@@ -3,6 +3,7 @@
 # Whitelist anything that's a directory
 !*/
 # Whitelist these:
+!.*
 !.gitignore
 !.config/**/*
 !.local/bin/**/*
