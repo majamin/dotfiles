@@ -1,0 +1,189 @@
+{
+  "layer": "bottom",
+  "position": "top",
+  "modules-left": [
+    "sway/workspaces",
+    "sway/mode",
+    "sway/window"
+  ],
+  "modules-center": ["clock"],
+  "modules-right": [
+    "custom/recorder",
+    "tray",
+    "custom/weather",
+    "pulseaudio",
+    "temperature",
+    "custom/cpu_speed",
+    "battery",
+    "custom/colorpicker",
+    "idle_inhibitor",
+    "network",
+    "sway/language",
+    "custom/powermenu",
+  ],
+  "sway/mode": {
+    "format": " {}"
+  },
+  "sway/workspaces": {
+    "disable-scroll": true,
+    "disable-markup": false,
+  },
+  "sway/window": {
+    "max-length": 60,
+    "tooltip": false
+  },
+  "clock": {
+    "format": "{:%a %d %b - %H:%M}",
+    "on-click": "gnome-calendar"
+  },
+  "sway/language": {
+    "format": "{}",
+    "tooltip-format": "{long}",
+    "on-click": "swaymsg input 'type:keyboard' xkb_switch_layout next"
+  },
+  "custom/cpu_speed": {
+    "interval": 10,
+    "return-type": "json",
+    "exec": "~/.config/waybar/modules/cpu_speed.sh",
+    "format": "<span font='Font Awesome 6 Free 11'>{icon}</span>{}",
+    "format-icons": [""],
+    "escape": true,
+    "on-click": "kitty top"
+  },
+  "custom/powermenu": {
+    "return-type": "json",
+    "exec": "~/.config/waybar/modules/powermenu.sh",
+    "format": "<span font='Font Awesome 6 Free 9'>{icon}</span>{}",
+    "format-icons": [""],
+    "interval": 3600,
+    "escape": true,
+    "on-click": "~/.config/sway/scripts/powermenu.sh"
+  },
+  "custom/recorder": {
+    "format": "🔴",
+    "return-type": "json",
+    "interval": 4,
+    "exec": "echo '{\"class\": \"recording\"}'",
+    "exec-if": "pgrep wf-recorder"
+  },
+  "custom/colorpicker": {
+    "format": "<span font='Font Awesome 6 Free 9'>{icon}</span>{}",
+    "format-icons": [""],
+    "return-type": "json",
+    "exec": "echo '{\"class\": \"colorpicker\"}'",
+    "on-click": "~/.local/bin/colorpicker",
+    "tooltip-format": "Copy and display pixel color information. Move mouse after click!"
+  },
+  "battery": {
+    "format": "<span font='Font Awesome 6 Free 11'>{icon}</span>{capacity}% - {time}",
+    "format-icons": ["", "", "", "", ""],
+    "format-time": "{H}h{M}m",
+    "format-charging": "<span font='Font Awesome 6 Free'></span><span font='Font Awesome 6 Free 11'>{icon}</span>{capacity}% - {time}",
+    "format-full": "<span font='Font Awesome 6 Free'></span><span font='Font Awesome 6 Free 11'>{icon}</span>Charged",
+    "interval": 30,
+    "states": {
+      "warning": 25,
+      "critical": 10
+    },
+    "tooltip": false,
+    "on-click": "gnome-power-statistics"
+  },
+  /* https://www.mankier.com/5/waybar-network */
+  "network": {
+    "format": "{icon}",
+    "format-alt": "{ipaddr}/{cidr} {icon}",
+    "format-alt-click": "click-right",
+    "format-wifi": "<span font='Font Awesome 6 Free 10'>{icon:2}</span>",
+    "format-ethernet": "<span font='Font Awesome 6 Free 10'>{icon:1}</span>",
+    "format-disconnected": "{icon:3} Disconnected",
+    "format-icons": ["", "", "⚠"],
+    "interval": 2,
+    "on-click": "kitty --class kitty-nmtui nmtui",
+    "tooltip-format": "Local IPv4 address",
+    "tooltip-format-ethernet": "Ethernet connection {ipaddr}\n<span font='Font Awesome 6 Free 10'> </span>{bandwidthDownBits} <span font='Font Awesome 6 Free 10'> </span>{bandwidthUpBits}",
+    "tooltip-format-wifi": "Wireless connection {ipaddr}\n<span font='Font Awesome 6 Free 10'> </span>{bandwidthDownBits} <span font='Font Awesome 6 Free 10'> </span>{bandwidthUpBits}",
+    "tooltip-format-disconnected": "Network disconnected",
+    "tooltip-format-disabled": "Networking disabled",
+  },
+  "pulseaudio": {
+    "format": "<span font='Font Awesome 6 Free 11'>{icon:2}</span> {volume:4}%",
+    "format-bluetooth": "<span font='Font Awesome 6 Free 11'>{icon:2}</span>{volume:4}% - {desc}",
+    "format-muted": "<span font='Font Awesome 6 Free 11'></span>",
+    "format-icons": {
+      "headphone": [" ", " ", " ", " "],
+      "default": ["", "", "", ""]
+    },
+    "scroll-step": 2,
+    "on-click": "kitty --class kitty-pulsemixer pulsemixer",
+    "on-click-right": "pactl set-sink-mute 0 toggle",
+    "tooltip": false
+  },
+  "custom/storage": {
+    "format": "{} ",
+    "format-alt": "{percentage}% ",
+    "format-alt-click": "click-right",
+    "return-type": "json",
+    "interval": 60,
+    "exec": "~/.config/waybar/modules/storage.sh"
+  },
+  "backlight": {
+    "format": "{icon}",
+    "format-alt": "{percent}% {icon}",
+    "format-alt-click": "click-right",
+    "format-icons": ["", ""],
+    "on-scroll-down": "light -A 1",
+    "on-scroll-up": "light -U 1"
+  },
+  "temperature": {
+    "format": "<span font='Font Awesome 6 Free 9'></span> {temperatureC:3}°C",
+    "hwmon-path": "/sys/class/thermal/thermal_zone10/temp",
+    "on-click": "kitty 'watch -n1 sensors'"
+  },
+  "custom/weather": {
+    "format": "{}   <span font='Weather Icons'>{icon}</span>",
+    "format-alt": "{alt}: {}",
+    "format-alt-click": "click-right",
+    "format-icons": [
+      "",
+      "", // sunny
+      "", // partly cloudy
+      "", // cloudy
+      "", // overcast
+      "", // mist, fog, freezing fog
+      "", // light rain
+      "", // rain
+      "", // sleet
+      "", // snow
+      "", // blizzard
+      "", // thunderstorm
+      "",
+    ],
+    "interval": 1800,
+    "return-type": "json",
+    "exec": "~/.config/waybar/modules/weather",
+    "exec-if": "ping wttr.in -c1",
+    "on-click": "gnome-weather"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-alt": "{icon} idle {status}",
+    "format-alt-click": "click-right",
+    "format-icons": {
+      "activated": "<span font='Font Awesome 6 Free 9'></span>",
+      "deactivated": "<span font='Font Awesome 6 Free 9'></span>"
+    },
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 18,
+    "spacing": 18
+  },
+  "wlr/taskbar": {
+    "format": "{icon}",
+    "icon-size": 14,
+    "icon-theme": "Flat-Remix-Violet-Dark",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close"
+  }
+}

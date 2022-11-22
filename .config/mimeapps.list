@@ -1,0 +1,23 @@
+[Default Applications]
+application/pdf=org.pwmt.zathura.desktop
+application/postscript=pdf.desktop;
+application/rss+xml=rss.desktop
+application/x-bittorrent=torrent.desktop;
+image/gif=img.desktop;
+image/jpeg=img.desktop;
+image/png=img.desktop;
+inode/directory=file.desktop
+text/plain=text.desktop;
+text/x-shellscript=text.desktop;
+video/x-matroska=video.desktop
+x-scheme-handler/lbry=lbry.desktop
+x-scheme-handler/magnet=torrent.desktop;
+x-scheme-handler/mailto=brave-browser.desktop
+x-scheme-handler/webcal=brave-browser.desktop
+
+[Added Associations]
+image/png=gimp.desktop;brave-browser.desktop;sxiv.desktop;
+text/html=brave-browser.desktop;firefox.desktop;
+image/jpeg=org.inkscape.Inkscape.desktop;gimp.desktop;
+image/svg+xml=org.inkscape.Inkscape.desktop;
+application/pdf=brave-browser.desktop;org.pwmt.zathura.desktop;

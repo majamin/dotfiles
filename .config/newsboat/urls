@@ -1,0 +1,12 @@
+https://weather.gc.ca/rss/city/bc-49_e.xml "WEATHER"
+https://weather.gc.ca/rss/warning/bc-49_e.xml "ALERTS"
+https://www.drivebc.ca/api/events/region/thomok?format=rss "Thompson-Okanagan Road Conditions" "news local"
+https://www.merrittherald.com/feed/ "~Merritt Herald" "news local"
+https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSkwyMHZNRE5pYkRWckVnVmxiaTFIUWlnQVAB?hl=en-CA&gl=CA&ceid=CA%3Aen "~Merritt Area - Google News" "news local"
+https://globalnews.ca/bc/feed/ "~BC news"
+https://www.archlinux.org/feeds/news/ "~Arch Linux News" "news linux"
+https://lukesmith.xyz/rss.xml "~Luke Smith Feed"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCuFFtHWoLl5fauMMD5Ww2jA "~CBC: News" "YouTube Politics"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCKjU3KzdbJE1EFcHVqXC3_g "~CBC: The National" "YouTube Politics"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCSJ4gkVC6NrvII8umztf0Ow "~ChilledCow" "YouTube Music"
+

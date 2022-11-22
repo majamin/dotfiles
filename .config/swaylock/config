@@ -1,0 +1,83 @@
+#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+# SWAYLOCK CONFIG
+
+image=~/Images/backgrounds/lock.jpg
+scaling=fill
+
+#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+# TODO: customize colours
+
+# Sets the color of the inside of the indicator.
+##inside-color=#24283b
+
+# Sets the color of the inside of the indicator when cleared.
+##inside-clear-color=#24283b
+
+# Sets the color of the inside of the indicator when Caps Lock is active.
+##inside-caps-lock-color=#24283b
+
+# Sets the color of the inside of the indicator when verifying.
+##inside-ver-color=#24283b
+
+# Sets the color of the inside of the indicator when invalid.
+##inside-wrong-color=#24283b
+
+# Sets the color of the key press highlight segments.
+##key-hl-color=#24283b
+
+# Sets the background color of the box containing the layout text.
+##layout-bg-color=#24283b
+
+# Sets the color of the border of the box containing the layout text.
+##layout-border-color=#24283b
+
+# Sets the color of the layout text.
+##layout-text-color=#24283b
+
+# Sets the color of the line between the inside and ring.
+##line-color=#24283b
+
+# Sets the color of the line between the inside and ring when cleared.
+##line-clear-color=#24283b
+
+# Sets the color of the line between the inside and ring when Caps Lock is active.
+##line-caps-lock-color=#24283b
+
+# Sets the color of the line between the inside and ring when verifying.
+##line-ver-color=#24283b
+
+##line-wrong-color=#24283b
+
+# Sets the color of the ring of the indicator when typing or idle.
+##ring-color=#24283b
+
+# Sets the color of the ring of the indicator when cleared.
+##ring-clear-color=#24283b
+
+# Sets the color of the ring of the indicator when Caps Lock is active.
+##ring-caps-lock-color=#24283b
+
+# Sets the color of the ring of the indicator when verifying.
+##ring-ver-color=#24283b
+
+# Sets the color of the ring of the indicator when invalid.
+##ring-wrong-color=#24283b
+
+# Sets the color of the lines that separate highlight segments.
+##separator-color=#24283b
+
+# Sets the color of the text.
+##text-color=#24283b
+
+# Sets the color of the text when cleared.
+##text-clear-color=#24283b
+
+# Sets the color of the text when Caps Lock is active.
+##text-caps-lock-color=#24283b
+
+# Sets the color of the text when verifying.
+##text-ver-color=#24283b
+
+# Sets the color of the text when invalid.
+##text-wrong-color=#24283b
+

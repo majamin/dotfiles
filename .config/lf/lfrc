@@ -1,0 +1,57 @@
+# Luke's lf settings
+
+# Basic vars
+set previewer ~/.config/lf/scope
+
+# cmds/functions
+cmd open ${{
+    case $(file --mime-type $f -b) in
+	    image/vnd.djvu|application/pdf|application/octet-stream)
+        setsid -f zathura $fx >/dev/null 2>&1 ;;
+	    image/x-xcf)
+        setsid -f gimp $f >/dev/null 2>&1 ;;
+	    image/svg+xml)
+        display -- $f ;;
+	    image/*)
+        rotdir $f | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\)\(_large\)*$" | setsid -f sxiv -aio 2>/dev/null | lf-select & ;;
+	    audio/*)
+        mpv --audio-display=no $f ;;
+	    video/*)
+        setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
+	    application/pdf|application/vnd*|application/epub*)
+        setsid -f zathura $fx >/dev/null 2>&1 ;;
+	    application/pgp-encrypted)
+        $EDITOR $fx ;;
+      text/*)
+        $EDITOR $fx;;
+      *)
+        for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
+    esac
+}}
+
+# Bindings
+map <c-f> $lf -remote "send $id select '$(fzf)'"
+map gh
+map g top
+map D delete
+map E extract
+map C copyto
+map M moveto
+map <c-n> push :mkdir<space>
+map <c-r> reload
+map <c-h> set hidden!
+map <enter> shell
+map x $$f
+map X !$f
+map o &mimeopen $f
+map O $mimeopen --ask $f
+
+map A rename # at the very end
+map c push A<c-u> # new rename
+map I push A<c-a> # at the very beginning
+map i push A<a-b><a-b><a-f> # before extention
+map a push A<a-b> # after extention
+map B bulkrename
+map b $setbg $f
+
+map V push :!nvim<space>
