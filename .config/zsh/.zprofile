@@ -64,7 +64,7 @@ export MOZ_USE_XINPUT2="1"		# Mozilla smooth scrolling/touchpads.
 export MOZ_ENABLE_WAYLAND=1
 export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
 
-# Start sway
+# Start
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-  while true; do wayfire 2>~/wayfire.log; done
+  wayfire 2>~/wayfire.log
 fi
