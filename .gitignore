@@ -4,6 +4,7 @@
 !*/
 # Whitelist these:
 !.*
+!README*
 !.gitignore
 !.config/**/*
 !.local/bin/**/*
