@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# directories to include
+INCLUDE="\
+  $HOME/.config \
+  $HOME/.local/bin \
+  $HOME/.local/src \
+  $HOME/Maja/Projects \
+  $HOME/Maja/Projects/mss \
+  $HOME/Maja/Projects/mss/scripts \
+  "
+
+EXCLUDE="\
+  --exclude .cache \
+  --exclude .git \
+  --exclude node_modules \
+  --exclude microsoft-edge \
+  "
+
+# check for dependencies
+for cmd in tmux fd xargs notify-send basename; do
+  command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
+done
+if (( "${#cmd_failures}" > 0 )); then
+  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
+fi
+
+# use fzf to select a directory
+if [[ $# -eq 1 ]]; then
+    selected="$1"
+else
+    selected="$(fd . $INCLUDE $EXCLUDE --color never --type d --hidden --follow --min-depth 1 --max-depth 2 | fzf)"
+fi
+
+# quit if nothing selected
+if [[ -z "$selected" ]]; then
+    exit 1
+fi
+
+# dir name of project
+selected_name="$(basename "$selected" | tr . _)"
+
+# are we in tmux?
+in_tmux() {
+  [[ -n "$TMUX" ]] && echo "we're in tmux alright"
+}
+
+# is main session open?
+has_session() {
+  return $(tmux has -t "$selected_name")
+}
+
+# params:
+# $1: window name
+attach() {
+  if ! has_session; then
+    tmux new-session -d -s "$selected_name" -c "$selected"
+  fi
+  tmux attach-session -t "$selected_name"
+}
+
+# params:
+# $1: window name
+switch() {
+  if ! has_session; then
+    tmux new-session -d -s "$selected_name" -c "$selected"
+  fi
+  tmux switch-client -t "$selected_name"
+}
+
+# main program
+if ! in_tmux; then
+  attach "$selected_name"
+else
+  switch "$selected_name"
+fi

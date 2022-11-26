@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# TODO only run the next line if there isn't already a loopback device
+sudo --askpass modprobe v4l2loopback
+
+VIDSOURCE="http://192.168.1.67:8080/video"
+AUDSOURCE="http://192.168.1.67:8080/audio.opus"
+SCREENDIM=$(xdpyinfo| grep dimensions | awk '{print $2}')
+LOOPDEV=$(v4l2-ctl --list-devices | grep -Po "/dev/.*")
+
+# legacy stuff
+#STREAMINFO="$(ffprobe -v error -show_streams $VIDSOURCE)"
+#IPWIDTH="$(echo $STREAMINFO | grep -Po '(?<=coded_width=)\d*' -)"
+#IPHEIGHT="$(echo $STREAMINFO | grep -Po '(?<=coded_height=)\d*' -)"
+
+ffmpeg -i "$VIDSOURCE" -pix_fmt yuv420p -f v4l2 $LOOPDEV &
+sleep 4
+
+ffplay /dev/video0 &
+
+# countdown to recording
+#for i in {10..1}; do
+#	notify-send -t 1000 "Recording starting in $i seconds"
+#	sleep 1
+#done
+#ffmpeg -y -f x11grab -s $SCREENDIM -i :0.0 -i http://192.168.1.67:8080/audio.opus -preset ultrafast -tune zerolatency "$(date '+%F-%H-%M-%S')-out.mkv"
+
+# xdg-open "http://192.168.1.67:8080/" 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+geometry=$(slurp -p)
+sleep 1 # so the user has a chance to move the mouse before it's captured
+
+grim -g "$geometry" /tmp/pixel.png
+convert /tmp/pixel.png -scale 50x50 /tmp/colorpicker_icon.png
+PIXEL_DATA=$(convert /tmp/pixel.png -format '%[pixel:p{0,0}]' txt:- | tail -n1 | cut -d# -f2)
+
+wl-copy "$PIXEL_DATA" && \
+  notify-send --icon="/tmp/colorpicker_icon.png" "Copied to clipboard" "$PIXEL_DATA"

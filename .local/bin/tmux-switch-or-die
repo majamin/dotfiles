@@ -1,0 +1,2 @@
+#!/bin/sh
+( tmux switch-client -n; tmux kill-session -t "$1" ) || tmux kill-session -t "$1"

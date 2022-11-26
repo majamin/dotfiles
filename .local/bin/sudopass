@@ -1,0 +1,2 @@
+#!/bin/sh
+pass local/$USER@`hostname` | head -n1

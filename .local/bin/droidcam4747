@@ -1,0 +1,43 @@
+#!/bin/sh
+
+[[ ! -x $(command -v v4l2-ctl) ]] && echo "v4l2 missing - please install." && break
+[[ ! -x $(command -v adb) ]] && echo "adb missing - please install." && break
+[[ ! -x $(command -v droidcam) ]] && echo "droidcam missing - please install." && break
+
+# create loopback device if it doesn't exist
+#[ -z "$(v4l2-ctl -l) | grep \"Cannot open device\"" ] && sudo modprobe v4l2loopback_dc
+[[ -z $(lsmod | grep v4l2loopback_dc) ]] \
+	&& echo "Installing v4l2 module" \
+	&& sudo modprobe v4l2loopback_dc video_nr=42
+
+DEVICE=$(v4l2-ctl --list-devices | grep -A1 Droidcam | tail -n1 | sed -e 's/^[ \t]*//')
+
+# is the phone plugged in?
+adb kill-server && adb start-server
+
+if [[ $(adb devices | wc -l ) = 3 ]]; then
+	notify-send "adb reports connection to a device"
+	droidcam-cli -v adb 4747 &
+	ffplay -autoexit -vf "vflip,hflip" $DEVICE \
+
+	ffmpeg "$DEVICE" \
+		-f v4l2 -vcodec libx264\
+		-preset ultrafast \
+		video_"$(date +\"%y_%m_%d_%H_%M_%S\")".mkv &
+else
+	notify-send "adb reports NO connections"
+	adb kill-server
+	killall droidcam-cli
+fi
+
+#mpv --no-osc --ontop --vf=rotate=PI av://v4l2:/dev/video0
+
+# NOTE: keeping this here as a reference for how to add a filter
+#ffplay -vf "deband=1thr=0.5:d=-PI" $DEVICE
+
+# SCREENGRAB
+#ffmpeg -f x11grab -thread_queue_size 64 -video_size 1920x1080 -framerate 30 -i :1 \
+#       #-f v4l2 -thread_queue_size 64 -video_size 320x180 -framerate 30 -i /dev/video42 \
+#       -filter_complex 'overlay=main_w-overlay_w:main_h-overlay_h:format=yuv444' \
+#       -vcodec libx264 -preset ultrafast -qp 0 -pix_fmt yuv444p \
+#       video.mkv &

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+SEL=$(printf "%s\n%s\n%s\n" "Dark" "Light" "Extra" | fzf)
+
+case $SEL in
+	"Dark")
+		DARK=$(wal --theme | sed 's/\x1b\[[0-9;]*m//g' | sed -n '/^Dark/,/^Light/p' | head -n-1 | tail -n +2 | sed 's/ - //' | fzf)
+		wal --theme "$DARK"
+		;;
+	"Light")
+		LIGHT=$(wal --theme | sed 's/\x1b\[[0-9;]*m//g' | sed -n '/^Light/,/^Extra/p' | head -n-1 | tail -n +2 | sed 's/ - //' | fzf)
+		wal -l --theme "$LIGHT"
+		;;
+	"Extra")
+		EXTRA=$(wal --theme | sed 's/\x1b\[[0-9;]*m//g' | sed -n '/^Extra/,/./p' | tail -n +2 | sed 's/ - //' | fzf)
+		wal --theme "$EXTRA"
+		;;
+	*)
+esac

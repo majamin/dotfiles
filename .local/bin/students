@@ -1,0 +1,24 @@
+#!/bin/sh
+
+[[ -z $DISPLAY ]] && PICKER='fzf' || PICKER='dmenu -i -l 20'
+
+FILE="/home/marian/Maja/Projects/newed/finder.txt"
+
+selcol(){
+	cat "$FILE" | cut -d";" -f$1 | sort -u | $PICKER
+}
+
+MAINSEL=$(echo -e "Care Package\\nStudent\\nTeacher\\nClass" | $PICKER)
+
+case $MAINSEL in
+	'Care Package')
+		CPCHOICE=$(find ${HOME}/Maja/_data/ed/myed/staff/2021 -name "*html" | $PICKER)
+		brave "$CPCHOICE" ;;
+	Student) STUDENT=$(selcol 1 "student")
+	         cat "$FILE" | grep "$STUDENT" | sort -t";" -k4 | column -t -s';' ;;
+	Teacher) TEACHER=$(selcol 2 "teacher")
+	         cat "$FILE" | grep "$TEACHER" | sort -t";" -k2 | column -t -s';' ;;
+	Class)   CLASS=$(selcol 3 "class")
+	         cat "$FILE" | grep "$CLASS" | sort -t";" -k4 | column -t -s';' ;;
+esac
+

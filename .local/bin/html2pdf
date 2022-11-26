@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# names of files (without extension)
+files=$(find . -name "*.html" | sed -e 's/\.html$//')
+
+read -p "This will convert all HTML files recursively to PDF. Are you sure? (PDF overwrites possible) (Y/y)" -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
+
+# convert files
+for file in $files
+do
+	echo "converting ${file}.html to ${file}.pdf"
+	#https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2177
+	wkhtmltopdf -s Letter --javascript-delay 1000 "${file}.html" "${file}.pdf"
+done
