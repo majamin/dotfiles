@@ -41,14 +41,8 @@ export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
 export PATH="$PATH:$GEM_HOME/bin"
 
-# Node (NVM || NPM)
-if [[ ! -f "/usr/share/nvm/init-nvm.sh" ]]; then
-  export NPM_PACKAGES="${XDG_DATA_HOME:-$HOME/.local/share}/npm_packages"
-  export PATH="$PATH:$NPM_PACKAGES/bin" # local package binaries
-else
-  mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
-  export NVM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
-fi
+export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
+export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
 
 export LESS=-R
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
@@ -65,6 +59,6 @@ export MOZ_ENABLE_WAYLAND=1
 export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
 
 # Start
-if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-  wayfire 2>~/wayfire.log
-fi
+#if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+#  wayfire 2>~/wayfire.log
+#fi

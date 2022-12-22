@@ -72,7 +72,6 @@ alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME' # help: do
 mkcd() { mkdir -p $1 && cd $1 }                 # help: mkcd ......... make a directory and cd into it
 
 # ------------ BEHAVIOUR -----------------------------------------------------
-[[ -f "/usr/share/nvm/init-nvm.sh" ]] && . "/usr/share/nvm/init-nvm.sh" || echo "warning: couldn't find nvm"
 source "/usr/share/fzf/completion.zsh"
 source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
