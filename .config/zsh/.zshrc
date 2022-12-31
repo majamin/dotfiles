@@ -68,6 +68,7 @@ alias la="ls -SlaA1"                            # help: l ............ is an ali
 alias gsu="git status -uno"                     # help: gsu .......... is an alias for `git status -uno`
 alias th='tmux new -s $(basename $(pwd))'       # help: th ........... create a new tmux session in current directory
 alias ta='tmux attach -t "$(tmux ls -F #S | fzf)"' # help: ta ........... attach an existing tmux session
+alias tl='tmux list'                            # help: tl ........... list tmux sessions
 alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME' # help: dots ......... is an alias to handle dotfiles in a bare git repo
 mkcd() { mkdir -p $1 && cd $1 }                 # help: mkcd ......... make a directory and cd into it
 
