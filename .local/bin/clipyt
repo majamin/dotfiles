@@ -60,7 +60,7 @@ SOURCES=("$@")
 [[ -n "$@" ]] && play "$@" && exit 0
 
 # anything currently on the clipboard with 'http'
-SOURCES+=("$(wl-paste 2>/dev/null | grep http)")
+SOURCES+=("$(xclip -o -sel clip 2>/dev/null | grep http)")
 
 # some radio stations
 SOURCES+=(
@@ -86,6 +86,6 @@ SOURCES+=(
 SOURCES+=("$(find ~/Videos -print 2>/dev/null | file -if - | grep "video/" | awk -F: '{print $1}')")
 
 # make a selection
-SEL=$(printf '%s\n' "${SOURCES[@]}" | sed '/^$/d' | dmenu -p "Select source:" -l 20)
+SEL=$(printf '%s\n' "${SOURCES[@]}" | sed '/^$/d' | dmenu -p "Select source:" -i -l 20)
 
 [[ -n "$SEL" ]] && play "$SEL"

@@ -1,10 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-# FIX: notification
-# This doesn't work in wayland (for now):
-# notify-send -u critical -t 1400 "Select an area of the screen to copy"
-
-grim -g "$(slurp)" - | \
-  swappy -f - -o - | \
-  tee "$SCREENSHOT_DIR/pic-selected-$(date '+%y%m%d-%H%M-%S').png" | \
-  wl-copy
+notify-send -u critical -t 1400 "Select an area of the screen to copy"
+maim -sluc 0.5,0.5,0.5,0.1 | tee "$SCREENSHOT_DIR/pic-selected-$(date '+%y%m%d-%H%M-%S').png" | xclip -i -sel clip -t image/png && notify-send -t 4000 "Screenshot saved to $SCREENSHOT_DIR and copied to clipboard"

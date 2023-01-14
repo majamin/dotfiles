@@ -1,0 +1,4 @@
+while true; do
+    bar.sh 2> ~/.bar.log &
+    dwm 2> ~/.dwm.log
+done

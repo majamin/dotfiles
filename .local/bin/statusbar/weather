@@ -1,0 +1,4 @@
+#!/bin/sh
+
+wkhtmltopdf "https://weather.gc.ca/city/pages/bc-49_metric_e.html" - | zathura - &
+wkhtmltopdf "https://weather.gc.ca/warnings/report_e.html?bc32"    - | zathura - &

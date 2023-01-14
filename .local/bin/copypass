@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# List accounts in password store, clean, and pass on to dmenu, and copy to clipboard via pass
+find "$PASSWORD_STORE_DIR" -name '*.gpg' -type f -exec basename -a '{}' + | sed 's/\.gpg$//g' | sort | uniq | dmenu -i -F -l 30 | xargs pass -c
+notify-send "Password copied to clipboard for 45 sec." 

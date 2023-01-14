@@ -1,0 +1,33 @@
+#!/bin/sh
+
+file="$HOME/.local/src/dwm/config.def.h"
+
+MODKEY=$(grep "(?<=#define MODKEY ).+" -Po $file)
+
+case $MODKEY in
+	"Mod1Mask")	MODKEY="Alt";;
+	"Mod4Mask")	MODKEY="Super";;
+	*)		;;
+esac
+
+cat "$file" \
+	| grep -A 100 -P "static Key" \
+	| grep -P "\t{ MODKEY" \
+	| sed 's/ \{2,\}//g' \
+	| sed 's/|/ + /g' \
+	| sed 's/XK_//g' \
+	| sed 's/ShiftMask/Shift/g' \
+	| sed "s/MODKEY/${MODKEY}/g" \
+	| sed 's/\({\|}\)//g' \
+	| sed 's/,/ +/' \
+	| cut -d"," -f1,4 \
+	| sed 's/\/\///g' \
+	| sed 's/,/\\t/' \
+	| sed 's/\t//g' \
+	| sed '$a.fi' \
+	| sed '1i keybinding	effect' \
+	| sed '1i .ta 1i 2i' \
+	| sed '1i .nf' \
+	| sed '1i Global DWM keybindings - sourced from config.def.h' \
+	| sed '1i .TL' \
+	| groff -mom -Tpdf -i | zathura -

@@ -5,7 +5,6 @@ INCLUDE="\
   $HOME/.config \
   $HOME/.local/bin \
   $HOME/.local/src \
-  $HOME/Projects \
   $HOME/Maja/Projects \
   $HOME/Maja/Projects/mss \
   $HOME/Maja/Projects/mss/scripts \
@@ -22,15 +21,15 @@ EXCLUDE="\
 for cmd in tmux fd xargs notify-send basename; do
   command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
 done
-# if (( "${#cmd_failures}" > 0 )); then
-#   printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}"
-# fi
+if (( "${#cmd_failures}" > 0 )); then
+  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
+fi
 
 # use fzf to select a directory
 if [[ $# -eq 1 ]]; then
     selected="$1"
 else
-    selected="$(fd . $INCLUDE $EXCLUDE --color never --type d --hidden --follow --min-depth 1 --max-depth 2 2>/dev/null | fzf)"
+    selected="$(fd . $INCLUDE $EXCLUDE --color never --type d --hidden --follow --min-depth 1 --max-depth 2 | fzf)"
 fi
 
 # quit if nothing selected

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# While tweaking all of my dotfiles, it's convenient to have an indicator
+# script that lets me know if things have been changed, but not pushed to
+# github. That's what this script does. If ANY files have been changed in
+# $HOME or ~/.local/src repos, but not pushed, we'll see a warning in the
+# statusbar.
+
+LOG="$HOME/bargit.log"
+rm $LOG 2>/dev/null
+FLAGS=()
+
+git_ls_files(){
+	printf "%s" "$(git -C "$1" ls-files --modified | sed '/^ *$/d')"
+}
+
+# TODO: add $HOME repo
+DIRS="$HOME $(find "$HOME/.local/src" -maxdepth 1 -type d)"
+
+# check src repos
+for DIR in $DIRS; do
+	FILES="$(git_ls_files ${DIR})"
+	if [[ -z "$FILES" ]]; then
+		continue
+	else
+		GITFLAG=true
+		echo -e "\n----" >> "$LOG"
+		for FILE in $FILES; do
+			echo -e "$DIR/$FILE" >> "$LOG"
+		done
+	fi
+done
+
+[[ $GITFLAG == true ]] && FLAGS+=("")
+
+echo -e "${FLAGS[@]}\n"

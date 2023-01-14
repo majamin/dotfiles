@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# TODO notify user of date string format on error:
+# Sun, 29 Feb 2004 16:21:42 -0800
+
+START="$1"
+END="$2"
+
+START_S="$(date --date=$START +%s)"
+END_S="$(date --date=$END +%s)"
+SECS=$((END_S - START_S))
+HOURS=$((SECS/3600))
+DAYS=$((HOURS/24))
+WEEKS=$((DAYS/7))
+YEARS=$((DAYS/365))
+
+printf "Seconds: %s\n" $SECS
+printf "Hours:   %s\n" $HOURS
+printf "Days:    %s\n" $DAYS
+printf "Weeks:   %s\n" $WEEKS
+printf "Years:   %s\n" $YEARS

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+bgloc="${HOME}/.local/share/bg"
+FAVES="${HOME}/.local/share/bgfaves.txt"
+
+# if no argument, assume user wants to save current background to favourite
+[ -z "$1" ] && readlink "$bgloc" >> "$FAVES" && notify-send "Current wallpaper sent to: ${FAVES}"
+
+for file in "$@"; do
+	echo "$file" >> "$FAVES"
+done
+
+sort -u "$FAVES" -o "$FAVES"
+
+# use sxiv to mark (with m) and send files to faves
+# readlink -f $(sxiv -to $(ls "$HOME/OneDrive/Images/backgrounds/") 2&>/dev/null) | xargs favebg

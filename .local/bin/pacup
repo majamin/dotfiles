@@ -1,0 +1,15 @@
+#!/bin/sh
+
+get_avg_time(){
+	ping $1 -c 3 | grep -P "avg" | grep -Po "(?<=\= )(\d|\.|/)*" | awk -F/ '{print $2}'
+}
+
+export -f get_avg_time
+
+ping_urls=$(grep -Po "(?<=://)[^/]*" /etc/pacman.d/mirrorlist | \
+	head -n 5 # sample for debugging
+)
+
+times=$(parallel -u get_avg_time ::: $ping_urls)
+
+echo $times $ping_urls

@@ -1,0 +1,3 @@
+#!/bin/sh
+xdg-open "$(rg --no-messages --files -g '!{.git,node_modules,build,.idea}' ~ | \
+	rofi -threads 0 -theme-str '#window { width: 900;}' -dmenu -sort -sorting-method fzf -i -p 'find')"

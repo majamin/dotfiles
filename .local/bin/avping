@@ -1,0 +1,3 @@
+#!/bin/sh
+avtime=$(ping $1 -c 5 | grep -P "avg" | grep -Po "(?<=\= )(\d|\.|/)*" | awk -F/ '{print $2}')
+echo $avtime "	" $1

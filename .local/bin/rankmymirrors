@@ -1,0 +1,2 @@
+#!/bin/sh
+[ -x $(which rankmirrors) ] && curl -s "https://www.archlinux.org/mirrorlist/?country=CA&country=US&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -v -n 10 - > mirrors_ranked.txt
