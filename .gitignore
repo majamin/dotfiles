@@ -1,9 +1,0 @@
-# Ignore everything
-*
-# Whitelist anything that's a directory
-!*/
-# Whitelist these:
-!.*
-!README*
-!.config/**/*
-!Images/backgrounds/**/*
