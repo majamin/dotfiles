@@ -3,8 +3,8 @@
 # directories to include
 INCLUDE="\
   $HOME/.config \
-  $HOME/.local/bin \
-  $HOME/.local/src \
+  $HOME/.local \
+  $HOME/Projects \
   $HOME/Maja/Projects \
   $HOME/Maja/Projects/mss \
   $HOME/Maja/Projects/mss/scripts \
