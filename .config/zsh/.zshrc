@@ -59,7 +59,7 @@ alias yt="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-d
 alias yta="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-dl/audio.config\""
 
 # oneliner (alias) - greps oneliners.txt and selects a command
-alias oneliner='grep "^(\*)" ~/Maja/Projects/oneliners.txt/oneliners.txt | fzf -e | grep -oP "(?<=: \`).*(?=\`$)"'
+alias oneliner='grep "^(.)" ~/Maja/Projects/oneliners.txt/oneliners.txt | fzf -e | grep -oP "(?<=: \`).*(?=\`$)"'
 
 alias ls="ls -hN --color=always --group-directories-first" # help: ls ........... ls has color and groups directories first
 alias l="ls"                                    # help: l ............ alias for `ls`
@@ -74,7 +74,7 @@ mkcd() { mkdir -p $1 && cd $1 }                 # help: mkcd ......... make a di
 
 # ------------ BEHAVIOUR -----------------------------------------------------
 source "/usr/share/fzf/completion.zsh"
-source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+#source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 source "/usr/share/fzf/key-bindings.zsh"
 # help: CTRL-T ....... Select one or more files and insert them at cursor
@@ -86,6 +86,3 @@ source "/usr/share/fzf/key-bindings.zsh"
 zstyle ':completion:*' list-colors "${LS_COLORS}"
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=none # remove that nasty red
-
-FWAL="$HOME/.cache/wal/sequences"
-[ -f "$FWAL" ] && (cat "$FWAL" &)
