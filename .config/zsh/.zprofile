@@ -4,7 +4,7 @@
 export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
 
 # Default binaries
-export TERMINAL="st"
+export TERMINAL="kitty"
 export EDITOR="nvim"
 export READER="zathura"
 export BROWSER="firefox"
