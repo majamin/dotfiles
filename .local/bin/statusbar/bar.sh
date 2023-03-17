@@ -41,7 +41,7 @@ gitwatch() {
   done
 
   [[ $GITFLAG == true ]] && \
-    printf "^c$black^ ^b$orange^ GIT" && \
+    printf "^c$black^ ^b$orange^ 療" && \
     printf "^c$white^ ^b$grey^ $(cat $LOG | wc -l)"
 }
 
@@ -72,7 +72,7 @@ battery() {
 }
 
 sys() {
-  printf "^c$black^ ^b$green^ SYS"
+  printf "^c$black^ ^b$green^ 閭"
 
   CPU=$(grep -o "^[^ ]*" /proc/loadavg)
   printf "^c$green^ ^b$grey^ CPU"
@@ -84,10 +84,14 @@ sys() {
 }
 
 net() {
-	if [[ "$(cat /sys/class/net/*/operstate 2>/dev/null)" == *"up"* ]]; then
-    printf "^c$black^ ^b$blue^ 󰤨 ^d^%s" " ^c$blue^Connected"
+  type=$(ip route get 8.8.8.8 | grep -Po 'dev \K\w+' | grep -qFf - /proc/net/wireless && echo wireless || echo wired)
+  domain="$(nmcli -t -f active,ssid | grep -Po "(?<=domains: ).*")"
+  icon=" "
+  [ "$type" = "wireless" ] && icon="直"
+  if [[ "$(cat /sys/class/net/*/operstate 2>/dev/null)" == *"up"* ]]; then
+    printf "^c$black^ ^b$blue^ $icon ^d^%s" " ^c$blue^$domain"
   else
-    printf "^c$black^ ^b$blue^ 󰤭 ^d^%s" " ^c$blue^Disconnected"
+    printf "^c$black^ ^b$blue^ 爵 ^d^%s" " ^c$blue^Disconnected"
   fi
 }
 
