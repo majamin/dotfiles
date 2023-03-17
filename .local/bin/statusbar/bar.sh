@@ -42,7 +42,7 @@ gitwatch() {
 
   [[ $GITFLAG == true ]] && \
     printf "^c$black^ ^b$orange^ 療" && \
-    printf "^c$white^ ^b$grey^ $(cat $LOG | wc -l)"
+    printf "^c$white^ ^b$black^ $(cat $LOG | wc -l)"
 }
 
 pkg_updates() {
@@ -65,39 +65,35 @@ battery() {
 
     status=$(cat "$battery"/status) || break
 
-    [ "$status" = "Discharging" ] && icon=" $baticon"
+    [ "$status" = "Discharging" ] && icon="$baticon"
     [ "$status" != "Discharging" ] && icon=""
   done
-  printf "^c$blue^ $icon $capacity"
+  printf "^c$blue^ $icon  $capacity"
 }
 
 sys() {
-  printf "^c$black^ ^b$green^ 閭"
-
   CPU=$(grep -o "^[^ ]*" /proc/loadavg)
-  printf "^c$green^ ^b$grey^ CPU"
-  printf "^c$white^ ^b$grey^$CPU"
+  printf "^c$green^ 閭 ^c$white^ %s " "$CPU"
 
   MEM=$(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)
-  printf "^c$green^ ^b$grey^ MEM"
-  printf "^c$white^ ^b$grey^$MEM"
+  printf "^c$green^ 礪 ^c$white^ %s " "$MEM"
 }
 
 net() {
   type=$(ip route get 8.8.8.8 | grep -Po 'dev \K\w+' | grep -qFf - /proc/net/wireless && echo wireless || echo wired)
   domain="$(nmcli -t -f active,ssid | grep -Po "(?<=domains: ).*")"
-  icon=" "
+  icon=""
   [ "$type" = "wireless" ] && icon="直"
   if [[ "$(cat /sys/class/net/*/operstate 2>/dev/null)" == *"up"* ]]; then
-    printf "^c$black^ ^b$blue^ $icon ^d^%s" " ^c$blue^$domain"
+    printf "^c$blue^ $icon ^d^%s" "^c$white^$domain"
   else
-    printf "^c$black^ ^b$blue^ 爵 ^d^%s" " ^c$blue^Disconnected"
+    printf "^c$blue^ 爵 ^d^%s" " ^c$white^Disconnected"
   fi
 }
 
 clock() {
-	# printf "^c$black^ ^b$darkblue^ 󱑆 "
-	printf "^c$black^^b$blue^ $(date '+%d %b %H:%M')  "
+  # printf "^c$black^ ^b$darkblue^ 󱑆 "
+  printf "^c$black^^b$blue^ $(date '+%d %b %H:%M')  "
 }
 
 while true; do
