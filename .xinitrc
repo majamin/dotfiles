@@ -2,4 +2,4 @@
 test $(which gpg-agent) && eval $(gpg-agent --daemon)
 eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
 eval $(ssh-agent)
-/home/$USER/.local/bin/startdwm
+/home/$USER/.local/bin/loopwm

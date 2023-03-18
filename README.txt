@@ -1,18 +1,29 @@
-=== A bare repo of dotfiles ===
+=== dotfiles ===
 
-This repo holds my dotfiles files for GNU/Linux systems.
+This repo holds my dotfiles for a minimal X11 window manager setup.
 
-WARNING: The following commands will overwrite any files that match the locations in this repo.
+As it exists, it is setup for DWM. To change that you'll need to edit:
+  ~/.local/bin/loopwm
 
-To deploy the files, run:
+Notes
+-----
 
+To deploy this repo as a bare repo (step 2 will overwrite files - BE CAREFUL):
+
+  --------------------------------------------------------------------------------------------
   1. git clone --bare --recurse-submodules https://github.com/majamin/dotfiles $HOME/.dotfiles
-  2. cd && git --git-dir=$HOME/.dotfiles --work-tree=$HOME checkout -f
+  2. cd && git --git-dir=$HOME/.dotfiles --work-tree=$HOME reset --hard HEAD
+  --------------------------------------------------------------------------------------------
 
-It's helpful to have an alias in your shell's RC file. Example:
+Then, you can manage the dotfile repo with `dots` (use it just like `git`).
+`dots` is aliased in this way (in `~/.config/.zshrc`):
 
+  --------------------------------------------------------
   alias dots='git --git-dir=~/.dotfiles --work-tree=$HOME'
+  --------------------------------------------------------
 
-Then, you can use `dots` like `git`. The following will also make `dots` quieter:
+The following will also make `dots` quieter:
 
+  --------------------------------------------------------
   dots config --local status.showUntrackedFiles no
+  --------------------------------------------------------
