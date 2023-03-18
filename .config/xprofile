@@ -2,13 +2,13 @@
 dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-remaps &
-dunst &
-xset r rate 300 50 &
-unclutter &
-mpd-module-update &
-xinput disable 'SynPS/2 Synaptics TouchPad' & # use mouse or trackpoint only
-picom & # composite manager
 [[ -x VBoxClient-all ]] && VBoxClient-all 2> ~/vbox.log &
+[[ -x $(command setbg) ]] && setbg &    # ~/.local/bin/setbg
+[[ -x $(command remaps) ]] && remaps &  # ~/.local/bin/remaps
+[[ -x $(command dunst) ]] && dunst &
+[[ -x $(command unclutter) ]] && unclutter &
+[[ -x $(command picom) ]] && picom &
 [[ -x ~/.screenlayout/default.sh ]] && ~/.screenlayout/default.sh &
-[[ -x $(command setbg) ]] && setbg &
+
+xset r rate 300 50 &
+xinput disable 'ELAN0672:00 04F3:3187 Touchpad' & # see `xinput list`
