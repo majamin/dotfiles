@@ -68,7 +68,35 @@ battery() {
     [ "$status" = "Discharging" ] && icon="$baticon"
     [ "$status" != "Discharging" ] && icon=""
   done
-  printf "^c$blue^ $icon  $capacity"
+  printf "^c$blue^ %s ^c$white^%s" "$icon" "$capacity"
+}
+
+vol() {
+  vol="$(wpctl get-volume @DEFAULT_AUDIO_SINK@)"
+
+  [ "$vol" != "${vol%\[MUTED\]}" ] && printf "^c$blue^ %s ^c$white^  " "婢" && exit
+
+  vol="${vol#Volume: }"
+
+  # Omit the . without calling an external program
+  split() {
+    IFS=$2
+    set -- $1
+    printf '%s' "$@"
+  }
+
+  vol="$(printf "%.0f" "$(split "$vol" ".")")"
+
+  # 墳奄奔婢
+  case 1 in
+    $((vol >= 70)) ) icon="墳" ;;
+    $((vol >= 30)) ) icon="奔" ;;
+    $((vol >= 1)) ) icon="奄" ;;
+    * ) printf "^c$blue^ %s ^c$white^  " "婢" && exit ;;
+  esac
+
+  # printf "^c$blue^%s^c $white^%s" "$icon" "$vol"
+  printf "^c$blue^ %s ^c$white^%s" "$icon" "$vol"
 }
 
 sys() {
@@ -109,5 +137,5 @@ while true; do
 
   interval=$((interval + 1))
 
-  sleep 1 && xsetroot -name "$updates $gits $(battery) $(sys) $(net) $(clock)"
+  sleep 1 && xsetroot -name "$updates $gits $(battery) $(vol) $(sys) $(net) $(clock)"
 done
