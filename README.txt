@@ -17,11 +17,11 @@ To deploy this repo as a bare repo (second step WILL overwrite files - BE CAREFU
   --------------------------------------------------------------------------------------------
 
 Then, you can manage the dotfile repo with `dots` (use it just like `git`).
-`dots` is aliased in this way (in `~/.config/.zshrc`):
+`dots` is aliased in this way (in `~/.config/zsh/.zshrc`):
 
-  --------------------------------------------------------
-  alias dots='git --git-dir=~/.dotfiles --work-tree=$HOME'
-  --------------------------------------------------------
+  ---------------------------------------------------------------------
+  alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+  ---------------------------------------------------------------------
 
 The following will also make `dots` quieter:
 
