@@ -68,7 +68,7 @@ battery() {
     [ "$status" = "Discharging" ] && icon="$baticon"
     [ "$status" != "Discharging" ] && icon=""
   done
-  printf "^c$blue^ %s ^c$white^%s" "$icon" "$capacity"
+  printf "^c$blue^ %s  ^c$white^%s" "$icon" "$capacity"
 }
 
 vol() {
@@ -137,5 +137,5 @@ while true; do
 
   interval=$((interval + 1))
 
-  sleep 1 && xsetroot -name "$updates $gits $(battery) $(vol) $(sys) $(net) $(clock)"
+  sleep 1 && xsetroot -name "$updates $gits $(battery) $(sys) $(net) $(clock)"
 done
