@@ -5,8 +5,8 @@
     # geometry
     width = 300
     height = 300
-    origin = top-right
-    offset = 16x16
+    origin = top-center
+    offset = 960x50
 
     # Scale factor. It is auto-detected if value is 0.
     scale = 0
