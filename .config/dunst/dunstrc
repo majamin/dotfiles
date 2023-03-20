@@ -90,7 +90,7 @@
 [urgency_normal]
     background = "#cad9f3"
     foreground = "#444444"
-    timeout = 120
+    timeout = 30
     #icon = /path/to/icon
 
 [urgency_critical]
