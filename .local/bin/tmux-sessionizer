@@ -5,6 +5,7 @@ INCLUDE="\
   $HOME/.config \
   $HOME/.local \
   $HOME/Projects \
+  $HOME/Images \
   $HOME/Maja/Projects \
   $HOME/Maja/Projects/mss \
   $HOME/Maja/Projects/mss/scripts \
