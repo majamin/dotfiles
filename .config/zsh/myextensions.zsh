@@ -28,7 +28,7 @@ f() {
     test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
 }
 
-# help: fgb() ........ fzf select local and remote git branches
+# help: fgr() ........ fzf select local and remote git branches
 fbr() {
   local branches branch
   branches=$(git branch --all | grep -v HEAD) &&
