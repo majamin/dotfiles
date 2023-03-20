@@ -1,30 +1,69 @@
 #!/bin/sh
 
+# Dependencies: pdftk, tesseract, ghostcript
+
+# You supply a list image paths of scanned docs,
+# and this script will create one PDF with embedded
+# text (English only).
+
+# Before you use this script you can use ImageMagick
+# -----------------------------------------------------
+# ... to improve the readability of the scanned images:
+# -----------------------------------------------------
+#   convert IMG_A.jpg \
+#     -brightness-contrast 3x10 \
+#     -unsharp 0x1 \
+#     -deskew 40% \
+#     IMG_nicetext.jpg
+# -----------------------------------------------------
+# ... to crop the page a little bit:
+# -----------------------------------------------------
+#   convert IMG.jpg \
+#     -gravity Center \
+#     -crop 97%x \
+#     IMG_cropped.jpg
+
+set -e
 im_list="$@"
 
 [[ -z $im_list ]] && echo "No images selected" && exit 1
 
-tstamp=$(date +'%Y%m%d_%H%M%S')
+# Check for dependencies and give the user helpful feedback
+cmd_failures=''
+for cmd in pdftk tesseract gs; do
+  command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
+done
 
+if (( "${#cmd_failures}" > 0 )); then
+  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" >&2
+  exit 1
+fi
+
+tstamp=$(date +'%Y%m%d_%H%M%S')
 temp_dir="/tmp/${tstamp}"
 final_dir="$HOME/Images/scanned/${tstamp}"
 mkdir -p "$temp_dir"
 mkdir -p "$final_dir"
 
+# Detect text and create individual PDF files
+count=0
 for im in $im_list; do
-  echo $im
+  temp_base=$(printf "%03d" $count)
   cp "$im" "$temp_dir"
   mv "$im" "$final_dir"
   fname=$(basename -- "$im")
   fext="${fname##*.}"
   fname="${fname%.*}"
-  tesseract -l eng "${temp_dir}/${fname}.${fext}" "${temp_dir}/${fname}" pdf
+  echo "Detecting text in $im"
+  tesseract -l eng "${temp_dir}/${fname}.${fext}" "${temp_dir}/${temp_base}" pdf
+  count+=1
 done
 
+# Combine PDFs
 cd "$temp_dir"
 pdftk *.pdf cat output joined.pdf
 gs -sDEVICE=pdfwrite -sPAPERSIZE=letter -dFIXEDMEDIA -dPDFFitPage -o "${final_dir}/final_${tstamp}.pdf" joined.pdf
 
-# rm -rf "$temp_dir"
+rm -rf "$temp_dir"
 
-notify-send "Results in \"${final_dir}\"."
+echo "Finished. Final PDF and images in \"${final_dir}\"."
