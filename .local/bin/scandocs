@@ -1,0 +1,30 @@
+#!/bin/sh
+
+im_list="$@"
+
+[[ -z $im_list ]] && echo "No images selected" && exit 1
+
+tstamp=$(date +'%Y%m%d_%H%M%S')
+
+temp_dir="/tmp/${tstamp}"
+final_dir="$HOME/Images/scanned/${tstamp}"
+mkdir -p "$temp_dir"
+mkdir -p "$final_dir"
+
+for im in $im_list; do
+  echo $im
+  cp "$im" "$temp_dir"
+  mv "$im" "$final_dir"
+  fname=$(basename -- "$im")
+  fext="${fname##*.}"
+  fname="${fname%.*}"
+  tesseract -l eng "${temp_dir}/${fname}.${fext}" "${temp_dir}/${fname}" pdf
+done
+
+cd "$temp_dir"
+pdftk *.pdf cat output joined.pdf
+gs -sDEVICE=pdfwrite -sPAPERSIZE=letter -dFIXEDMEDIA -dPDFFitPage -o "${final_dir}/final_${tstamp}.pdf" joined.pdf
+
+# rm -rf "$temp_dir"
+
+notify-send "Results in \"${final_dir}\"."
