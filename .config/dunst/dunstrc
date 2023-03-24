@@ -84,19 +84,19 @@
 [urgency_low]
     background = "#cad9f3"
     foreground = "#444444"
-    timeout = 10
+    timeout = 4
     #icon = /path/to/icon
 
 [urgency_normal]
     background = "#cad9f3"
     foreground = "#444444"
-    timeout = 30
+    timeout = 8
     #icon = /path/to/icon
 
 [urgency_critical]
     background = "#cc2421"
     foreground = "#eeeeee"
-    timeout = 0
+    timeout = 120
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.
