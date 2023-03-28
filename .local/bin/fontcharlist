@@ -1,6 +1,6 @@
 #!/bin/bash -
 
-Usage() { echo "$0 FontFile"; exit 1; }
+Usage() { echo "Usage: `basename $0` /path/to/FontFile"; exit 1; }
 SayError() { local error=$1; shift; echo "$0: $@"; exit "$error"; }
 
 [ "$#" -ne 1 ] && Usage
