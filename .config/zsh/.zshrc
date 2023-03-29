@@ -33,15 +33,17 @@ autoload edit-command-line; zle -N edit-command-line
 autoload -U colors && colors
 
 DATE=$(date +"%b %d, %Y - %H:%M:%S")
-TMUX_SESSION_NAME=$(for s in $(tmux list-sessions -F '#{session_name}'); do
+TMUX_SESSION_NAME=$(for s in $(tmux list-sessions -F '#{session_name}' 2>/dev/null); do
     tmux list-panes -F '#{pane_tty} #{session_name}' -t "$s"
 done | grep "$(tty)" | awk '{print $2}')
+[[ -n "$TMUX_SESSION_NAME" ]] && \
+    TMUX_SESSION_NAME="(${TMUX_SESSION_NAME}) "
 
 print -P "Hi \e[0;33m%n\e[0m. $DATE"
 print -P "This is the \e[0;33mzsh\e[0m shell on \e[0;33m%m\e[0m."
 print -P "Type \"help\" for some useful commands."
 NEWL=$'\n'
-PROMPT="%B%F{#666666}%~%b${NEWL}%F{#8BE9FD}(${TMUX_SESSION_NAME}) %F{#FFE531}$%f "
+PROMPT="%B%F{#666666}%~%b${NEWL}%F{#8BE9FD}${TMUX_SESSION_NAME}%F{#FFE531}$%f "
 
 # ------------ KEYBINDINGS AND MODES -----------------------------------------
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
