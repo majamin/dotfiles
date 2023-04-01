@@ -38,8 +38,9 @@ export PATH="$PATH:$HOME/.cargo/bin"
 export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 # Ruby
-export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
-export PATH="$PATH:$GEM_HOME/bin"
+[[ -x $(which ruby) ]] && \
+  export GEM_HOME="$(ruby -e 'puts Gem.user_dir')" && \
+  export PATH="$PATH:$GEM_HOME/bin"
 
 export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
 export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
