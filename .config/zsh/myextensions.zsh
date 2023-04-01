@@ -11,8 +11,6 @@ FZF_DEFAULT_OPTS='
 --color info:2,prompt:109,spinner:2,pointer:168,marker:168
 '
 
-# use rg instead of find
-# help: fzf compgen is currently using `rg`
 _fzf_compgen_path() {
 	rg -j0 --files --hidden --glob '!{.git,node_modules,build,.idea}' --column --line-number --no-heading --smart-case
 	}
