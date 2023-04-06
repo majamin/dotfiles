@@ -109,8 +109,7 @@ sys() {
 
 net() {
   type=$(ip route get 8.8.8.8 | grep -Po 'dev \K\w+' | grep -qFf - /proc/net/wireless && echo wireless || echo wired)
-  domain="$(nmcli -t -f active,ssid | grep -Po '(?<=domains: ).*')"
-  ssid="$(nmcli -t -f active,ssid dev wifi | grep -Po '(?<=yes:).*')"
+  ssid="$(wpa_cli status | grep -Po "(?<=^ssid=).*")"
   icon=""
   [ "$type" = "wireless" ] && icon="直"
   if [[ "$(cat /sys/class/net/*/operstate 2>/dev/null)" == *"up"* ]]; then
@@ -137,5 +136,5 @@ while true; do
 
   interval=$((interval + 1))
 
-  sleep 1 && xsetroot -name "$updates $gits $(battery) $(sys) $(net) $(clock)"
+  sleep 1 && xsetroot -name "$updates $gits $(battery) $(sys) $(net &) $(clock)"
 done
