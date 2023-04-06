@@ -1,5 +1,4 @@
 #!/bin/sh
-dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 [[ -x VBoxClient-all ]] && VBoxClient-all 2> ~/vbox.log &

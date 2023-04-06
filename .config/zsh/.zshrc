@@ -66,7 +66,7 @@ alias yt="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-d
 alias yta="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-dl/audio.config\""
 
 # oneliner (alias) - greps oneliners.txt and selects a command
-alias oneliner='grep "^(.)" ~/Maja/Projects/oneliners.txt/oneliners.txt | fzf -e | sed -E -e "s/:/:\n/"'
+alias oneliner='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e | sed -E -e "s/:/:\n/"'
 
 alias ls="ls -hN --color=always --group-directories-first" # help: ls ........... ls has color and groups directories first
 alias l="ls"                                       # help: l ............ alias for `ls`

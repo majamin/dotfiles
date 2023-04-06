@@ -60,6 +60,3 @@ export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
 
 # Start X if not already running
 [[ -z $(echo ${SSH_CLIENT}) && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u $USER '\bXorg$')" ]] && exec startx
-
-# Switch escape and caps if tty and no passwd required:
-sudo -n loadkeys ${XDG_DATA_HOME:-$HOME/.local/share}/ttymaps.kmap 2>/dev/null

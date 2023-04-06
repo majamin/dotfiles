@@ -1,3 +1,12 @@
 [submodule ".config/nvim"]
 	path = .config/nvim
 	url = https://github.com/majamin/neovim-config
+[submodule ".local/src/dwm"]
+	path = .local/src/dwm
+	url = https://github.com/majamin/dwm
+[submodule ".local/src/dmenu"]
+	path = .local/src/dmenu
+	url = https://github.com/majamin/dmenu
+[submodule ".local/src/oneliners.txt"]
+	path = .local/src/oneliners.txt
+	url = https://github.com/majamin/oneliners.txt

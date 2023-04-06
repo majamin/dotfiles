@@ -29,10 +29,16 @@ The following will also make `dots` quieter:
   dots config --local status.showUntrackedFiles no
   --------------------------------------------------------
 
+To pull submodules if you skipped that step:
+
+  --------------------------------------------------------
+  dots submodule update --init --recursive
+  --------------------------------------------------------
+
 Tips
 ====
 
-Get my dmenu, dwm, and neovim configs for a comfy experience!
+This repo contains submodules for my oneliners repo, neovim, dwm, and dmenu configs.
 Key repeat rate is set by xset - change it in ~/.config/xprofile
 Key remaps are located in ~/.local/bin/remaps
 GTK styles are located in ~/.config/gtk-*
