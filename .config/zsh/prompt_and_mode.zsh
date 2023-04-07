@@ -41,8 +41,8 @@ beam_cursor
 
   local left right invisible leftcontent
 
-  left+='%K{#6E4B60}%B%F{#BBB} %n '
-  left+="%K{#422D3A} %* "
+  left+='%F{#142852}%K{#7AA2F7}%B %n '
+  left+="%F{#DDD}%K{#3363CC} %* "
   left+='%k %~ '
 
   right+='${vcs_info_msg_0_:+${vcs_info_msg_0_//[%]/%%} }'
