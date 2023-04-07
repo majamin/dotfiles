@@ -1,9 +1,12 @@
-FZF_DEFAULT_COMMAND="rg --files --hidden --follow --no-messages --smart-case --glob '!{.git,node_modules,build,.idea}'"
-FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-FZF_ALT_C_COMMAND="fd -H -td -d4"
+[[ -x `which rg` ]] && export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --follow --exclude .git --exclude .dotfiles"
+[[ -x `which fd` ]] && export FZF_ALT_C_COMMAND="fd --hidden --type directory --strip-cwd-prefix --hidden --follow --exclude .git"
 
-FZF_DEFAULT_OPTS='
---ansi
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
+
+[[ -x `which bat` ]] && export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
+
+export FZF_DEFAULT_OPTS='
 --border
 --layout=reverse
 --height 50%
@@ -35,17 +38,17 @@ fbr() {
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
-# help: fcd() ........ change directory to file, run fzf if no file argument provided
+# help: cdf() ........ change directory to file, run fzf if no file argument provided
 cdf () {
 	if [[ -e "$1" ]]
 	then
-		cd $(dirname "$1")
+		thefile="$1"
 	else
-		thefile=$(rg -j0 --hidden --no-messages --smart-case --files -g '!{.git,node_modules,build,.idea,.npm,.cache,.bundle,cache}' . | fzf)
-		[[ -z $thefile ]] && return 1
-		printf '%s\n\e[1;34m%-6s\e[m\n' "You are now in the same directory as" "$thefile"
-		cd $(dirname $thefile)
+		thefile=$(fzf)
+		[[ -z "$thefile" ]] && return 1
 	fi
+	printf 'You are now in the same directory as \e[1;34m%-6s\e[m\n' "$(basename $thefile)"
+	cd $(dirname $thefile)
 }
 
 # help: lfcd() ....... open lf, but also cd to the directory that was open when lf closes
