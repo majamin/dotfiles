@@ -1,5 +1,6 @@
-[[ -x `which rg` ]] && export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --follow --exclude .git --exclude .dotfiles"
-[[ -x `which fd` ]] && export FZF_ALT_C_COMMAND="fd --hidden --type directory --strip-cwd-prefix --hidden --follow --exclude .git"
+[[ -x `which fd` ]] && \
+	export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix --hidden --follow --exclude .git --exclude .dotfiles" && \
+	export FZF_ALT_C_COMMAND="fd --hidden --type directory --strip-cwd-prefix --hidden --follow --exclude .git"
 
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
