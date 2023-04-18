@@ -1,13 +1,16 @@
 #!/bin/sh
 
-[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-[[ -x VBoxClient-all ]] && VBoxClient-all 2> ~/vbox.log &
-[[ -x $(command setbg) ]] && setbg &    # ~/.local/bin/setbg
-[[ -x $(command remaps) ]] && remaps &  # ~/.local/bin/remaps
-[[ -x $(command dunst) ]] && dunst &
-[[ -x $(command unclutter) ]] && unclutter &
-[[ -x $(command picom) ]] && picom &
-[[ -x ~/.screenlayout/default.sh ]] && ~/.screenlayout/default.sh &
+try_run() {
+  # local command="$1"
+  $1 2>&1 | logger -t "xprofile:$1" & disown
+}
 
-xset r rate 300 50 &
-xinput disable 'ELAN0672:00 04F3:3187 Touchpad' & # see `xinput list`
+[ -f ~/.Xresources ] && xrdb -merge -I$HOME ~/.Xresources
+
+try_run "$(which VBoxClient-all)"
+try_run "$(which setbg)"
+try_run "$(which dunst)"
+try_run "$(which picom)"
+
+try_run "xset r rate 300 50"
+try_run "xinput disable 11" # NOTE: works best with IDs -- see xinput list
