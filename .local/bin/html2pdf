@@ -15,5 +15,5 @@ for file in $files
 do
 	echo "converting ${file}.html to ${file}.pdf"
 	#https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2177
-	wkhtmltopdf -s Letter --javascript-delay 1000 "${file}.html" "${file}.pdf"
+	weasyprint --presentational-hints "${file}.html" "${file}.pdf"
 done
