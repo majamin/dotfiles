@@ -4,10 +4,10 @@
 
 cmds="\
 lock screen	slock
-leave dwm	kill -TERM $(pgrep -u $USER "\bXorg$")
+leave dwm	kill -HUP $(pgrep -u $USER "\bloopwm$")
 refresh dwm	kill -HUP $(pgrep -u $USER "\bdwm$") && kill -HUP $(pgrep -u $USER "\bbar.sh$")
-reboot	sudo -A reboot
-shutdown	sudo -A shutdown -h now"
+reboot	doas /sbin/reboot
+shutdown	doas /sbin/shutdown -h now"
 
 choice="$(echo "$cmds" | cut -d'	' -f 1 | dmenu)" || exit 1
 
