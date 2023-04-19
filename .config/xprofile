@@ -11,6 +11,7 @@ try_run "$(which VBoxClient-all)"
 try_run "$(which setbg)"
 try_run "$(which dunst)"
 try_run "$(which picom)"
+try_run "$(which gentoo-pipewire-launcher)"
 
 try_run "xset r rate 300 50"
 try_run "xinput disable 11" # NOTE: works best with IDs -- see xinput list
