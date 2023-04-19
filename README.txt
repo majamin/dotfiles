@@ -20,7 +20,8 @@ Notes
 If you use this entire repo as is, here's the important files:
 
   ~/.xinitrc                                  (loads ENV, window manager)
-  ~/.local/bin/loopwm                         (loops window manager and bar)
+  ~/.local/bin/loopwm                         (loops window manager and bar.sh)
+  ~/.local/bin/statusbar/bar.sh               (the statusbar script)
   ~/.config/xprofile                          (startup programs)
   ~/.profile -> ~/.config/zsh/.zprofile       (ENV and startx)
 
