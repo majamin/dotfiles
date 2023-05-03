@@ -6,9 +6,7 @@ INCLUDE="\
   $HOME/.local \
   $HOME/Projects \
   $HOME/Images \
-  $HOME/Maja/Projects \
-  $HOME/Maja/Projects/mss \
-  $HOME/Maja/Projects/mss/scripts \
+  $ONEDRIVE
   "
 
 EXCLUDE="\
@@ -18,28 +16,38 @@ EXCLUDE="\
   --exclude microsoft-edge \
   "
 
+FD_OPTS="\
+  --color never \
+  --type d      \
+  --hidden      \
+  --follow      \
+  --min-depth 1 \
+  --max-depth 5 \
+  "
+
 # check for dependencies
 for cmd in tmux fd xargs notify-send basename; do
   command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
 done
 if (( "${#cmd_failures}" > 0 )); then
-  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
+  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" \
+    | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
 fi
 
 # use fzf to select a directory
 if [[ $# -eq 1 ]]; then
-    selected="$1"
+  selected="$1"
 else
-    selected="$(fd . $INCLUDE $EXCLUDE --color never --type d --hidden --follow --min-depth 1 --max-depth 2 | fzf)"
+  selected="$(fd . $INCLUDE $EXCLUDE $FD_OPTS 2>/dev/null | fzf)"
 fi
 
 # quit if nothing selected
 if [[ -z "$selected" ]]; then
-    exit 1
+  exit 1
 fi
 
 # dir name of project
-selected_name="$(basename "$selected" | tr . _)"
+selected_name="$(basename "$selected" | tr . _)-session"
 
 # are we in tmux?
 in_tmux() {
