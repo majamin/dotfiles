@@ -44,7 +44,7 @@ case "$ext" in
 		elif [ -x "$(command -v groffdown)" ]; then
 			groffdown -i "$file" | groff -T pdf > "$base".pdf
 		else
-			pandoc --template=eisvogel -t ms -s -o "$base".pdf "$file"
+			pandoc --template=eisvogel -t pdf -s -o "$base".pdf "$file"
 		fi ; ;;
 	mom) preconv "$file" | refer -PS -e | groff -mom -kept -T pdf > "$base".pdf ;;
 	ms) preconv "$file" | refer -PS -e | groff -me -ms -kept -T pdf > "$base".pdf ;;
