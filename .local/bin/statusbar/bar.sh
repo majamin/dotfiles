@@ -11,6 +11,7 @@ interval=0
 #     ^c$black^ ^b$orange^
 black=#1e222a
 green=#7eca9c
+brightwhite=#ffffff
 white=#abb2bf
 grey=#282c34
 blue=#7aa2f7
@@ -56,6 +57,22 @@ darkblue=#668ee3
 #     printf "  ^c$green^    $updates"" updates"
 #   fi
 # }
+
+# Gentoo
+pkg_updates() {
+  # doas /usr/bin/emerge --sync &>/dev/null
+  temp="$HOME/.local/share/emerge-dup-updates.txt"
+  [ ! -f "$temp" ] && touch "$temp"
+  if [ -n "$(find $temp -mmin +60)" ]; then
+    datetime > "$temp"
+    emerge -puD --with-bdeps=y --color=n @world > "$temp"
+  fi
+  num_updates=$(cat "$temp" | grep '\[ebuild' | wc -l)
+  estimated_emerge_time=$(cat $temp | genlop -np | tail -n1 | cut -d':' -f2 | grep -Po "\d+ \w*")
+  if [ "$num_updates" -gt 0 ]; then
+    printf "  ^c$brightwhite^     ^c$white^$num_updates ($estimated_emerge_time)"
+  fi
+}
 
 # cpu performance (Fn+l, Fn+m, Fn+h) - Some ThinkPad models?
 cpuperf() {
@@ -165,8 +182,8 @@ while true; do
 
   # HOURLY UPDATES
   # [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] && \
-    # updates=$(pkg_updates) && \
-    # gits=$(gitwatch)
+  # [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] && \
+  #   updates=$(pkg_updates)
 
-    sleep 1 && xsetroot -name "$(cpuperf) $(battery) $(sys) $(net &) $(clock)"
+  sleep 1 && xsetroot -name "$(pkg_updates) $(cpuperf) $(battery) $(sys) $(net &) $(clock)"
 done
