@@ -19,7 +19,7 @@ vol_trimmed() {
 notify() {
   notify-send -t 1500 -r $ID \
     -h string:bgcolor:#111122 \
-    -h string:fgcolor:#eeeeee \
+    -h string:fgcolor:$3 \
     -h string:width:600px \
     "$1 $2"
 }
@@ -40,4 +40,5 @@ fi
 
 ticks=$(echo "$(vol_trimmed) / 10" | bc -l )
 bar=$(seq -s "──" 0 $ticks | sed 's/[0-9]//g')
-notify "$icon" "$bar"
+[ $(vol_trimmed) -gt 100 ] && col="#ff9e64" || col="#eeeeee"
+notify "$icon" "$bar" "$col"
