@@ -26,42 +26,61 @@ function zle-line-init() {
 }
 
 function beam_cursor() { echo -ne '\e[5 q' ;}
-
 zle -N zle-keymap-select
 zle -N zle-line-init
-
 beam_cursor
 
-#▒▒▒▒▒▒THIS▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-# left='%m | %~'
-# PS1='%K{green}$left${(l,COLUMNS-${#${(%)left}},)${${:-$branch | $vimode}//[%]/%%}}%k$ '
-
-#▒▒▒▒▒▒OR THIS▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-(){ # local scope
-
-  local left right invisible leftcontent
-
-  left+='%F{#142852}%K{#7AA2F7}%B %n '
-  left+="%F{#DDD}%K{#3363CC} %* "
-  left+='%k %~ '
-
-  right+='${vcs_info_msg_0_:+${vcs_info_msg_0_//[%]/%%} }'
-
-  export VIRTUAL_ENV_DISABLE_PROMP=1
-  right+='${VIRTUAL_ENV:+venv }'
-
-  # Show error codes
-  right+='%(?..%B%F{red}(%?%)%b)'
-
-  # Defaults
-  right+=$' %k%f%b'
-
-  # Combine left and right prompt with spacing in between.
-  invisible='%([BSUbfksu]|([FBK]|){*})'
-
-  leftcontent=${(S)left//$~invisible}
-  rightcontent=${(S)right//$~invisible}
-
-  PS1="$left\${(l,COLUMNS-\${#\${(%):-$leftcontent$rightcontent}},)}$right%{"$'\n%}$ '
+(){
+# Define a function that retrieves the current git branch and latest commit hash
+function git_info {
+    # Get the current branch name
+    local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [[ -n $branch ]]; then
+        # Get the latest commit hash for the branch
+        local latest_commit=$(git rev-parse --short HEAD 2>/dev/null)
+        # Print the branch name and latest commit hash
+        echo "[$branch:$latest_commit]"
+    fi
 }
 
+# Set the PROMPT variable to the desired format
+PROMPT='%F{#29A4BD}%n%f %~
+%(?..%B(%?%)%b )%F{#FF9E64}%(!.#.$)%f '
+
+# Set the RPROMPT variable to an empty string (we'll use it for the git info)
+RPROMPT=''
+
+# Define a preexec hook that sets the start time of the command
+function preexec {
+    CMD_START_TIME=$(date +%s)
+}
+
+# Define a precmd hook that updates the RPROMPT variable with git info
+# before each command, and sets the CMD_DURATION variable with the
+# duration of the previous command
+function precmd {
+    RPROMPT='$CMD_DURATION %F{#A9B1D6}$(git_info)%f'
+    if [ -n "$CMD_START_TIME" ]; then
+        CMD_END_TIME=$(date +%s)
+        CMD_DURATION=$((CMD_END_TIME - CMD_START_TIME))
+        unset CMD_START_TIME
+        if [ "$CMD_DURATION" -gt 0 ]; then
+            local hours=$((CMD_DURATION / 3600))
+            local minutes=$((CMD_DURATION % 3600 / 60))
+            local seconds=$((CMD_DURATION % 60))
+            if [ "$hours" -gt 0 ]; then
+                CMD_DURATION=$(printf "%dh%dm%ds" $hours $minutes $seconds)
+            elif [ "$minutes" -gt 0 ]; then
+                CMD_DURATION=$(printf "%dm%ds" $minutes $seconds)
+            else
+                CMD_DURATION=$(printf "%ds" $seconds)
+            fi
+        else
+            CMD_DURATION=''
+        fi
+    else
+        CMD_DURATION=''
+    fi
+}
+
+}
