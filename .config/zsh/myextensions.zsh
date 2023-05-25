@@ -7,13 +7,14 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 
 [[ -x `which bat` ]] && export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
 
-export FZF_DEFAULT_OPTS='
+export FZF_DEFAULT_OPTS="
 --border
 --layout=reverse
---height 50%
+--height 70%
 --color fg:15,fg+:15,bg+:239,hl+:108
 --color info:2,prompt:109,spinner:2,pointer:168,marker:168
-'
+--preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'
+"
 
 _fzf_compgen_path() {
 	rg -j0 --files --hidden --glob '!{.git,node_modules,build,.idea}' --column --line-number --no-heading --smart-case
