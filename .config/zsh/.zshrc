@@ -76,7 +76,17 @@ alias gsu="git status -uno"                        # help: gsu .......... is an 
 alias th='tmux-sessionizer $(pwd)'                 # help: th ........... create a new tmux session in current directory
 alias ta='tmux attach -t "$(tmux ls -F #S | fzf)"' # help: ta ........... attach an existing tmux session
 alias tl='tmux list-sessions'                      # help: tl ........... list tmux sessions
-alias tns='tmux new -s '                           # help: tns........... tmux new session (required: add session name after cursor)
+# alias tns='tmux new -s '                           # help: tns........... tmux new session (required: add session name after cursor)
+
+tns() {
+  [ -z $1 ] && echo "Please provide a session name" && return 1
+  [ -z $2 ] && echo "Please provide a command" && return 1
+  tmux new -d -s $1 $2 || tmux attach -t $1
+  tmux setw -t "$1" remain-on-exit on
+  tmux attach-session -t "$1"
+}
+
+
 alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME' # help: dots ......... is an alias to handle dotfiles in a bare git repo
 mkcd() { mkdir -p $1 && cd $1 }                    # help: mkcd ......... make a directory and cd into it
 
