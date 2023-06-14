@@ -22,7 +22,7 @@ export SCREENSHOT_DIR="${ONEDRIVE:-$HOME}/Images/Screenshots"
 
 # Security and secrets
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export PASSWORD_STORE_DIR="$ONEDRIVE/password-store"
+export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/password-store"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
 
 # Go

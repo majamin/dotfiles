@@ -26,13 +26,13 @@ FD_OPTS="\
   "
 
 # check for dependencies
-for cmd in tmux fd xargs notify-send basename; do
-  command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
-done
-if (( "${#cmd_failures}" > 0 )); then
-  printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" \
-    | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
-fi
+# for cmd in tmux fd xargs notify-send basename; do
+#   command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
+# done
+# if (( "${#cmd_failures}" > 0 )); then
+#   printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" \
+#     | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
+# fi
 
 # use fzf to select a directory
 if [[ $# -eq 1 ]]; then
