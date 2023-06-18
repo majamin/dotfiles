@@ -40,6 +40,7 @@ export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 # Ruby
 [[ -x $(which ruby) ]] && \
   export GEM_HOME="$(ruby -e 'puts Gem.user_dir')" && \
+  mkdir -p "$GEM_HOME" 2>/dev/null && \
   export PATH="$PATH:$(find $GEM_HOME -type d -name "bin" | tr '\n' ':' | sed 's/:*$//')"
 
 
