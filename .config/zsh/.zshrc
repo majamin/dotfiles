@@ -81,9 +81,10 @@ alias tl='tmux list-sessions'                      # help: tl ........... list t
 tns() {
   [ -z $1 ] && echo "Please provide a session name" && return 1
   [ -z $2 ] && echo "Please provide a command" && return 1
-  tmux new -d -s $1 $2 || tmux attach -t $1
+
+  tmux new -d -s $1 $2
   tmux setw -t "$1" remain-on-exit on
-  tmux attach-session -t "$1"
+  tmux attach -t $1 || tmux switch -t $1
 }
 
 
