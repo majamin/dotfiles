@@ -101,6 +101,7 @@ source "/usr/share/fzf/key-bindings.zsh"
 # help: ALT-C ........ Change to the selected directory, default command is `fd`
 
 # ------------ COLORS --------------------------------------------------------
+source "$ZDOTDIR/lscolors.sh"
 zstyle ':completion:*' list-colors "${LS_COLORS}"
 source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh
 # ZSH_HIGHLIGHT_STYLES[unknown-token]=fg={#E64109} # remove that nasty red
