@@ -79,31 +79,29 @@ alias tl='tmux list-sessions'                      # help: tl ........... list t
 # alias tns='tmux new -s '                           # help: tns........... tmux new session (required: add session name after cursor)
 
 function tns {
-    local session_name="$1"
-    shift
-    local command_to_run="$@"
+  local session_name="$1"
+  shift
+  local command_to_run="$@"
 
-    # Shorten the command for the window name (adjust as needed)
-    local window_name="${command_to_run:0:20}"
-    window_name="${window_name// /}"  # Remove spaces
+  # Shorten the command for the window name (adjust as needed)
+  local window_name="${command_to_run:0:20}"
+  window_name="${window_name// /}"  # Remove spaces
 
-    # Check if the session already exists
-    tmux has-session -t "$session_name" 2>/dev/null
+  # Check if the session already exists
+  tmux has-session -t "$session_name" 2>/dev/null
 
-    if [ $? != 0 ]; then
-      # If the session doesn't exist, create it
-      tmux new-session -d -s "$session_name" -n "$window_name"
-      tmux send-keys -t "$session_name" "$command_to_run" C-m
-    else
-      # If the session does exist, create a new window
-      tmux new-window -t "$session_name" -n "$window_name"
-      # Create a new window and run the command
-      local new_window_index=$(tmux new-window -t "$session_name" -n "$window_name" -P -F "#{window_index}")
-      tmux send-keys -t "$session_name:$new_window_index" "$command_to_run" C-m
-    fi
-
-    # Switch to the session
+  if [ $? != 0 ]; then
+    # If the session doesn't exist, create it
+    printf "Creating new session: %s\n" "$session_name"
+    tmux new-session -d -s "$session_name" -n "$window_name"
+    tmux send-keys -t "$session_name" "$command_to_run" C-m
+    tmux attach -t "$session_name"
+  else
+    # Create a new window and run the command
+    local new_window_index=$(tmux new-window -t "$session_name" -n "$window_name" -P -F "#{window_index}")
+    tmux send-keys -t "$session_name:$new_window_index" "$command_to_run" C-m
     tmux switch-client -t "$session_name"
+  fi
 }
 
 
