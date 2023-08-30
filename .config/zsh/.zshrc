@@ -78,13 +78,32 @@ alias ta='tmux attach -t "$(tmux ls -F #S | fzf)"' # help: ta ........... attach
 alias tl='tmux list-sessions'                      # help: tl ........... list tmux sessions
 # alias tns='tmux new -s '                           # help: tns........... tmux new session (required: add session name after cursor)
 
-tns() {
-  [ -z $1 ] && echo "Please provide a session name" && return 1
-  [ -z $2 ] && echo "Please provide a command" && return 1
+function tns {
+    local session_name="$1"
+    shift
+    local command_to_run="$@"
 
-  tmux new -d -s $1 $2
-  tmux setw -t "$1" remain-on-exit on
-  tmux attach -t $1 || tmux switch -t $1
+    # Shorten the command for the window name (adjust as needed)
+    local window_name="${command_to_run:0:20}"
+    window_name="${window_name// /}"  # Remove spaces
+
+    # Check if the session already exists
+    tmux has-session -t "$session_name" 2>/dev/null
+
+    if [ $? != 0 ]; then
+      # If the session doesn't exist, create it
+      tmux new-session -d -s "$session_name" -n "$window_name"
+      tmux send-keys -t "$session_name" "$command_to_run" C-m
+    else
+      # If the session does exist, create a new window
+      tmux new-window -t "$session_name" -n "$window_name"
+      # Create a new window and run the command
+      local new_window_index=$(tmux new-window -t "$session_name" -n "$window_name" -P -F "#{window_index}")
+      tmux send-keys -t "$session_name:$new_window_index" "$command_to_run" C-m
+    fi
+
+    # Switch to the session
+    tmux switch-client -t "$session_name"
 }
 
 
