@@ -43,7 +43,11 @@ fi
 # $1: session name
 # $2: working directory
 attach_or_switch() {
-  make_session "$1" "$2"
+  if [[ $2 == "" ]]; then
+    make_session "$1"
+  else
+    make_session "$1" "$2"
+  fi
   if [[ -n "$TMUX" ]]; then
     tmux switch-client -t "$1"
   else
@@ -52,9 +56,10 @@ attach_or_switch() {
 }
 
 # truncate a long string with spaces into a nice session name
+# remove spaces and special characters and cut to 20 characters
 # $1: long string (possibly a command)
 trunc() {
-  echo "$1" | sed -E 's/.*\/(.*)/\1/' | tr . _
+  echo "$1" | tr -d ' ' | cut -c -20
 }
 
 # is the session running?
@@ -119,7 +124,12 @@ if [[ "$1" == "-l" ]]; then
     usage
     exit 1
   fi
-  attach_or_switch "$(tmux list-sessions -F "#{session_name}" | fzf)"
+  available_sessions="$(tmux list-sessions -F "#{session_name}")"
+  if [[ -z "$available_sessions" ]]; then
+    echo "No sessions found"
+    exit 0
+  fi
+  attach_or_switch "$(echo $available_sessions | fzf)"
   exit 0
 fi
 
@@ -142,10 +152,11 @@ if [[ $# -ge 1 ]]; then
       exit 0
     fi
   else
-    selected_name="$(trunc "$@")"
+    commands="$@"
+    selected_name="$(trunc "$commands")"
     make_session "$selected_name"
-    tmux send-keys -t "$selected_name" "$@" Enter
-    attach_or_switch "$selected_name" "$HOME"
+    tmux send-keys -t "$selected_name" "$commands" Enter
+    attach_or_switch "$selected_name"
     exit 0
   fi
 fi
