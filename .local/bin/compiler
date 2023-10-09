@@ -39,12 +39,12 @@ case "$ext" in
 	h) sudo make install ;;
 	java) javac -d classes "$file" && java -cp classes "${1%.*}" ;;
 	m) octave "$file" ;;
-	md)	if  [ -x "$(command -v lowdown)" ]; then
-			lowdown --parse-no-intraemph "$file" -Tms | groff -mpdfmark -ms -kept -T pdf > "$base".pdf
-		elif [ -x "$(command -v groffdown)" ]; then
-			groffdown -i "$file" | groff -T pdf > "$base".pdf
-		else
+	md)	if  [ -x "$(command -v pandoc)" ]; then
 			pandoc --template=eisvogel -t pdf -s -o "$base".pdf "$file"
+		elif [ -x "$(command -v lowdown)" ]; then
+			lowdown --parse-no-intraemph "$file" -Tms | groff -mpdfmark -ms -kept -T pdf > "$base".pdf
+    elif [ -x "$(command -v groffdown)" ]; then
+			groffdown -i "$file" | groff -T pdf > "$base".pdf
 		fi ; ;;
 	mom) preconv "$file" | refer -PS -e | groff -mom -kept -T pdf > "$base".pdf ;;
 	ms) preconv "$file" | refer -PS -e | groff -me -ms -kept -T pdf > "$base".pdf ;;
