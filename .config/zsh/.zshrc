@@ -46,9 +46,7 @@ source "$ZDOTDIR/prompt_and_mode.zsh"
 bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
 bindkey '^j' forward-char                       # help: CTRL-J ....... accept autosuggestion
-bindkey -s '^o' 'oneliner\n'                    # help: CTRL-O ....... opens oneliners
-bindkey -s '^a' 'tmux attach-session || tmux\n' # help: CTRL-A ....... attaches to any available open tmux session
-bindkey -s '^f' 'tmux-sessionizer\n'            # help: CTRL-P ....... opens a project in tmux-sessionizer
+bindkey -s '^o' 'oneliner^M'                    # help: CTRL-O ....... opens oneliners
 
 # ------------ ALIASES -------------------------------------------------------
 
@@ -80,12 +78,18 @@ mkcd() { mkdir -p $1 && cd $1 }                    # help: mkcd ......... make a
 # ------------ BEHAVIOUR -----------------------------------------------------
 #source "/usr/share/fzf/completion.zsh"
 source "/usr/share/zsh/site-functions/zsh-autosuggestions.zsh"
-source "$ZDOTDIR/tmux-sessionizer.zsh"
 source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 source "/usr/share/fzf/key-bindings.zsh"
 # help: CTRL-T ....... Select one or more files and insert them at cursor
 # help: CTRL-R ....... Search command history and insert command
 # help: ALT-C ........ Change to the selected directory, default command is `fd`
+
+# -- tmux-sessionizer --------------------------------------------------------
+# source "$ZDOTDIR/tmux-sessionizer.zsh"
+alias tns="tmux-sessionizer"                       # help: tns .......... tmux sessionizer
+
+# list and attach to sessions
+alias t="tmux-sessionizer -l"                      # help: t ............ list and attach to tmux sessions
 
 # ------------ COLORS --------------------------------------------------------
 source "$ZDOTDIR/lscolors.sh"

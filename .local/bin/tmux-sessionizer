@@ -34,6 +34,23 @@ FD_OPTS="\
 #     | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
 # fi
 
+# are we in tmux?
+in_tmux() {
+  [[ -n "$TMUX" ]] && return 1 || return 0
+}
+
+# if -l flag is passed, list all sessions and attach using fzf
+if [[ "$1" == "-l" ]]; then
+  session=$(tmux list-sessions -F "#{session_name}" | fzf)
+  # if in tmux, switch to session, otherwise attach
+  if [[ in_tmux ]]; then
+    tmux switch-client -t "$session"
+  else
+    tmux attach-session -t "$session"
+  fi
+  exit 0
+fi
+
 # use fzf to select a directory
 if [[ $# -eq 1 ]]; then
   selected="$1"
@@ -49,11 +66,6 @@ fi
 # dir name of project
 selected_name="$(basename "$selected" | tr . _)-session"
 
-# are we in tmux?
-in_tmux() {
-  [[ -n "$TMUX" ]] && echo "we're in tmux alright"
-}
-
 # is main session open?
 has_session() {
   return $(tmux has -t "$selected_name")
@@ -63,9 +75,9 @@ has_session() {
 # $1: window name
 attach() {
   if ! has_session; then
-    tmux new-session -d -s "$selected_name" -c "$selected"
+    tmux new-session -d -s "$1" -c "$2"
   fi
-  tmux attach-session -t "$selected_name"
+  tmux attach-session -t "$1"
 }
 
 # params:
@@ -79,7 +91,7 @@ switch() {
 
 # main program
 if ! in_tmux; then
-  attach "$selected_name"
+  attach "$selected_name" "$selected"
 else
   switch "$selected_name"
 fi
