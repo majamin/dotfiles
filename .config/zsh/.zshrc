@@ -89,8 +89,9 @@ source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 # -- tmux-sessionizer --------------------------------------------------------
 alias t="tmux-sessionizer"                      # help: t ............ tmux sessionizer
 alias tl="tmux-sessionizer -l"                  # help: tl ........... tmux sessionizer -l
-bindkey -s '^p' 'tmux-sessionizer^M'            # help: CTRL-F ....... run tmux-sessionizer (searches for directories)
-bindkey -s '^f' 'tmux-sessionizer $(fd . ~/ -H --type=f | fzf)^M' # help: CTRL-P ....... run tmux-sessionizer on a file found with fd/fzf
+bindkey -s '^p' 'tmux-sessionizer^M'            # help: CTRL-P ....... run tmux-sessionizer (searches for directories)
+alias tf='FILE="$(fd . ~/ -H --type=f | fzf)" && if [[ -n $FILE ]]; then tmux-sessionizer "$FILE"; fi' # help: tf ........... tmux sessionizer (searches for files)
+bindkey -s '^f' 'tf^M'                            # help: CTRL-F ....... bind CTRL-F to tf
 
 # -- colors ------------------------------------------------------------------
 source "$ZDOTDIR/lscolors.sh"
