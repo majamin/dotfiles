@@ -46,15 +46,18 @@ source "$ZDOTDIR/prompt_and_mode.zsh"
 bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
 bindkey '^j' forward-char                       # help: CTRL-J ....... accept autosuggestion
-bindkey -s '^o' 'oneliner^M'                    # help: CTRL-O ....... opens oneliners
+bindkey -s '^o' 'oneliners^M'                   # help: CTRL-O ....... opens oneliners
 
 # ------------ ALIASES -------------------------------------------------------
 
 # WARNING: Elevate privileges with?
-# elevate="sudo"
-elevate="doas"
+if [ -x "$(command -v doas)" ]; then
+    elevate="doas"
+else
+    elevate="sudo"
+fi
 
-# alias emerge="$elevate emerge"
+alias emerge="$elevate emerge"
 alias sdn="$elevate shutdown -h now"                # help: sdn .......... shutdown now
 alias reboot="$elevate reboot"                      # help: reboot ....... reboots machine
 
@@ -64,35 +67,35 @@ alias yt="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-d
 # help: yta .......... downloads audio only of videos using yt-dlp using config found in ~/.config/youtube-dl
 alias yta="yt-dlp --config-location \"${XDG_CONFIG_HOME:-$HOME/.config}/youtube-dl/audio.config\""
 
-# oneliner (alias) - greps oneliners.txt and selects a command
-alias oneliner='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e | sed -E -e "s/:/:\n/"'
+# help: oneliners .... search oneliners (github.com/majamin/oneliners.txt)
+alias oneliners='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e | sed -E -e "s/:/:\n/"'
 
 alias ls="ls -hN --color=always --group-directories-first" # help: ls ........... ls has color and groups directories first
 alias l="ls"                                       # help: l ............ alias for `ls`
 alias ll="ls -SlA1"                                # help: ll ........... is an alias for `ls -SlA1`
 alias la="ls -SlaA1"                               # help: l ............ is an alias for `ls -SlaA1`
-alias gsu="git status -uno"                        # help: gsu .......... is an alias for `git status -uno`
+alias gsu="git status -uno 2>/dev/null || dots status -uno 2>/dev/null"    # help: gsu .......... is an alias for `git status -uno`
 alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME' # help: dots ......... is an alias to handle dotfiles in a bare git repo
 mkcd() { mkdir -p $1 && cd $1 }                    # help: mkcd ......... make a directory and cd into it
 
-# ------------ BEHAVIOUR -----------------------------------------------------
-#source "/usr/share/fzf/completion.zsh"
+# -- General behavior --------------------------------------------------------
 source "/usr/share/zsh/site-functions/zsh-autosuggestions.zsh"
-source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 source "/usr/share/fzf/key-bindings.zsh"
+source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 # help: CTRL-T ....... Select one or more files and insert them at cursor
 # help: CTRL-R ....... Search command history and insert command
 # help: ALT-C ........ Change to the selected directory, default command is `fd`
 
 # -- tmux-sessionizer --------------------------------------------------------
-# source "$ZDOTDIR/tmux-sessionizer.zsh"
-alias tns="tmux-sessionizer"                       # help: tns .......... tmux sessionizer
+alias t="tmux-sessionizer"                      # help: t ............ tmux sessionizer
+bindkey -s '^p' 'tmux-sessionizer^M'            # help: CTRL-F ....... run tmux-sessionizer (searches for directories)
+bindkey -s '^l' 'tmux-sessionizer -l^M'         # help: CTRL-L ....... run tmux-sessionizer -l (lists sessions)
+bindkey -s '^f' 'tmux-sessionizer $(fd . ~/ -H --type=f | fzf)^M' # help: CTRL-P ....... run tmux-sessionizer on a file found with fd/fzf
 
-# list and attach to sessions
-alias t="tmux-sessionizer -l"                      # help: t ............ list and attach to tmux sessions
-
-# ------------ COLORS --------------------------------------------------------
+# -- colors ------------------------------------------------------------------
 source "$ZDOTDIR/lscolors.sh"
 zstyle ':completion:*' list-colors "${LS_COLORS}"
 source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh
+
+# -- unused ------------------------------------------------------------------
 # ZSH_HIGHLIGHT_STYLES[unknown-token]=fg={#E64109} # remove that nasty red

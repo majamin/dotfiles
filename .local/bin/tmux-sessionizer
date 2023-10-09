@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# set -x
+
+if [[ $EDITOR == "" ]]; then
+  EDITOR="nano"
+fi
+
 # directories to include
 INCLUDE="\
   $HOME/.config \
@@ -13,7 +19,6 @@ EXCLUDE="\
   --exclude .cache \
   --exclude .git \
   --exclude node_modules \
-  --exclude microsoft-edge \
   "
 
 FD_OPTS="\
@@ -25,73 +30,125 @@ FD_OPTS="\
   --max-depth 5 \
   "
 
-# check for dependencies
-# for cmd in tmux fd xargs notify-send basename; do
-#   command -v "${cmd}" >/dev/null 2>&1 || cmd_failures="${cmd_failures},${cmd}"
-# done
-# if (( "${#cmd_failures}" > 0 )); then
-#   printf -- '%s\n' "The following dependencies are missing: ${cmd_failures/,/}" \
-#     | tee >(xargs -I{} notify-send -t 5000 "tmux-sessionizer" {})
-# fi
+# TODO: incomplete - need to add exclude patterns
+FIND="find $INCLUDE -type d -not -path '*/\.*' -not -path '*/\.git/*' -not -path '*/node_modules/*'"
 
-# are we in tmux?
-in_tmux() {
-  [[ -n "$TMUX" ]] && return 1 || return 0
+if command -v fd >/dev/null 2>&1; then
+  FIND="fd . $INCLUDE $FD_OPTS $EXCLUDE "
+fi
+if command -v fd-find >/dev/null 2>&1; then
+  FIND="fd-find . $INCLUDE $FD_OPTS $EXCLUDE "
+fi
+
+# $1: session name
+# $2: working directory
+attach_or_switch() {
+  make_session "$1" "$2"
+  if [[ -n "$TMUX" ]]; then
+    tmux switch-client -t "$1"
+  else
+    tmux attach-session -t "$1"
+  fi
 }
 
-# if -l flag is passed, list all sessions and attach using fzf
-if [[ "$1" == "-l" ]]; then
-  session=$(tmux list-sessions -F "#{session_name}" | fzf)
-  # if in tmux, switch to session, otherwise attach
-  if [[ in_tmux ]]; then
-    tmux switch-client -t "$session"
-  else
-    tmux attach-session -t "$session"
+# truncate a long string with spaces into a nice session name
+# $1: long string (possibly a command)
+trunc() {
+  echo "$1" | sed -E 's/.*\/(.*)/\1/' | tr . _
+}
+
+# is the session running?
+# $1: session name
+has_session() {
+  return $(tmux has -t "$1" 2>/dev/null)
+}
+
+# create a session if it doesn't exist
+# $1: session name
+# $2: working directory
+make_session() {
+  if ! has_session "$1"; then
+    tmux new-session -d -s "$1" -c "$2"
   fi
+}
+
+green() {
+  echo -e "\x1B[32m$1\x1B[0m"
+}
+
+red() {
+  echo -e "\x1B[31m$1\x1B[0m"
+}
+
+usage() {
+  echo "Usage:"
+  echo "       $(green tmux-sessionizer)"
+  echo "           (search for a directory using fd and open it in a session)"
+  echo "       $(green tmux-sessionizer) -h"
+  echo "           (print this message)"
+  echo "       $(green tmux-sessionizer) -l"
+  echo "           (list sessions and attach to the selected one)"
+  echo "       $(green tmux-sessionizer) <file>"
+  echo "           (create a session with the file's name and open it with \$EDITOR (default is nano))"
+  echo "       $(green tmux-sessionizer) <directory>"
+  echo "           (create a session with the directory's name and cd into it)"
+  echo "       $(green tmux-sessionizer) <command>"
+  echo "           (create a session with the command and run it)"
+  echo
+}
+
+###   main   ###
+# if no arguments, search for a directory using FIND and open it in a session
+# if only one argument and it is a file, create a session with the file's name and open it neovim
+# if only one argument and it is a directory, create a session with the directory's name and cd into it
+# if there are multiple arguments, assume that it is a command and run it in a session using trunc
+
+# no arguments
+if [[ $# -eq 0 ]]; then
+  selected="$($FIND | fzf)"
+  selected_name="$(basename "$selected" | tr . _)"
+  attach_or_switch "$selected_name" "$selected"
   exit 0
 fi
 
-# use fzf to select a directory
-if [[ $# -eq 1 ]]; then
-  selected="$1"
-else
-  selected="$(fd . $INCLUDE $EXCLUDE $FD_OPTS 2>/dev/null | fzf)"
-fi
-
-# quit if nothing selected
-if [[ -z "$selected" ]]; then
-  exit 1
-fi
-
-# dir name of project
-selected_name="$(basename "$selected" | tr . _)-session"
-
-# is main session open?
-has_session() {
-  return $(tmux has -t "$selected_name")
-}
-
-# params:
-# $1: window name
-attach() {
-  if ! has_session; then
-    tmux new-session -d -s "$1" -c "$2"
+# -l flag
+if [[ "$1" == "-l" ]]; then
+  if [[ $# -gt 1 ]]; then
+    shift
+    echo -e "$(red "Too many arguments passed to -l:") $@"
+    usage
+    exit 1
   fi
-  tmux attach-session -t "$1"
-}
-
-# params:
-# $1: window name
-switch() {
-  if ! has_session; then
-    tmux new-session -d -s "$selected_name" -c "$selected"
-  fi
-  tmux switch-client -t "$selected_name"
-}
-
-# main program
-if ! in_tmux; then
-  attach "$selected_name" "$selected"
-else
-  switch "$selected_name"
+  attach_or_switch "$(tmux list-sessions -F "#{session_name}" | fzf)"
+  exit 0
 fi
+
+# >=1 arguments
+if [[ $# -ge 1 ]]; then
+  if [[ $# -eq 1 && "$1" == "-h" ]]; then
+    usage
+    exit 0
+  fi
+  if [[ $# -eq 1 ]]; then
+    if [[ -f "$1" ]]; then
+      selected_name="$(basename "$1" | tr . _)"
+      make_session "$selected_name"
+      tmux send-keys -t "$selected_name" "$EDITOR $1" Enter
+      attach_or_switch "$selected_name" "$(dirname "$1")"
+      exit 0
+    elif [[ -d "$1" ]]; then
+      selected_name="$(basename "$1" | tr . _)"
+      attach_or_switch "$selected_name" "$1"
+      exit 0
+    fi
+  else
+    selected_name="$(trunc "$@")"
+    make_session "$selected_name"
+    tmux send-keys -t "$selected_name" "$@" Enter
+    attach_or_switch "$selected_name" "$HOME"
+    exit 0
+  fi
+fi
+
+echo -e "$(red "Invalid arguments:") $@"
+usage
