@@ -11,7 +11,6 @@ INCLUDE="\
   $HOME/.config \
   $HOME/.local \
   $HOME/Projects \
-  $HOME/Images \
   $ONEDRIVE
   "
 
@@ -111,6 +110,9 @@ usage() {
 # no arguments
 if [[ $# -eq 0 ]]; then
   selected="$($FIND | fzf)"
+  if [[ -z "$selected" ]]; then
+    exit 0
+  fi
   selected_name="$(basename "$selected" | tr . _)"
   attach_or_switch "$selected_name" "$selected"
   exit 0
@@ -145,6 +147,11 @@ if [[ $# -ge 1 ]]; then
       make_session "$selected_name"
       tmux send-keys -t "$selected_name" "$EDITOR $1" Enter
       attach_or_switch "$selected_name" "$(dirname "$1")"
+      exit 0
+    # if . was used for current directory
+    elif [[ "$1" == "." ]]; then
+      selected_name="$(basename "$PWD" | tr . _)"
+      attach_or_switch "$selected_name" "$PWD"
       exit 0
     elif [[ -d "$1" ]]; then
       selected_name="$(basename "$1" | tr . _)"
