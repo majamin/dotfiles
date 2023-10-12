@@ -67,3 +67,33 @@ lfcd () {
     fi
   fi
 }
+
+addsuf() {
+  if [ $# -ne 2 ]; then
+    echo "addsuf - add a suffix to a filename (example.jpg -> example-suffix.jpg)"
+    echo "Usage: addsuf <file> <suffix>"
+    return 1
+  fi
+
+  local file="$1"
+  local suffix="$2"
+
+  if [ -e "$file" ]; then
+    local filename
+    local extension
+
+    # Extract the filename and extension
+    filename=${file%.*}
+    extension=${file##*.}
+
+    # Add the suffix and keep the extension
+    local new_filename="${filename}${suffix}"
+    local new_file="${new_filename}.${extension}"
+
+    echo "$new_file"
+  else
+    echo "File '$file' does not exist."
+    return 1
+  fi
+}
+
