@@ -49,6 +49,7 @@ export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
 export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
+export PATH="$PATH:./node_modules/.bin"
 
 export LESS=-R
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"

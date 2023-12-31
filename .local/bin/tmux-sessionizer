@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # set -x
-DEBUG="true"
+# DEBUG="true"
 
 if [[ $EDITOR == "" ]]; then
   EDITOR="nano"
@@ -69,7 +69,7 @@ attach_or_switch() {
 # $1: long string (possibly a command)
 trunc() {
   debug "Truncating string $1"
-  echo "$1" | tr -d ' ' | cut -c -20
+  echo "$1" | tr -cd '[:alnum:]' | cut -c -20
 }
 
 # is the session running?
