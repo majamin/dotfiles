@@ -57,7 +57,6 @@ else
     elevate="sudo"
 fi
 
-alias emerge="$elevate emerge"
 alias sdn="$elevate shutdown -h now"                # help: sdn .......... shutdown now
 alias reboot="$elevate reboot"                      # help: reboot ....... reboots machine
 
@@ -79,7 +78,7 @@ alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME' # help: do
 mkcd() { mkdir -p $1 && cd $1 }                    # help: mkcd ......... make a directory and cd into it
 
 # -- General behavior --------------------------------------------------------
-source "/usr/share/zsh/site-functions/zsh-autosuggestions.zsh"
+# source "/usr/share/zsh/site-functions/zsh-autosuggestions.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
 source "$ZDOTDIR/myextensions.zsh" # fzf and more ~/.config/zsh/myextensions.zsh
 # help: CTRL-T ....... Select one or more files and insert them at cursor
