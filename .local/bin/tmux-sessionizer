@@ -116,14 +116,8 @@ if [[ $# -eq 0 ]]; then
   exit 0
 fi
 
-# -l flag
-if [[ "$1" == "-l" ]]; then
-  if [[ $# -gt 1 ]]; then
-    shift
-    echo -e "$(red "Too many arguments passed to -l:") $@"
-    usage
-    exit 1
-  fi
+# -l : list sessions
+if [[ "$@" == "-l" ]]; then
   available_sessions="$(tmux list-sessions -F "#{session_name}")"
   if [[ -z "$available_sessions" ]]; then
     echo "No sessions found"
@@ -133,21 +127,28 @@ if [[ "$1" == "-l" ]]; then
   exit 0
 fi
 
+# -h : help (usage)
+if [[ "$@" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
 # >=1 arguments
 if [[ $# -ge 1 ]]; then
-  if [[ $# -eq 1 && "$1" == "-h" ]]; then
-    usage
-    exit 0
-  fi
   if [[ $# -eq 1 ]]; then
     if [[ -f "$1" ]]; then
-      selected_name="$(basename "$1" | tr . _)"
+      selected_name="$(basename "$1" | tr ' ' _)"
       make_session "$selected_name"
       tmux send-keys -t "$selected_name" "$EDITOR $1" Enter
       attach_or_switch "$selected_name" "$(dirname "$1")"
       exit 0
+      # check if argument is dot (THIS directory)
+    elif [[ "$1" == "." ]]; then
+      selected_name="$(basename "$(pwd)")"
+      attach_or_switch "$selected_name" "$(pwd)"
+      exit 0
     elif [[ -d "$1" ]]; then
-      selected_name="$(basename "$1" | tr . _)"
+      selected_name="$(basename "$1")"
       attach_or_switch "$selected_name" "$1"
       exit 0
     fi
