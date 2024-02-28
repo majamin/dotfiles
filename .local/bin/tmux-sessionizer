@@ -145,8 +145,8 @@ if [[ $# -ge 1 ]]; then
       exit 0
       # check if argument is dot (THIS directory)
     elif [[ "$1" == "." ]]; then
-      selected_name="$(basename "$(pwd)" | tr . _)"
-      workdir="$(dirname "$(readlink -f "$(pwd)")")"
+      workdir="$(readlink -f "$(pwd)")"
+      selected_name="$(basename $workdir)"
       attach_or_switch "$selected_name" "$workdir"
       exit 0
     elif [[ -d "$1" ]]; then
