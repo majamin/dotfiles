@@ -43,6 +43,9 @@ fi
 # $1: session name
 # $2: working directory
 attach_or_switch() {
+  if [[ $1 == "" ]]; then
+    exit 0
+  fi
   if [[ $2 == "" ]]; then
     make_session "$1"
   else
@@ -116,14 +119,13 @@ if [[ $# -eq 0 ]]; then
   exit 0
 fi
 
-# -l : list sessions
+# use fzf to select a session
+# if no selection made, exit quietly
 if [[ "$@" == "-l" ]]; then
-  available_sessions="$(tmux list-sessions -F "#{session_name}")"
-  if [[ -z "$available_sessions" ]]; then
-    echo "No sessions found"
-    exit 0
+  session="$(tmux list-sessions -F '#{session_name}' | fzf)"
+  if [[ -n "$session" ]]; then
+    attach_or_switch "$session"
   fi
-  attach_or_switch "$(echo $available_sessions | fzf)"
   exit 0
 fi
 
