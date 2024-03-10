@@ -3,11 +3,12 @@
 # Put .local/bin and all subdirectories in $PATH
 export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
 
-# WSL Windows path
+# WSL Windows paths
 export PATH="$PATH:/mnt/c/Windows:/mnt/c/Windows/System32"
+export PATH="$PATH:$(find /mnt/c/Users -maxdepth 1 -type d | sed 's|$|/AppData/Local/Microsoft/WindowsApps|' | tr '\n' ':' | sed 's/:*$//')"
 
 # Default binaries
-export TERMINAL="kitty"
+export TERMINAL="st"
 export EDITOR="nvim"
 export READER="zathura"
 export BROWSER="firefox"
