@@ -33,6 +33,7 @@ setopt promptsubst # required for git info to appear in prompt
 export COLORTERM=truecolor
 export KEYTIMEOUT=1
 
+autoload edit-command-line; zle -N edit-command-line
 autoload -Uz compinit && compinit
 autoload -U colors && colors
 autoload -Uz vcs_info
