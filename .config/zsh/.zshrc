@@ -39,6 +39,8 @@ autoload -U colors && colors
 autoload -Uz vcs_info
 precmd() vcs_info
 
+compdef '_git' dots
+
 source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
 source "$ZDOTDIR/prompt_and_mode.zsh"     # prompt settings
