@@ -32,29 +32,13 @@ beam_cursor
 
 (){
 # Define a function that retrieves the current git branch and latest commit hash
-# If no git repo is found, try the dots alias (which can be used just like the git command)
 function git_info {
-    local ref
-    if [[ -n $(git rev-parse --git-dir 2> /dev/null) ]]; then
-        if ! $(git diff --quiet --ignore-submodules --cached); then
-            ref="⚡️"
-        elif ! $(git diff-files --quiet --ignore-submodules --); then
-            ref="✏️"
-        else
-            ref="🎉"
-        fi
-        local git_branch=$(git symbolic-ref --quiet --short HEAD 2> /dev/null || git rev-parse --short HEAD 2> /dev/null || echo '(unknown)')
-        echo "$ref $git_branch"
-    else
-        if ! $(dots diff --quiet --ignore-submodules --cached); then
-            ref="⚡️"
-        elif ! $(dots diff-files --quiet --ignore-submodules --); then
-            ref="✏️"
-        else
-            ref="🎉"
-        fi
-        local git_branch=$(dots symbolic-ref --quiet --short HEAD 2> /dev/null || dots rev-parse --short HEAD 2> /dev/null || echo '(unknown)')
-        echo "$ref $git_branch"
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [ -n "$branch" ]; then
+        local hash
+        hash=$(git rev-parse --short HEAD)
+        echo "$branch@$hash"
     fi
 }
 
