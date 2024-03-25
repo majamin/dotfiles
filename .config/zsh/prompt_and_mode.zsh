@@ -32,13 +32,18 @@ beam_cursor
 
 (){
 # Define a function that retrieves the current git branch and latest commit hash
+# If there is no first commit, state the branch name only with "(no commits)"
 function git_info {
-    local branch
-    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [ -n "$branch" ]; then
-        local hash
-        hash=$(git rev-parse --short HEAD)
-        echo "$branch@$hash"
+    local ref
+    ref=$(command git symbolic-ref --short HEAD 2> /dev/null) || return
+    if [ -n "$ref" ]; then
+        local commit
+        commit=$(command git rev-parse --short HEAD)
+        if [ -n "$commit" ]; then
+            echo "$ref@$commit"
+        else
+            echo "$ref (no commits)"
+        fi
     fi
 }
 
