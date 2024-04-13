@@ -52,6 +52,7 @@ mkcd() { mkdir -p $1 && cd $1 }
 alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e | sed -E -e "s/:/:\n/"'
 alias t="tmux-sessionizer"
+alias tl="tmux choose-tree -Z 's'"
 
 bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim

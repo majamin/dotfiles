@@ -1,171 +1,82 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# set -x
+set -x
 
-if [[ $EDITOR == "" ]]; then
-  EDITOR="nano"
-fi
-
-# directories to include
-INCLUDE="\
-  $HOME/.config \
-  $HOME/.local \
-  $HOME/Projects \
-  $HOME/Images \
-  $ONEDRIVE
-  "
-
-EXCLUDE="\
-  --exclude .cache \
-  --exclude .git \
-  --exclude node_modules \
-  "
-
-FD_OPTS="\
-  --color never \
-  --type d      \
-  --hidden      \
-  --follow      \
-  --min-depth 1 \
-  --max-depth 5 \
-  "
-
-# TODO: incomplete - need to add exclude patterns
-FIND="find $INCLUDE -type d -not -path '*/\.*' -not -path '*/\.git/*' -not -path '*/node_modules/*'"
-
-if command -v fd >/dev/null 2>&1; then
-  FIND="fd . $INCLUDE $FD_OPTS $EXCLUDE "
-fi
-if command -v fd-find >/dev/null 2>&1; then
-  FIND="fd-find . $INCLUDE $FD_OPTS $EXCLUDE "
-fi
-
-# $1: session name
-# $2: working directory
-attach_or_switch() {
-  if [[ $1 == "" ]]; then
-    exit 0
-  fi
-  if [[ $2 == "" ]]; then
-    make_session "$1"
-  else
-    make_session "$1" "$2"
-  fi
-  if [[ -n "$TMUX" ]]; then
-    tmux switch-client -t "$1"
-  else
-    tmux attach-session -t "$1"
-  fi
-}
-
-# truncate a long string with spaces into a nice session name
-# remove spaces and special characters and cut to 20 characters
-# $1: long string (possibly a command)
-trunc() {
-  echo "$1" | tr -d ' ' | cut -c -20
-}
-
-# is the session running?
-# $1: session name
-has_session() {
-  return $(tmux has -t "$1" 2>/dev/null)
-}
-
-# create a session if it doesn't exist
-# $1: session name
-# $2: working directory
-make_session() {
-  if ! has_session "$1"; then
-    tmux new-session -d -s "$1" -c "$2"
-  fi
-}
-
-green() {
-  echo -e "\x1B[32m$1\x1B[0m"
-}
-
-red() {
-  echo -e "\x1B[31m$1\x1B[0m"
-}
+# Set editor
+EDITOR=${EDITOR:-nano}
 
 usage() {
-  echo "Usage:"
-  echo "       $(green tmux-sessionizer)"
-  echo "           (search for a directory using fd and open it in a session)"
-  echo "       $(green tmux-sessionizer) -h"
-  echo "           (print this message)"
-  echo "       $(green tmux-sessionizer) -l"
-  echo "           (list sessions and attach to the selected one)"
-  echo "       $(green tmux-sessionizer) <file>"
-  echo "           (create a session with the file's name and open it with \$EDITOR (default is nano))"
-  echo "       $(green tmux-sessionizer) <directory>"
-  echo "           (create a session with the directory's name and cd into it)"
-  echo "       $(green tmux-sessionizer) <command>"
-  echo "           (create a session with the command and run it)"
-  echo
+    echo "tmux-sessionizer: Open and manage tmux sessions, files, and commands"
+    echo "Usage: tmux-sessionizer [file|directory|command]"
+    exit 1
 }
 
-###   main   ###
-# if no arguments, search for a directory using FIND and open it in a session
-# if only one argument and it is a file, create a session with the file's name and open it neovim
-# if only one argument and it is a directory, create a session with the directory's name and cd into it
-# if there are multiple arguments, assume that it is a command and run it in a session using trunc
+# Home directory name
+sandbox_name="sandbox"
 
-# no arguments
-if [[ $# -eq 0 ]]; then
-  selected="$($FIND | fzf)"
-  selected_name="$(basename "$selected")"
-  attach_or_switch "$selected_name" "$selected"
-  exit 0
+# Function to sanitize input
+sanitize_input() {
+    echo "$1" | sed 's/[^a-zA-Z0-9]//g'
+}
+
+# Function to sanitize command
+sanitize_command() {
+    echo "$1" | sed 's/[^a-zA-Z0-9]//g' | sed 's/sudo//g' | sed 's/doas//g'
+}
+
+# Function to handle file editing
+handle_file() {
+    local file="$(realpath "$1")"
+    dir=$(dirname "$(realpath "$file")")
+    name=$(basename "$dir")
+    window_name=$(sanitize_input "$(basename "$file")")
+    command="$EDITOR $file"
+}
+
+# Function to handle command execution
+handle_command() {
+    command="$@"
+    dir="$PWD"
+    name=$(basename "$dir")
+    window_name=$(sanitize_command "$command")
+}
+
+if [ -d "$1" ]; then
+    dir="$1"
+    name=$(basename "$dir")
+elif [ -f "$1" ]; then
+    # Argument is a file, open session in file's directory and edit file
+    handle_file "$1"
+else
+    # Argument is assumed to be a command, execute command in new window
+    handle_command "$@"
 fi
 
-# use fzf to select a session
-# if no selection made, exit quietly
-if [[ "$@" == "-l" ]]; then
-  session="$(tmux list-sessions -F '#{session_name}' | fzf)"
-  if [[ -n "$session" ]]; then
-    attach_or_switch "$session"
-  fi
-  exit 0
+# If present directory is home directory, use sandbox
+if [ "$dir" = "$HOME" ]; then
+    name="$sandbox_name"
 fi
 
-# -h : help (usage)
-if [[ "$@" == "-h" ]]; then
-  usage
-  exit 0
+# If window and session already exists, attach to it and exit
+if tmux has-session -t "$name:$window_name" 2>/dev/null; then
+    tmux attach-session -t "$name:$window_name"
+    exit
 fi
 
-# >=1 arguments
-if [[ $# -ge 1 ]]; then
-  if [[ $# -eq 1 ]]; then
-    if [[ -f "$1" ]]; then
-      selected_name="$(basename "$1" | tr . _)"
-      workdir="$(dirname "$(readlink -f "$1")")"
-      make_session "$selected_name"
-      tmux send-keys -t "$selected_name" "$EDITOR $1" Enter
-      attach_or_switch "$selected_name" "$workdir"
-      exit 0
-      # check if argument is dot (THIS directory)
-    elif [[ "$1" == "." ]]; then
-      workdir="$(readlink -f "$(pwd)")"
-      selected_name="$(basename $workdir)"
-      attach_or_switch "$selected_name" "$workdir"
-      exit 0
-    elif [[ -d "$1" ]]; then
-      selected_name="$(basename "$1")"
-      workdir="$1"
-      attach_or_switch "$selected_name" "$workdir"
-      exit 0
-    fi
-  else
-    commands="$@"
-    selected_name="$(trunc "$commands")"
-    make_session "$selected_name"
-    tmux send-keys -t "$selected_name" "$commands" Enter
-    attach_or_switch "$selected_name"
-    exit 0
-  fi
+# Check if session and window already exists
+if ! tmux has-session -t "$name" 2>/dev/null; then
+    tmux new-session -d -s "$name" -n "$window_name" -c "$dir"
 fi
 
-echo -e "$(red "Invalid arguments:") $@"
-usage
+# Check if window already exists
+if ! tmux list-windows -t "$name" | grep -q "$window_name"; then
+    tmux new-window -t "$name" -n "$window_name" -c "$dir"
+fi
+
+# If command is provided, execute it
+if [ -n "$command" ]; then
+    tmux send-keys -t "$name:$window_name" "$command" Enter
+fi
+
+# Attach to tmux session
+tmux attach-session -t "$name:$window_name"
