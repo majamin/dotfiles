@@ -14,6 +14,10 @@ usage() {
 # Home directory name
 sandbox_name="sandbox"
 
+in_tmux() {
+    [ -n "$TMUX" ]
+}
+
 # Function to sanitize input
 sanitize_input() {
     echo "$1" | sed 's/[^a-zA-Z0-9]//g'
@@ -59,7 +63,11 @@ fi
 
 # If window and session already exists, attach to it and exit
 if tmux has-session -t "$name:$window_name" 2>/dev/null; then
-    tmux attach-session -t "$name:$window_name"
+    if ! in_tmux; then
+        tmux attach-session -t "$name:$window_name"
+    else
+        tmux switch-client -t "$name:$window_name"
+    fi
     exit
 fi
 
@@ -79,4 +87,8 @@ if [ -n "$command" ]; then
 fi
 
 # Attach to tmux session
-tmux attach-session -t "$name:$window_name"
+if ! in_tmux; then
+    tmux attach-session -t "$name:$window_name"
+else
+    tmux switch-client -t "$name:$window_name"
+fi
