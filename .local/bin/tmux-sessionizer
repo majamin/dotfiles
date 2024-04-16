@@ -34,7 +34,7 @@ handle_file() {
     dir=$(dirname "$(realpath "$file")")
     name=$(basename "$dir")
     window_name=$(sanitize_input "$(basename "$file")")
-    command="$EDITOR $file"
+    command="$EDITOR '$file'"
 }
 
 # Function to handle command execution
