@@ -1,94 +1,65 @@
 #!/bin/bash
 
-# set -x
+set -x
 
 # Set editor
 EDITOR=${EDITOR:-nano}
 
-usage() {
-    echo "tmux-sessionizer: Open and manage tmux sessions, files, and commands"
-    echo "Usage: tmux-sessionizer [file|directory|command]"
-    exit 1
+session_name=$(basename "$PWD")
+
+sanitize() {
+  echo "$1" | tr -dC '[:alnum:]' | cut -c -16
 }
 
-# Home directory name
-sandbox_name="sandbox"
-
-in_tmux() {
-    [ -n "$TMUX" ]
-}
-
-# Function to sanitize input
-sanitize_input() {
-    echo "$1" | sed 's/[^a-zA-Z0-9]//g'
-}
-
-# Function to sanitize command
-sanitize_command() {
-    echo "$1" | sed 's/[^a-zA-Z0-9]//g' | sed 's/sudo//g' | sed 's/doas//g'
-}
-
-# Function to handle file editing
-handle_file() {
-    local file="$(realpath "$1")"
-    dir=$(dirname "$(realpath "$file")")
-    name=$(basename "$dir")
-    window_name=$(sanitize_input "$(basename "$file")")
-    command="$EDITOR '$file'"
-}
-
-# Function to handle command execution
-handle_command() {
-    command="$@"
-    dir="$PWD"
-    name=$(basename "$dir")
-    window_name=$(sanitize_command "$command")
-}
-
-if [ -d "$1" ]; then
-    dir="$1"
-    name=$(basename "$dir")
-elif [ -f "$1" ]; then
-    # Argument is a file, open session in file's directory and edit file
-    handle_file "$1"
+if [ -n "$TMUX" ]; then
+  tmux_cmd="tmux switch-client"
 else
-    # Argument is assumed to be a command, execute command in new window
-    handle_command "$@"
+  tmux_cmd="tmux attach-session"
 fi
 
-# If present directory is home directory, use sandbox
-if [ "$dir" = "$HOME" ]; then
-    name="$sandbox_name"
+if [ -f "$1" ]; then
+  session_name=$(sanitize "$(basename "$(dirname "$(realpath "$1")")")")
+  window_name=$(sanitize "$(basename "$1")")
+  working_dir=$(dirname "$(realpath $1)")
+  command="$EDITOR '$(realpath $1)'"
+elif [ -d "$1" ]; then
+  working_dir="$(realpath $1)"
+  session_name=$(sanitize "$(basename "$working_dir")")
+else
+  # assume it is a command
+  window_name=$(sanitize "$1")
+  command="$1"
 fi
 
-# If window and session already exists, attach to it and exit
-if tmux has-session -t "$name:$window_name" 2>/dev/null; then
-    if ! in_tmux; then
-        tmux attach-session -t "$name:$window_name"
+# Check if session exists
+if tmux has-session -t "$session_name" 2>/dev/null; then
+  # do we have a window name? and does it exist?
+  if [ -n "$window_name" ]; then
+    if tmux list-windows -t "$session_name" | grep -q "$window_name"; then
+      tmux_cmd+=" -t $session_name:$window_name"
+      $tmux_cmd
+      exit
     else
-        tmux switch-client -t "$name:$window_name"
+      tmux new-window -d -n "$window_name" -t "$session_name" -c "$working_dir"
+      tmux_cmd+=" -t $session_name:$window_name"
     fi
-    exit
-fi
-
-# Check if session and window already exists
-if ! tmux has-session -t "$name" 2>/dev/null; then
-    tmux new-session -d -s "$name" -n "$window_name" -c "$dir"
-fi
-
-# Check if window already exists
-if ! tmux list-windows -t "$name" | grep -q "$window_name"; then
-    tmux new-window -t "$name" -n "$window_name" -c "$dir"
-fi
-
-# If command is provided, execute it
-if [ -n "$command" ]; then
-    tmux send-keys -t "$name:$window_name" "$command" Enter
-fi
-
-# Attach to tmux session
-if ! in_tmux; then
-    tmux attach-session -t "$name:$window_name"
+  else
+    tmux_cmd+=" -t $session_name"
+  fi
 else
-    tmux switch-client -t "$name:$window_name"
+  # Create new session and/or window
+  if [ -n "$window_name" ]; then
+    tmux new-session -d -s "$session_name" -n "$window_name" -c "$working_dir"
+    tmux_cmd+=" -t $session_name:$window_name"
+  else
+    tmux new-session -d -s "$session_name" -c "$working_dir"
+    tmux_cmd+=" -t $session_name"
+  fi
 fi
+
+if [ -n "$command" ]; then
+  tmux send-keys -t "$session_name:$window_name" "$command" C-m
+fi
+
+# printf "Tmux cmd: %s\n" "$tmux_cmd"
+$tmux_cmd
