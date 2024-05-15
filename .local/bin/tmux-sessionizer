@@ -20,10 +20,10 @@ fi
 if [ -f "$1" ]; then
   session_name=$(sanitize "$(basename "$(dirname "$(realpath "$1")")")")
   window_name=$(sanitize "$(basename "$1")")
-  working_dir=$(dirname "$(realpath $1)")
-  command="$EDITOR '$(realpath $1)'"
+  working_dir=$(dirname "$(realpath "$1")")
+  command="$EDITOR '$(realpath "$1")'"
 elif [ -d "$1" ]; then
-  working_dir="$(realpath $1)"
+  working_dir=$(realpath "$1")
   session_name=$(sanitize "$(basename "$working_dir")")
 else
   # assume it is a command
