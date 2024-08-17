@@ -4,6 +4,7 @@
 EDITOR=${EDITOR:-nano}
 
 session_name=$(basename "$PWD")
+working_dir=$(realpath "$PWD")
 
 sanitize() {
   echo "$1" | tr -dC '[:alnum:]' | cut -c -16
