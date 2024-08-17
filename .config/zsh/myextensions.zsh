@@ -7,12 +7,12 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 
 [[ -x `which bat` ]] && export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
 
-export FZF_DEFAULT_OPTS="
---border
---layout=reverse
---height 70%
---color fg:15,fg+:15,bg+:239,hl+:108
---color info:2,prompt:109,spinner:2,pointer:168,marker:168
+export FZF_DEFAULT_OPTS=" \
+--border \
+--layout=reverse \
+--height 70% \
+--color fg:15,fg+:15,bg+:239,hl+:108 \
+--color info:2,prompt:109,spinner:2,pointer:168,marker:168 \
 --preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'
 "
 
@@ -31,8 +31,8 @@ f() {
   test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
 }
 
-# help: fgr() ........ fzf select local and remote git branches
-fbr() {
+# help: fgb() ........ fzf select local and remote git branches
+fgb() {
   local branches branch
   branches=$(git branch --all | grep -v HEAD) &&
     branch=$(echo "$branches" |
