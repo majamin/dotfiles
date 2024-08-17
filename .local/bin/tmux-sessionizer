@@ -17,17 +17,15 @@ else
 fi
 
 # ---- Handle arguments ----
-if [ "$#" -gt 1 ]; then
-  window_name=$(sanitize "$@")
-  command="$@"
-elif [ "$#" -eq 1 ]; then
-  if [ -f "$1" ]; then
-    session_name=$(sanitize "$(basename "$(dirname "$(realpath "$1")")")")
-    window_name=$(sanitize "$(basename "$1")")
-    working_dir=$(dirname "$(realpath "$1")")
-    command="$EDITOR '$(realpath "$1")'"
-  elif [ -d "$1" ]; then
-    working_dir=$(realpath "$1")
+if [ "$#" -gt 0 ]; then
+  # check to see if entire argument is a file
+  if [ -f "$@" ]; then
+    session_name=$(sanitize "$(basename "$(dirname "$(realpath "$@")")")")
+    window_name=$(sanitize "$(basename "$@")")
+    working_dir=$(dirname "$(realpath "$@")")
+    command="$EDITOR '$(realpath "$@")'"
+  elif [ -d "$@" ]; then
+    working_dir=$(realpath "$@")
     session_name=$(sanitize "$(basename "$working_dir")")
   else
     # check if the argument is a command
@@ -50,6 +48,8 @@ if tmux has-session -t "$session_name" 2>/dev/null; then
   if [ -n "$window_name" ]; then
     if tmux list-windows -t "$session_name" | grep -q "$window_name"; then
       tmux_cmd+=" -t $session_name:$window_name"
+      eval $tmux_cmd # session and window exist, just attach
+      exit
     else
       tmux new-window -d -n "$window_name" -t "$session_name" -c "$working_dir"
       tmux_cmd+=" -t $session_name:$window_name"
