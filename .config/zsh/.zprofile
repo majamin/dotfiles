@@ -5,7 +5,7 @@ export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$
 
 # WSL Windows paths
 export PATH="$PATH:/mnt/c/Windows:/mnt/c/Windows/System32"
-export PATH="$PATH:$(find /mnt/c/Users -maxdepth 1 -type d | sed 's|$|/AppData/Local/Microsoft/WindowsApps|' | tr '\n' ':' | sed 's/:*$//')"
+export PATH="$PATH:$(find /mnt/c/Users/*/AppData/Local/Microsoft/WindowsApps -maxdepth 1 -type d | tr '\n' ':' | sed 's/:*$//')"
 
 # Default binaries
 export TERMINAL="st"
