@@ -38,7 +38,7 @@ function git_info {
     ref=$(command git symbolic-ref --short HEAD 2> /dev/null) || return
     if [ -n "$ref" ]; then
         local commit
-        commit=$(command git rev-parse --short HEAD)
+        commit=$(command git rev-parse --short HEAD 2> /dev/null)
         if [ -n "$commit" ]; then
             echo "$ref@$commit"
         else
