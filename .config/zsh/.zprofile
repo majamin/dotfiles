@@ -26,7 +26,9 @@ export SCREENSHOT_DIR="${ONEDRIVE:-$HOME}/Images/Screenshots"
 
 # Security and secrets
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/password-store"
+export PASSWORD_STORE_DIR="/mnt/c/Users/majam/PasswordStore"
+export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+export PASSWORD_STORE_EXTENSIONS_DIR="$(python -m site --user-site)/usr/lib/password-store/extensions/"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
 
 # Go
@@ -50,6 +52,9 @@ export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
 export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
+
+export BUN_INSTALL="$HOME/.local/share/bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 export LESS=-R
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"

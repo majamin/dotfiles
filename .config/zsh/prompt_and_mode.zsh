@@ -48,8 +48,8 @@ function git_info {
 }
 
 # Set the PROMPT variable to the desired format
-PROMPT='%F{#29A4BD}%n%f %~
-%(?..%B(%?%)%b )%F{#FF9E64}%(!.#.$)%f '
+PROMPT='%F{#0349B4}%n%f %~
+%(?..%B(%?%)%b )%F{#D1242F}%(!.#.$)%f '
 
 # Set the RPROMPT variable to an empty string (we'll use it for the git info)
 RPROMPT=''
