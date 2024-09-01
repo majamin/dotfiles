@@ -1,76 +1,140 @@
 #!/bin/bash
 
-# Set editor
+# Set default editor
 EDITOR=${EDITOR:-nano}
 
-session_name=$(basename "$PWD")
-working_dir=$(realpath "$PWD")
+# Initialize variables
+session_name=""
+working_dir=""
+file=""
+command=""
+window_name=""
 
+# Function to sanitize names
 sanitize() {
   echo "$1" | tr -dC '[:alnum:]' | cut -c -16
 }
 
-if [ -n "$TMUX" ]; then
-  tmux_cmd="tmux switch-client"
-else
-  tmux_cmd="tmux attach-session"
+# ---- Handle arguments ----
+while getopts ":w:f:c:" opt; do
+  case ${opt} in
+    w )
+      working_dir=$(realpath "$OPTARG")
+      session_name=$(sanitize "$(basename "$working_dir")")
+      ;;
+    f )
+      if [ -n "$command" ]; then
+        echo "Error: -f (file) and -c (command) cannot be used together." >&2
+        exit 1
+      fi
+      file=$(realpath "$OPTARG")
+      window_name=$(sanitize "$(basename "$file")")
+      if [ -z "$session_name" ]; then
+        session_name=$(sanitize "$(basename "$(dirname "$file")")")
+      fi
+      if [ -z "$working_dir" ]; then
+        working_dir=$(dirname "$file")
+      fi
+      command="$EDITOR '$file'"
+      ;;
+    c )
+      if [ -n "$file" ]; then
+        echo "Error: -f (file) and -c (command) cannot be used together." >&2
+        exit 1
+      fi
+      command="$OPTARG"
+      if [ -z "$session_name" ]; then
+        session_name=$(sanitize "$(basename "$PWD")")
+      fi
+      if [ -z "$working_dir" ]; then
+        working_dir=$(realpath "$PWD")
+      fi
+      ;;
+    \? )
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    : )
+      echo "Invalid option: -$OPTARG requires an argument" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+# Default session name if none was set
+if [ -z "$session_name" ]; then
+  session_name=$(sanitize "$(basename "$PWD")")
 fi
 
-# ---- Handle arguments ----
-if [ "$#" -gt 0 ]; then
-  # check to see if entire argument is a file
-  if [ -f "$@" ]; then
-    session_name=$(sanitize "$(basename "$(dirname "$(realpath "$@")")")")
-    window_name=$(sanitize "$(basename "$@")")
-    working_dir=$(dirname "$(realpath "$@")")
-    command="$EDITOR '$(realpath "$@")'"
-  elif [ -d "$@" ]; then
-    working_dir=$(realpath "$@")
-    session_name=$(sanitize "$(basename "$working_dir")")
-  else
-    # check if the argument is a command
-    if [ -n `command -v "$1"` ]; then
-      command="$@"
-      working_dir=$(realpath "$PWD")
-    else
-      echo "Argument is not a known file, directory or command"
-      exit 1
-    fi
-  fi
-else
-  session_name=$(sanitize "$(basename "$PWD")")
-  tmux_cmd+=" -t $session_name"
+# Default working directory if none was set
+if [ -z "$working_dir" ]; then
+  working_dir=$(realpath "$PWD")
 fi
+
+# Initialize flags to track if session and window exist
+session_exists=false
+window_exists=false
 
 # Check if session exists
 if tmux has-session -t "$session_name" 2>/dev/null; then
-  # do we have a window name? and does it exist?
+  session_exists=true
+fi
+
+# Check if window exists (only if window_name is set and session exists)
+if [ -n "$window_name" ] && $session_exists; then
+  if tmux list-windows -t "$session_name" | awk '{print $1}' | cut -d':' -f1 | grep -qx "$window_name"; then
+    window_exists=true
+  fi
+fi
+
+
+# Function to attach to a session or window
+attach_tmux() {
+  local target="$1"
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t "$target"
+  else
+    tmux attach-session -t "$target"
+  fi
+}
+
+# Handle tmux operations
+if $session_exists; then
   if [ -n "$window_name" ]; then
-    if tmux list-windows -t "$session_name" | grep -q "$window_name"; then
-      tmux_cmd+=" -t $session_name:$window_name"
-      eval $tmux_cmd # session and window exist, just attach
+    if $window_exists; then
+      # Session and window exist; attach to the window without sending the command
+      attach_tmux "${session_name}:${window_name}"
       exit
     else
-      tmux new-window -d -n "$window_name" -t "$session_name" -c "$working_dir"
-      tmux_cmd+=" -t $session_name:$window_name"
+      # Session exists but window does not; create the window, send the command, then attach
+      tmux new-window -n "$window_name" -t "$session_name" -c "$working_dir"
+      if [ -n "$command" ]; then
+        tmux send-keys -t "${session_name}:${window_name}" "$command" C-m
+      fi
+      attach_tmux "${session_name}:${window_name}"
+      exit
     fi
   else
-    tmux_cmd+=" -t $session_name"
+    # Session exists without a specific window; attach to the session
+    attach_tmux "$session_name"
+    exit
   fi
 else
-  # Create new session and/or window
+  # Session does not exist; create it (with or without window) and send the command if necessary
   if [ -n "$window_name" ]; then
     tmux new-session -d -s "$session_name" -n "$window_name" -c "$working_dir"
-    tmux_cmd+=" -t $session_name:$window_name"
+    if [ -n "$command" ]; then
+      tmux send-keys -t "${session_name}:${window_name}" "$command" C-m
+    fi
+    attach_tmux "${session_name}:${window_name}"
+    exit
   else
     tmux new-session -d -s "$session_name" -c "$working_dir"
-    tmux_cmd+=" -t $session_name"
+    if [ -n "$command" ]; then
+      tmux send-keys -t "$session_name" "$command" C-m
+    fi
+    attach_tmux "$session_name"
+    exit
   fi
 fi
-
-if [ -n "$command" ]; then
-  tmux send-keys -t "$session_name:$window_name" "$command" C-m
-fi
-
-# printf "Tmux cmd: %s\n" "$tmux_cmd"
-eval $tmux_cmd
