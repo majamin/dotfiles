@@ -31,7 +31,7 @@ for image in "${selection[@]}"; do
 
     # convert image to png using image magick,
     # and copy the file to the images/ directory with the new name
-    convert "$image" -auto-orient -resize 800x "images/$new_name"
+    convert "$image" -auto-orient -resize 1600x "images/$new_name"
 
     # Print the new name of the image
     echo "$new_name"
