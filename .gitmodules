@@ -14,3 +14,6 @@
 	path = .local/src/oneliners.txt
 	url = https://github.com/majamin/oneliners.txt
 	branch = master
+[submodule ".local/src/st"]
+	path = .local/src/st
+	url = git@github.com:majamin/st
