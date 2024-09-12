@@ -28,7 +28,7 @@ export SCREENSHOT_DIR="${ONEDRIVE:-$HOME}/Images/Screenshots"
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export PASSWORD_STORE_DIR="/mnt/c/Users/majam/PasswordStore"
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
-export PASSWORD_STORE_EXTENSIONS_DIR="$(python -m site --user-site)/usr/lib/password-store/extensions/"
+export PASSWORD_STORE_EXTENSIONS_DIR="$PASSWORD_STORE_DIR/.extensions"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
 
 # Go
