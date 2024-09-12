@@ -45,7 +45,8 @@ source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
 source "$ZDOTDIR/prompt_and_mode.zsh"     # prompt settings
 source "$ZDOTDIR/myextensions.zsh"        # fzf, etc.
-source "$ZDOTDIR/lscolors.sh"
+source "$ZDOTDIR/COLORS_LIGHT"
+#source "$ZDOTDIR/COLORS_DARK"
 
 alias ls="ls -hN --color=auto --group-directories-first"
 mkcd() { mkdir -p $1 && cd $1 }

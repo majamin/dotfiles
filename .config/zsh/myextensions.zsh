@@ -11,7 +11,7 @@ export FZF_DEFAULT_OPTS=" \
 --border \
 --layout=reverse \
 --height 70% \
---color fg:15,fg+:15,bg+:239,hl+:108 \
+--color=light \
 --color info:2,prompt:109,spinner:2,pointer:168,marker:168 \
 --preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'
 "
