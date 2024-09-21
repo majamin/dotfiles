@@ -15,9 +15,10 @@ Submodules
 Submodules are provided for:
 
   * Neovim (https://github.com/majamin/neovim-config.git)
-  * DWM (https://github.com/majamin/dwm.git)
-  * Dmenu (https://github.com/majamin/dmenu.git)
-  * Oneliners (https://github.com/majamin/oneliners.txt.git)
+  * dwm (https://github.com/majamin/dwm.git)
+  * dmenu (https://github.com/majamin/dmenu.git)
+  * st (https://github.com/majamin/st.git)
+  * oneliners (https://github.com/majamin/oneliners.txt.git)
 
 If you cloned this repo without the `--recursive` flag, run
 
@@ -42,20 +43,27 @@ Stow
 ====
 
 You can use GNU Stow to manage the dotfiles in this repo.
-For example, to deploy all the dotfiles in this repo
-from the home directory, run the following commands:
+
+https://www.gnu.org/software/stow/
+
+To deploy all the dotfiles in this repo from the home directory, run
+the following commands:
 
   --------------------------------------------------------
   cd ~/
   git clone --recursive https://github.com/majamin/dotfiles.git .dotfiles
   cd .dotfiles
-  stow -t $HOME -v -R .
+  stow --dotfiles -t $HOME -v -R .
   --------------------------------------------------------
 
-It's best for the target directory to be free of any clashing files.
-`stow` will fail in those particular scenarios (this is normal).
-Please see `stow` documentation for more information. In particular,
-the `--adopt` flag may be useful.
+It's best for the target directory to be free of any clashing files,
+as stow will fail in those particular scenarios (this is normal).
+You can tell stow to *adopt* the already-existing files, i.e. the file
+will be converted to a symlink and "absorbed" into the stow directory.
+
+  --------------------------------------------------------
+  stow --dotfiles -t $HOME -v -R --adopt .
+  --------------------------------------------------------
 
 To deploy as a bare repo
 ========================
