@@ -48,8 +48,13 @@ function git_info {
 }
 
 # Set the PROMPT variable to the desired format
-PROMPT='%F{#0349B4}%n%f %~
+if [ -f "${ZDOTDIR}/set-light-theme" ]; then
+  PROMPT='%F{#0349B4}%n%f %~
 %(?..%B(%?%)%b )%F{#D1242F}%(!.#.$)%f '
+else
+  PROMPT='%F{#82aaff}%n%f %F{#c8d3f5}%~%f
+%(?..%B%F{#c53b53}(%?%)%f%b )%F{#ffc777}%(!.#.$)%f '
+fi
 
 # Set the RPROMPT variable to an empty string (we'll use it for the git info)
 RPROMPT=''
