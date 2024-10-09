@@ -25,11 +25,11 @@ export ONEDRIVE="$HOME/Maja"
 export MYDATA="$ONEDRIVE/_data"
 export VIDEOS="$HOME/Videos"
 export MUSIC="$HOME/Music"
-export SCREENSHOT_DIR="${ONEDRIVE:-$HOME}/Images/Screenshots"
+export SCREENSHOT_DIR="/mnt/c/majam/Pictures/Screenshots"
 
 # Security and secrets
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export PASSWORD_STORE_DIR="/mnt/c/Users/majam/PasswordStore"
+export PASSWORD_STORE_DIR="$ONEDRIVE/Private/PasswordStore"
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 export PASSWORD_STORE_EXTENSIONS_DIR="$PASSWORD_STORE_DIR/.extensions"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
