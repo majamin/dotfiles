@@ -10,8 +10,8 @@ if [ ! -d "$IMAGE_DIR" ]; then
 fi
 
 # Find all files in the directory using fd-find
-# Pipe the output to sxiv for image selection
-mapfile -t selection < <(fd -e jpg -e png -e gif -e bmp -e tiff -e webp -e svg -e jpeg -e heic . "$IMAGE_DIR" -0 | xargs -0 ls -t | sxiv -troi)
+# Pipe the output to nsxiv for image selection
+mapfile -t selection < <(fd -e jpg -e png -e gif -e bmp -e tiff -e webp -e svg -e jpeg -e heic . "$IMAGE_DIR" -0 | xargs -0 ls -t | nsxiv -troi)
 
 # Check if the user selected any images
 if [ ${#selection[@]} -eq 0 ]; then
