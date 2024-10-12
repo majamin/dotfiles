@@ -1,0 +1,6 @@
+.git
+.npm
+.cache
+.bundle
+.local/state
+.local/share

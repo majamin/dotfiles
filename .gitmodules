@@ -1,7 +1,7 @@
 [submodule ".config/nvim"]
 	path = .config/nvim
 	url = https://github.com/majamin/neovim-config
-	branch = lazy
+	branch = master
 [submodule ".local/src/dwm"]
 	path = .local/src/dwm
 	url = https://github.com/majamin/dwm
@@ -16,4 +16,5 @@
 	branch = master
 [submodule ".local/src/st"]
 	path = .local/src/st
-	url = git@github.com:majamin/st
+	url = https://github.com/majamin/st
+	branch = master

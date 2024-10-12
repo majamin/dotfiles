@@ -21,6 +21,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 
 # Personal Folders
+export DOTFILES="$HOME/.local/src/dotfiles"
 export ONEDRIVE="$HOME/Maja"
 export MYDATA="$ONEDRIVE/_data"
 export VIDEOS="$HOME/Videos"

@@ -6,6 +6,7 @@
 #       if you're using a light theme in the terminal.
 
 HISTFILE="${ZDOTDIR}/.history"
+IGNOREFILE="${DOTFILES}/.gitignore"
 HISTSIZE=1000
 SAVEHIST=10000
 setopt autocd extendedglob notify
@@ -87,17 +88,17 @@ precmd() {
 # TODO: simplify this by predefining the colours
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
   zstyle ':vcs_info:*' actionformats \
-      '%F{8}(%f%s%F{8})%F{6}-%F{0}[%F{2}%b%F{6}|%F{1}%a%F{0}]%f '
+      '%F{8}(%f%s%F{8})%F{6}-%F{0}[%F{1}%b%F{6}|%F{1}%a%F{0}]%f '
   zstyle ':vcs_info:*' formats       \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{2}%b%F{8}]%f '
+      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-  PS1='%F{8}[%F{0}%n%F{8}] %F{6}%3~
-%F{0}%(!.#.$)%f '
+    PS1='%F{8}[%F{7}%n%F{8}] %F{6}%3~
+%F{7}%(!.#.$)%f '
 else
   zstyle ':vcs_info:*' actionformats \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{2}%b%F{6}|%F{1}%a%F{8}]%f '
+      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{6}|%F{1}%a%F{8}]%f '
   zstyle ':vcs_info:*' formats       \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{2}%b%F{8}]%f '
+      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
   PS1='%F{8}[%F{7}%n%F{8}] %F{6}%3~
 %F{3}%(!.#.$)%f '
@@ -134,6 +135,7 @@ else
   export FILE_PREVIEW_COMMAND="cat {}"
 fi
 
+export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFILE}"
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
@@ -145,8 +147,8 @@ source "/usr/share/fzf/key-bindings.zsh"
 # -------------------------------------------------------------------
 alias t="tmux-sessionizer"
 alias tl="tmux list-sessions && tmux attach-session"
-alias tj="tmux-sessionizer -w /home/marian/Maja/Projects/notes -c 'cd /home/marian/Maja/Projects/notes && nvim ./src/notes/notes.adoc'"
-alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+alias tj="tmux-sessionizer -w $ONEDRIVE/Projects/notes -c 'cd $ONEDRIVE/Projects/notes && nvim -S || nvim ./src/notes/notes.adoc'"
+alias dots='/usr/bin/git --git-dir=$HOME/.local/src/dotfiles/.git --work-tree=$HOME'
 alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
 alias ls="ls -hN --color=auto --group-directories-first"
 
