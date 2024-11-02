@@ -147,13 +147,18 @@ source "/usr/share/fzf/key-bindings.zsh"
 # -------------------------------------------------------------------
 alias t="tmux-sessionizer"
 alias tl="tmux list-sessions && tmux attach-session"
-alias tj="tmux-sessionizer -w $ONEDRIVE/Projects/notes -c 'cd $ONEDRIVE/Projects/notes && nvim -S || nvim ./src/notes/notes.adoc'"
-alias dots='/usr/bin/git --git-dir=$HOME/.local/src/dotfiles/.git --work-tree=$HOME'
-alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
 alias ls="ls -hN --color=auto --group-directories-first"
+# alias dots='/usr/bin/git --git-dir=$HOME/.local/src/dotfiles/.git --work-tree=$HOME'
+
+# Personal
+alias tj="tmux-sessionizer -w $ONEDRIVE/Projects/notes -c 'cd $ONEDRIVE/Projects/notes && nvim ./src/notes.adoc'"
+alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
 
 mkcd() { mkdir -p $1 && cd $1 }
 
 bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
 bindkey -s '^p' 'tmux-sessionizer^M'
+
+# bun completions
+[ -s "/home/marian/.local/src/dotfiles/.local/share/bun/_bun" ] && source "/home/marian/.local/src/dotfiles/.local/share/bun/_bun"
