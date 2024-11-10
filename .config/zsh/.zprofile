@@ -51,7 +51,7 @@ export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 [[ -x $(which ruby) ]] && \
   export GEM_HOME="$(ruby -e 'puts Gem.user_dir')" && \
   mkdir -p "$GEM_HOME" 2>/dev/null && \
-  export PATH="$PATH:$(find $GEM_HOME -type d -name "bin" | tr '\n' ':' | sed 's/:*$//')"
+  export PATH="$PATH:$(find "$GEM_HOME" -type d -name "bin" | tr '\n' ':' | sed 's/:*$//')"
 
 
 export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
