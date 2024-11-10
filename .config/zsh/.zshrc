@@ -71,11 +71,11 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 # Colours for ls, fzf, bat, etc.
 # -------------------------------------------------------------------
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
-  source "${ZDOTDIR}/LS_COLORS_LIGHT"
+#   source "${ZDOTDIR}/LS_COLORS_LIGHT"
   export FZF_OPT_THEME="--color=light"
   BAT_THEME="GitHub"
 else
-  source "${ZDOTDIR}/LS_COLORS_DARK"
+#   source "${ZDOTDIR}/LS_COLORS_DARK"
   BAT_THEME="OneHalfDark"
 fi
 
@@ -110,15 +110,15 @@ if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
   zstyle ':vcs_info:*' formats       \
       '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-    PS1='%F{8}[%F{7}%n%F{8}] %F{6}%3~
-%F{7}%(!.#.$)%f '
+    PS1='%F{8}[%F{5}%n%F{8}] %F{6}%3~
+%F{9}%(!.#.$)%f '
 else
   zstyle ':vcs_info:*' actionformats \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{6}|%F{1}%a%F{8}]%f '
+      '%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{6}|%F{1}%a%F{7}]%f '
   zstyle ':vcs_info:*' formats       \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
+      '%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{7}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-  PS1='%F{8}[%F{7}%n%F{8}] %F{6}%3~
+  PS1='%F{4}[%F{7}%n%F{4}] %F{6}%3~
 %F{3}%(!.#.$)%f '
 fi
 
@@ -158,7 +158,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
 source "/usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh" # Gentoo
 source "/usr/share/fzf/key-bindings.zsh"
 
 # -------------------------------------------------------------------
