@@ -50,6 +50,24 @@ autoload -Uz vcs_info
 compdef '_git' dots
 
 # -------------------------------------------------------------------
+# Change cursor shape for different vi modes.
+# -------------------------------------------------------------------
+function zle-keymap-select () {
+    case $KEYMAP in
+        vicmd) echo -ne '\e[1 q';;      # block
+        viins|main) echo -ne '\e[5 q';; # beam
+    esac
+}
+zle -N zle-keymap-select
+zle-line-init() {
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+echo -ne '\e[5 q' # Use beam shape cursor on startup.
+preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
+
+# -------------------------------------------------------------------
 # Colours for ls, fzf, bat, etc.
 # -------------------------------------------------------------------
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
@@ -139,7 +157,8 @@ export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFI
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
-source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
 
 # -------------------------------------------------------------------
@@ -158,7 +177,11 @@ mkcd() { mkdir -p $1 && cd $1 }
 
 bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
 bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
+bindkey -M vicmd '^[[P' vi-delete-char
+bindkey -M vicmd '^e' edit-command-line
+bindkey -M visual '^[[P' vi-delete
+
 bindkey -s '^p' 'tmux-sessionizer^M'
 
 # bun completions
-[ -s "/home/marian/.local/src/dotfiles/.local/share/bun/_bun" ] && source "/home/marian/.local/src/dotfiles/.local/share/bun/_bun"
+[ -s "$HOME/.local/src/dotfiles/.local/share/bun/_bun" ] && source "$HOME/.local/src/dotfiles/.local/share/bun/_bun"
