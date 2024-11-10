@@ -26,7 +26,7 @@ export ONEDRIVE="$HOME/Maja"
 export MYDATA="$ONEDRIVE/_data"
 export VIDEOS="$HOME/Videos"
 export MUSIC="$HOME/Music"
-export SCREENSHOT_DIR="/mnt/c/majam/Pictures/Screenshots"
+export SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
 
 # Security and secrets
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
@@ -74,4 +74,4 @@ export MOZ_USE_XINPUT2="1"		# Mozilla smooth scrolling/touchpads.
 export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
 
 # Start X if not already running
-[[ -z $(echo ${SSH_CLIENT}) && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u $USER '\bXorg$')" ]] && exec startx
+[[ -z $(echo "${SSH_CLIENT}") && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u "$USER" '\bXorg$')" ]] && exec startx
