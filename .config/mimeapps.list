@@ -1,30 +1,21 @@
 [Default Applications]
-x-scheme-handler/mailto=org.gnome.Geary.desktop
-image/jpeg=sxiv.desktop
-image/bmp=sxiv.desktop
-image/gif=sxiv.desktop
-image/jpg=sxiv.desktop
-image/png=sxiv.desktop
-image/tiff=sxiv.desktop
-image/x-bmp=sxiv.desktop
-image/x-portable-anymap=sxiv.desktop
-image/x-portable-bitmap=sxiv.desktop
-image/x-portable-graymap=sxiv.desktop
-image/x-tga=sxiv.desktop
-image/x-xpixmap=sxiv.desktop
-application/pdf=org.pwmt.zathura-pdf-mupdf.desktop
 
-[Added Associations]
-x-scheme-handler/mailto=org.gnome.Geary.desktop;
-image/bmp=sxiv.desktop;
-image/gif=sxiv.desktop;
-image/jpg=sxiv.desktop;
-image/png=sxiv.desktop;
-image/tiff=sxiv.desktop;
-image/x-bmp=sxiv.desktop;
-image/x-portable-anymap=sxiv.desktop;
-image/x-portable-bitmap=sxiv.desktop;
-image/x-portable-graymap=sxiv.desktop;
-image/x-tga=sxiv.desktop;
-image/x-xpixmap=sxiv.desktop;
-application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;
+# xdg-open will use these settings to determine how to open filetypes.
+# These .desktop entries can also be seen and changed in ~/.local/share/applications/
+
+text/x-shellscript=text.desktop;
+x-scheme-handler/magnet=torrent.desktop;
+application/x-bittorrent=torrent.desktop;
+x-scheme-handler/mailto=mail.desktop;
+text/plain=text.desktop;
+application/postscript=pdf.desktop;
+application/pdf=pdf.desktop;
+image/png=img.desktop;
+image/jpeg=img.desktop;
+image/gif=img.desktop;
+application/rss+xml=rss.desktop
+video/x-matroska=video.desktop
+video/mp4=video.desktop
+x-scheme-handler/lbry=lbry.desktop
+inode/directory=file.desktop
+x-scheme-handler/discord-455712169795780630=discord-455712169795780630.desktop
