@@ -1,5 +1,5 @@
 #!/bin/sh
 while true; do
-    ~/.local/bin/statusbar/bar.sh 2>&1 | logger -t statusbar &
-    dwm 2>&1 | logger -t dwm
-done
+  ~/.local/bin/statusbar/bar.sh 2>&1 | logger -t statusbar
+done &
+dwm 2>&1 | logger -t dwm
