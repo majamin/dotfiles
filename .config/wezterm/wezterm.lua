@@ -1,7 +1,14 @@
 local wezterm = require("wezterm")
+
+local light = false
+local f = io.open("$HOME/.config/zsh/set-light-theme", "r")
+if f ~= nil then
+  io.close(f)
+  light = true
+end
+
 local config = {
-  -- color_scheme = "PencilLight",
-  color_scheme = "Tokyo Night Storm",
+  color_scheme = light and "PencilLight" or "Tokyo Night Storm",
   cursor_blink_ease_in = "Constant",
   cursor_blink_ease_out = "Constant",
   cursor_blink_rate = 680,
