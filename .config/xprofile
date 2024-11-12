@@ -2,14 +2,33 @@
 
 xrandr --dpi 96 # Set DPI. User may want to use a larger number for larger screens.
 setbg &         # set the background with the `setbg` script
-#xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
+xrdb "$HOME/.Xresources" &
+xrdbpid=$!
 
-autostart="VBoxClient-all picom dunst unclutter pipewire remapd"
+autostart="VBoxClient-all xcompmgr dunst unclutter pipewire"
 
 for program in $autostart; do
   pidof -sx "$program" || "$program" &
 done >/dev/null 2>&1
 
-xset r rate 300 50
+# Ensure that xrdb has finished running before moving on to start the WM/DE.
+[ -n "$xrdbpid" ] && wait "$xrdbpid"
+
+# ---------------------- NOTES ------------------
+
+# Touchpad disable:
 # xinput disable 11
-setxkbmap -option caps:swapescape
+
+# Using conf file for these (these don't activate
+# when wake from sleep):
+#     xset r rate 300 50
+#     setxkbmap -option caps:swapescape
+
+# ---- /etc/X11/xorg.conf.d/00-keyboard.conf ----
+#
+#    Section "InputClass"
+#        Identifier "system-keyboard"
+#        MatchIsKeyboard "on"
+#        Option "XkbOptions" "caps:swapescape"
+#        Option "AutoRepeat" "300 50"
+#    EndSection
