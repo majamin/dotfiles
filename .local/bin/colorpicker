@@ -5,7 +5,7 @@ geometry=$(slop -t 0)
 
 maim -u -g "$geometry" /tmp/pixel.png
 convert /tmp/pixel.png -scale 50x50 /tmp/colorpicker_icon.png
-PIXEL_DATA=$(convert /tmp/pixel.png -format '%[pixel:p{0,0}]' txt:- | tail -n1 | cut -d# -f2)
+PIXEL_DATA=$(magick /tmp/pixel.png -format '%[pixel:p{0,0}]' txt:- | tail -n1 | cut -d' ' -f4)
 
-echo "$PIXEL_DATA" | xclip -i -sel clip && \
+echo "$PIXEL_DATA" | xclip -i -sel clip &&
   notify-send --icon="/tmp/colorpicker_icon.png" "Copied to clipboard" "$PIXEL_DATA"
