@@ -157,8 +157,8 @@ export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFI
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
-source "/usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh" # Gentoo
+#source "/usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh" # Gentoo
 source "/usr/share/fzf/key-bindings.zsh"
 
 # -------------------------------------------------------------------
