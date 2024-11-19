@@ -1,11 +1,14 @@
 #!/bin/sh
 
-xrandr --dpi 96 # Set DPI. User may want to use a larger number for larger screens.
-setbg &         # set the background with the `setbg` script
+autorandr --change &
+xrandr --dpi 96 &
+setbg &
 xrdb "$HOME/.Xresources" &
 xrdbpid=$!
 
-autostart="VBoxClient-all xcompmgr dunst unclutter pipewire"
+gentoo-pipewire-launcher restart &
+
+autostart="xcompmgr dunst unclutter"
 
 for program in $autostart; do
   pidof -sx "$program" || "$program" &
