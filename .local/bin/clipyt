@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check for basic dependencies
 [[ ! -x $(which mpv) ]] && notify-send "mpv could not be found - please make sure it is installed or in your \$PATH" && exit 1
@@ -11,39 +11,39 @@ OPTIND=1
 
 SOC="/tmp/mpv-clipyt"
 
-play_toggle(){
-	echo '{ "command": ["cycle", "pause"] }' | socat - "$SOC" &>/dev/null && exit 0
+play_toggle() {
+  echo '{ "command": ["cycle", "pause"] }' | socat - "$SOC" &>/dev/null && exit 0
 }
 
-play(){
-	mpv --profile=clipyt "$1" &>/dev/null
+play() {
+  mpv --profile=clipyt "$1" &>/dev/null
 }
 
-show_help(){
-	echo "clipyt reads in multiple sources of media and plays them in mpv."
-	echo "mpv is opened using a socket with the option to be controlled with socat."
-	echo
-	echo "Syntax: clipyt [-h] [-p] [source]"
-	echo "options:"
-	echo "p            Toggle play/pause using socat."
-	echo "h            Print this Help."
-	echo "source       A file or URL containing any media."
-	echo
+show_help() {
+  echo "clipyt reads in multiple sources of media and plays them in mpv."
+  echo "mpv is opened using a socket with the option to be controlled with socat."
+  echo
+  echo "Syntax: clipyt [-h] [-p] [source]"
+  echo "options:"
+  echo "p            Toggle play/pause using socat."
+  echo "h            Print this Help."
+  echo "source       A file or URL containing any media."
+  echo
 }
 
 while getopts "h?p" opt; do
-	case "$opt" in
-	h|\?)
-		show_help
-		exit 0
-		;;
-	p)
-		play_toggle
-		;;
-	esac
+  case "$opt" in
+  h | \?)
+    show_help
+    exit 0
+    ;;
+  p)
+    play_toggle
+    ;;
+  esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 [ "${1:-}" = "--" ] && shift
 
@@ -64,22 +64,22 @@ SOURCES+=("$(xclip -o -sel clip 2>/dev/null | grep http)")
 
 # some radio stations
 SOURCES+=(
-"https://ais-edge09-live365-dal02.cdnstream.com/a06375?listenerId=Live365-Widget-AdBlock&aw_0_1st.playerid=Live365-Widget&aw_0_1st.skey=1617124325"
-"https://kathy.torontocast.com:1825/stream"
-"https://kcrw.streamguys1.com//kcrw_128k_mp3_on_air"
-"https://kcrw.streamguys1.com/kcrw_192k_mp3_e24"
-"http://liveradio.cbc.ca/i/CBCR1_KAM@384142/index_96_a-p.m3u8"
-"https://nightride.fm/stream/nightride.m4a"
-"https://chillout.zone/chillout_plus"
-"http://audio-ogg.ibiblio.org:8000/wcpe.ogg"
-"https://ycradio.stream.publicradio.org/ycradio.aac"
-"https://holiday.stream.publicradio.org/holiday_yc.aac"
-"https://stream.wqxr.org/qxr-special-web?nyprBrowserId=73ef765c453ff400"
-"https://hygge.stream.publicradio.org/hygge.aac"
-"https://peacefulpiano.stream.publicradio.org/peacefulpiano.aac"
-"https://classicalkids.stream.publicradio.org/classicalkids.aac"
-"https://focus.stream.publicradio.org/focus.aac"
-"https://favorites.stream.publicradio.org/favorites.aac"
+  "https://ais-edge09-live365-dal02.cdnstream.com/a06375?listenerId=Live365-Widget-AdBlock&aw_0_1st.playerid=Live365-Widget&aw_0_1st.skey=1617124325"
+  "https://kathy.torontocast.com:1825/stream"
+  "https://kcrw.streamguys1.com//kcrw_128k_mp3_on_air"
+  "https://kcrw.streamguys1.com/kcrw_192k_mp3_e24"
+  "http://liveradio.cbc.ca/i/CBCR1_KAM@384142/index_96_a-p.m3u8"
+  "https://nightride.fm/stream/nightride.m4a"
+  "https://chillout.zone/chillout_plus"
+  "http://audio-ogg.ibiblio.org:8000/wcpe.ogg"
+  "https://ycradio.stream.publicradio.org/ycradio.aac"
+  "https://holiday.stream.publicradio.org/holiday_yc.aac"
+  "https://stream.wqxr.org/qxr-special-web?nyprBrowserId=73ef765c453ff400"
+  "https://hygge.stream.publicradio.org/hygge.aac"
+  "https://peacefulpiano.stream.publicradio.org/peacefulpiano.aac"
+  "https://classicalkids.stream.publicradio.org/classicalkids.aac"
+  "https://focus.stream.publicradio.org/focus.aac"
+  "https://favorites.stream.publicradio.org/favorites.aac"
 )
 
 # My video folder
