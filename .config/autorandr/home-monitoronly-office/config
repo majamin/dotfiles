@@ -15,9 +15,10 @@ off
 output VIRTUAL1
 off
 output DP3
-crtc 1
+crtc 0
 mode 2560x1440
 pos 0x0
+primary
 rate 59.95
 x-prop-audio auto
 x-prop-broadcast_rgb Automatic
