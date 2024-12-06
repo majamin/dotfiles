@@ -52,6 +52,7 @@ compdef '_git' dots
 # -------------------------------------------------------------------
 # Change cursor shape for different vi modes.
 # -------------------------------------------------------------------
+# help: vi-mode ............. press <ESC>, etc, to interact in vi-mode
 function zle-keymap-select () {
     case $KEYMAP in
         vicmd) echo -ne '\e[1 q';;      # block
@@ -67,15 +68,56 @@ zle -N zle-line-init
 echo -ne '\e[5 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
+
+# -------------------------------------------------------------------
+# Tmux things
+# -------------------------------------------------------------------
+t() { # mini sessionizer
+  if [ "$#" -gt 1 ]; then
+    echo "t - make and attach to tmux sessions"
+    echo "Usage: create a new session in this directory or a new window if in tmux already"
+    echo "       t"
+    echo "Usage: attach to <session_name> - use TAB to autocomplete."
+    echo "       t <session_name>"
+    return 1
+  elif [ "$#" -eq 1 ]; then
+    tmux attach-session -t "$1" || \
+      tmux switch-client -t "$1" 2>/dev/null
+  else
+    if [ -n "$TMUX" ]; then
+      # we're inside of tmux:
+      tmux new-window
+    else
+      session_name="$(basename "$(pwd)")"
+      tmux new -s "$session_name" || \
+        tmux attach-session -t "$session_name" || \
+        tmux switch-client -t "$session_name"
+    fi
+  fi
+}
+
+_t_complete() {
+    # Get a list of tmux sessions, replacing newlines with spaces for Zsh completion
+    local -a _sessions
+    IFS=$'\n'
+    _sessions=($(tmux list-sessions -F "#{session_name}" 2>/dev/null))
+    compadd -a _sessions
+}
+compdef _t_complete t
+
+list_tmux_sessions() {
+  if [[ -n $(tmux list-sessions 2>/dev/null) ]]; then
+    print -P "| %F{2}%{$reset_color%} $(tmux list-sessions -F \#{session_name} | tr '\n' ' ')"
+  fi
+}
+
 # -------------------------------------------------------------------
 # Colours for ls, fzf, bat, etc.
 # -------------------------------------------------------------------
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
-#   source "${ZDOTDIR}/LS_COLORS_LIGHT"
   export FZF_OPT_THEME="--color=light"
   BAT_THEME="GitHub"
 else
-#   source "${ZDOTDIR}/LS_COLORS_DARK"
   BAT_THEME="OneHalfDark"
 fi
 
@@ -83,7 +125,7 @@ fi
 # Prompt -> timer + version control info
 # -------------------------------------------------------------------
 
-# Right prompt
+# Right prompt empty (we'll fill it later)
 RPROMPT=''
 
 function preexec() {
@@ -103,14 +145,14 @@ precmd() {
 
 # Run the script ~/.local/bin/demo-colors
 # to customize the colours of the prompt.
-# TODO: simplify this by predefining the colours
+# TODO: this is ugly as f*ck - can we simplify this?
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
   zstyle ':vcs_info:*' actionformats \
       '%F{8}(%f%s%F{8})%F{6}-%F{0}[%F{1}%b%F{6}|%F{1}%a%F{0}]%f '
   zstyle ':vcs_info:*' formats       \
-      '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
+    '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-    PS1='%F{8}[%F{5}%n%F{8}] %F{6}%3~
+    PS1='%F{8}[ %F{5}%n %F{8}$(list_tmux_sessions)%F{8}] %F{6}%3~
 %F{9}%(!.#.$)%f '
 else
   zstyle ':vcs_info:*' actionformats \
@@ -118,12 +160,12 @@ else
   zstyle ':vcs_info:*' formats       \
       '%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{7}]%f '
   zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-  PS1='%F{4}[%F{7}%n%F{4}] %F{6}%3~
+  PS1='%F{4}[ %F{7}%n %F{4}$(list_tmux_sessions)%F{4}] %F{6}%3~
 %F{3}%(!.#.$)%f '
 fi
 
 # -------------------------------------------------------------------
-# fzf
+# fzf - the selection assistant!
 # -------------------------------------------------------------------
 
 # Do we have fd?
@@ -157,20 +199,24 @@ export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFI
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
-#source "/usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh" # Gentoo
+# Gentoo:
+#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+
+# Arch:
+source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
+
+# bun completions
+[ -s "$HOME/.local/share/bun/_bun" ] && \
+  source "$HOME/.local/share/bun/_bun"
 
 # -------------------------------------------------------------------
 # Aliases, helper functions, and key bindings
 # -------------------------------------------------------------------
-alias t="tmux-sessionizer"
-alias tl="tmux list-sessions && tmux attach-session"
 alias ls="ls -hN --color=auto --group-directories-first"
-# alias dots='/usr/bin/git --git-dir=$HOME/.local/src/dotfiles/.git --work-tree=$HOME'
 
 # Personal
-alias tj="tmux-sessionizer -w $ONEDRIVE/Projects/notes -c 'cd $ONEDRIVE/Projects/notes && nvim ./src/notes.adoc'"
+alias tj="cd $ONEDRIVE/Projects/notes && tn 'nvim -S'" # tmux journal
 alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
 
 mkcd() { mkdir -p $1 && cd $1 }
@@ -181,7 +227,3 @@ bindkey -M vicmd '^[[P' vi-delete-char
 bindkey -M vicmd '^e' edit-command-line
 bindkey -M visual '^[[P' vi-delete
 
-bindkey -s '^p' 'tmux-sessionizer^M'
-
-# bun completions
-[ -s "$HOME/.local/src/dotfiles/.local/share/bun/_bun" ] && source "$HOME/.local/src/dotfiles/.local/share/bun/_bun"
