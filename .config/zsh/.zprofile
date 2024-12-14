@@ -4,14 +4,14 @@
 export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
 
 # WSL Windows paths if in WSL
-if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+if [[ $(grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null) ]]; then
   export PATH="$PATH:/mnt/c/Windows:/mnt/c/Windows/System32"
   export PATH="$PATH:$(find /mnt/c/Users/*/AppData/Local/Microsoft/WindowsApps -maxdepth 1 -type d | tr '\n' ':' | sed 's/:*$//')"
   export PATH="$PATH:$(find /mnt/c/Users/*/scoop/apps -maxdepth 3 -mindepth 2 -type d -regex '.*/[0-9]+\.[0-9]+\.[0-9]+$' | tr '\n' ':' | sed 's/:*$//')"
 fi
 
 # Default binaries
-export TERMINAL="st"
+export TERMINAL="wezterm"
 export EDITOR="nvim"
 export READER="zathura"
 export BROWSER="firefox"
@@ -30,7 +30,7 @@ export SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
 
 # Security and secrets
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export PASSWORD_STORE_DIR="$ONEDRIVE/Private/PasswordStore"
+export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/PasswordStore"
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 export PASSWORD_STORE_EXTENSIONS_DIR="$PASSWORD_STORE_DIR/.extensions"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
@@ -48,15 +48,16 @@ export PATH="$PATH:$HOME/.cargo/bin"
 export TEXMFHOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 # Ruby
-[[ -x $(which ruby) ]] && \
-  export GEM_HOME="$(ruby -e 'puts Gem.user_dir')" && \
-  mkdir -p "$GEM_HOME" 2>/dev/null && \
+[[ -x $(which ruby) ]] &&
+  export GEM_HOME="$(ruby -e 'puts Gem.user_dir')" &&
+  mkdir -p "$GEM_HOME" 2>/dev/null &&
   export PATH="$PATH:$(find "$GEM_HOME" -type d -name "bin" | tr '\n' ':' | sed 's/:*$//')"
 
-
+# NPM
 export npm_config_prefix="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
 export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
 
+# Bun
 export BUN_INSTALL="$HOME/.local/share/bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
