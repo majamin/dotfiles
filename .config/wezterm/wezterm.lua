@@ -16,6 +16,8 @@ local config = {
   cursor_blink_rate = 680,
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
+  initial_rows = 36,
+  initial_cols = 120,
   -- window_background_opacity = 0.96,
   font = wezterm.font_with_fallback({
     {
