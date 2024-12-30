@@ -79,7 +79,7 @@ t() {
     tmux list-sessions -F "#{session_name}" 2>/dev/null | grep -qx "$1"
   }
   attach_or_switch() {
-    local session_name="$1"
+    local session_name="$(echo $1 | tr "(.|:)" _)"
     if [[ -n "$TMUX" ]]; then
       tmux switch-client -t "$session_name" || echo "Error: Could not switch to session '$session_name'."
     else
@@ -109,7 +109,7 @@ t() {
 
   # one parameter provided
   if [[ "$#" -eq 1 ]]; then
-    local session_name="$1"
+    local session_name="$(echo $1 | tr "(.|:)" _)"
     if has_session_exact $session_name; then
       attach_or_switch $session_name
     else # we don't have that session
@@ -119,7 +119,7 @@ t() {
   fi
 
   # no parameter provided
-  local session_name="$(basename "$(pwd)")"
+  local session_name="$(basename "$(pwd)" | tr "(.|:)" _)"
   if has_session_exact $session_name; then
     attach_or_switch $session_name
   else
@@ -231,10 +231,10 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
 # Gentoo:
-#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
 
 # Arch:
-source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+#source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "/usr/share/fzf/key-bindings.zsh"
 
 # bun completions
