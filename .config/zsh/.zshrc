@@ -2,7 +2,7 @@
 # zsh config
 # -------------------------------------------------------------------
 
-# NOTE: Create the file $ZDOTDIR/set-light-theme
+# NOTE: Create the empty file $ZDOTDIR/set-light-theme
 #       if you're using a light theme in the terminal.
 
 HISTFILE="${ZDOTDIR}/.history"
@@ -48,26 +48,85 @@ autoload -Uz compinit && compinit
 autoload -U colors && colors
 autoload -Uz vcs_info
 compdef '_git' dots
+compdef _t_complete t
 
 # -------------------------------------------------------------------
-# Change cursor shape for different vi modes.
+# Colours for ls, fzf, bat, etc.
 # -------------------------------------------------------------------
-# help: vi-mode ............. press <ESC>, etc, to interact in vi-mode
-function zle-keymap-select () {
-    case $KEYMAP in
-        vicmd) echo -ne '\e[1 q';;      # block
-        viins|main) echo -ne '\e[5 q';; # beam
-    esac
-}
-zle -N zle-keymap-select
-zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[5 q"
-}
-zle -N zle-line-init
-echo -ne '\e[5 q' # Use beam shape cursor on startup.
-preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
+if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
+  export FZF_OPT_THEME="--color=light"
+  BAT_THEME="GitHub"
+else
+  BAT_THEME="OneHalfDark"
+fi
 
+# -------------------------------------------------------------------
+# fzf - the selection assistant!
+# -------------------------------------------------------------------
+
+# Do we have fd?
+if $(command -v fd > /dev/null); then
+  export FZF_CTRL_T_COMMAND="fd --type f --hidden --follow --exclude .git"
+else
+  export FZF_CTRL_T_COMMAND="find . -type f -not -path '*/\.git/*'"
+fi
+
+export FZF_DEFAULT_OPTS="\
+  ${FZF_OPT_THEME} \
+  --ansi \
+  --border \
+  --layout=reverse --height 70% \
+  --bind '?:toggle-preview' \
+  "
+
+if $(command -v bat > /dev/null); then
+  export FILE_PREVIEW_COMMAND="\
+    bat \
+    --theme=${BAT_THEME} \
+    --style=numbers \
+    --color=always \
+    --line-range :500 {} \
+    "
+else
+  export FILE_PREVIEW_COMMAND="cat {}"
+fi
+
+export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFILE}"
+export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
+export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
+
+# ---- Gentoo -------------------------------------------------------
+source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+# -------------------------------------------------------------------
+
+# ---- Arch ---------------------------------------------------------
+#source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+# -------------------------------------------------------------------
+
+source "/usr/share/fzf/key-bindings.zsh"
+
+# -------------------------------------------------------------------
+# Aliases, helper functions, and key bindings
+# -------------------------------------------------------------------
+
+bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
+bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
+bindkey -M vicmd '^[[P' vi-delete-char
+bindkey -M vicmd '^e' edit-command-line
+bindkey -M visual '^[[P' vi-delete
+alias ls="ls -hN --color=auto --group-directories-first"
+
+# Personal
+alias tj="tmux switch -t notes 2> /dev/null || \
+  { \
+    cd $ONEDRIVE/Projects/notes && \
+    tmux new -d -s notes nvim src/notes.adoc && \
+    t notes \
+  }" # tmux journal
+
+alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
+
+mkcd() { mkdir -p $1 && cd $1 }
 
 # -------------------------------------------------------------------
 # Tmux things
@@ -134,8 +193,8 @@ _t_complete() {
     _descriptions=($(tmux list-sessions 2>/dev/null))
     compadd -d _descriptions -a _sessions
 }
-compdef _t_complete t
 
+# used in LPROMPT
 list_tmux_sessions() {
   if [[ -n $(tmux list-sessions 2>/dev/null) ]]; then
     print -P "| %F{2}%{$reset_color%} $(tmux list-sessions -F \#{session_name} | tr '\n' ' ')"
@@ -143,28 +202,38 @@ list_tmux_sessions() {
 }
 
 # -------------------------------------------------------------------
-# Colours for ls, fzf, bat, etc.
+# Change cursor shape for different vi modes.
 # -------------------------------------------------------------------
-if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
-  export FZF_OPT_THEME="--color=light"
-  BAT_THEME="GitHub"
-else
-  BAT_THEME="OneHalfDark"
-fi
+# help: vi-mode ............. press <ESC>, etc, to interact in vi-mode
+function zle-keymap-select () {
+    case $KEYMAP in
+        vicmd) echo -ne '\e[1 q';;      # block
+        viins|main) echo -ne '\e[5 q';; # beam
+    esac
+}
+zle -N zle-keymap-select
+zle-line-init() {
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+echo -ne '\e[5 q' # Use beam shape cursor on startup.
+preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 # -------------------------------------------------------------------
 # Prompt -> timer + version control info
 # -------------------------------------------------------------------
 
-# Right prompt empty (we'll fill it later)
-RPROMPT=''
+RPROMPT='' # version control info
+LPROMPT='' # user, current dir, etc.
 
-function preexec() {
+preexec() {
   timer=${timer:-$SECONDS}
 }
 
 precmd() {
   vcs_info
+  print -rP $LPROMPT
   if [ $timer ]; then
     timer_show=$(($SECONDS - $timer))
     RPROMPT="%F{cyan}${timer_show}s %{$reset_color%} ${vcs_info_msg_0_}"
@@ -174,87 +243,36 @@ precmd() {
   fi
 }
 
-# Run the script ~/.local/bin/demo-colors
-# to customize the colours of the prompt.
-# TODO: this is ugly as f*ck - can we simplify this?
+set_prompt_theme() {
+  local theme=$1
+  local dim_color bold_color highlight_color ps1_color
+
+  if [[ $theme == "light" ]]; then
+    dim_color=8
+    bold_color=6
+    highlight_color=1
+    ps1_color=9
+  else
+    dim_color=7
+    bold_color=6
+    highlight_color=1
+    ps1_color=3
+  fi
+
+  zstyle ':vcs_info:*' actionformats \
+      "%F{$dim_color}(%f%s%F{$dim_color})%F{$bold_color}-%F{$dim_color}[%F{$highlight_color}%b%F{$bold_color}|%F{$highlight_color}%a%F{$dim_color}]%f"
+  zstyle ':vcs_info:*' formats       \
+      "%F{$dim_color}(%f%s%F{$dim_color})%F{$bold_color}-%F{$dim_color}[%F{$highlight_color}%b%F{$dim_color}]%f"
+  zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat "%b%F{$highlight_color}:%F{$bold_color}%r"
+
+  LPROMPT="%F{$dim_color}[ %F{$bold_color}%n %F{$dim_color}\$(list_tmux_sessions)%F{$dim_color}] %F{$bold_color}%3~"
+  export PROMPT="%F{$ps1_color}%(!.#.$)%f "
+}
+
+# Check theme setting and apply styles
 if [[ -f "${ZDOTDIR}/set-light-theme" ]]; then
-  zstyle ':vcs_info:*' actionformats \
-      '%F{8}(%f%s%F{8})%F{6}-%F{0}[%F{1}%b%F{6}|%F{1}%a%F{0}]%f '
-  zstyle ':vcs_info:*' formats       \
-    '%F{8}(%f%s%F{8})%F{6}-%F{8}[%F{1}%b%F{8}]%f '
-  zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-    PS1='%F{8}[ %F{5}%n %F{8}$(list_tmux_sessions)%F{8}] %F{6}%3~
-%F{9}%(!.#.$)%f '
+  set_prompt_theme "light"
 else
-  zstyle ':vcs_info:*' actionformats \
-      '%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{6}|%F{1}%a%F{7}]%f '
-  zstyle ':vcs_info:*' formats       \
-      '%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{7}]%f '
-  zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{6}%r'
-  PS1='%F{4}[ %F{7}%n %F{4}$(list_tmux_sessions)%F{4}] %F{6}%3~
-%F{3}%(!.#.$)%f '
+  set_prompt_theme "dark"
 fi
-
-# -------------------------------------------------------------------
-# fzf - the selection assistant!
-# -------------------------------------------------------------------
-
-# Do we have fd?
-if $(command -v fd > /dev/null); then
-  export FZF_CTRL_T_COMMAND="fd --type f --hidden --follow --exclude .git"
-else
-  export FZF_CTRL_T_COMMAND="find . -type f -not -path '*/\.git/*'"
-fi
-
-export FZF_DEFAULT_OPTS="\
-  ${FZF_OPT_THEME} \
-  --ansi \
-  --border \
-  --layout=reverse --height 70% \
-  --bind '?:toggle-preview' \
-  "
-
-if $(command -v bat > /dev/null); then
-  export FILE_PREVIEW_COMMAND="\
-    bat \
-    --theme=${BAT_THEME} \
-    --style=numbers \
-    --color=always \
-    --line-range :500 {} \
-    "
-else
-  export FILE_PREVIEW_COMMAND="cat {}"
-fi
-
-export FZF_ALT_C_COMMAND="fd --hidden --follow --type d --ignore-file=${IGNOREFILE}"
-export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
-export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
-
-# Gentoo:
-source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
-
-# Arch:
-#source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-source "/usr/share/fzf/key-bindings.zsh"
-
-# bun completions
-[ -s "$HOME/.local/share/bun/_bun" ] && \
-  source "$HOME/.local/share/bun/_bun"
-
-# -------------------------------------------------------------------
-# Aliases, helper functions, and key bindings
-# -------------------------------------------------------------------
-alias ls="ls -hN --color=auto --group-directories-first"
-
-# Personal
-alias tj="cd $ONEDRIVE/Projects/notes && tn 'nvim -S'" # tmux journal
-alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:\n/"'
-
-mkcd() { mkdir -p $1 && cd $1 }
-
-bindkey '^[[Z' reverse-menu-complete            # help: SHIFT-TAB ..... reverse menu complete
-bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in insert mode, edits the command line in vim
-bindkey -M vicmd '^[[P' vi-delete-char
-bindkey -M vicmd '^e' edit-command-line
-bindkey -M visual '^[[P' vi-delete
 
