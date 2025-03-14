@@ -27,7 +27,7 @@ local config = {
     },
     "Noto Color Emoji", -- fallback font
   }),
-  font_size = 14.0,
+  font_size = 12.0,
   bold_brightens_ansi_colors = false,
   freetype_load_target = "Light",
   harfbuzz_features = {
