@@ -75,6 +75,8 @@ export MOZ_USE_XINPUT2="1"		# Mozilla smooth scrolling/touchpads.
 export MOZ_ENABLE_WAYLAND=0
 export GDK_BACKEND=x11
 export _JAVA_AWT_WM_NONREPARENTING=1	# Fix for Java applications in dwm
+export MANPAGER='nvim +Man!'
+
 
 # Start X if not already running
 [[ -z $(echo "${SSH_CLIENT}") && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u "$USER" '\bXorg$')" ]] && exec startx
