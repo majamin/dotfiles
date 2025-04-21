@@ -115,7 +115,9 @@ bindkey '^e' edit-command-line                  # help: CTRL-E ....... while in 
 bindkey -M vicmd '^[[P' vi-delete-char
 bindkey -M vicmd '^e' edit-command-line
 bindkey -M visual '^[[P' vi-delete
+bindkey '^j' autosuggest-accept
 alias ls="ls -hN --color=auto --group-directories-first"
+o() { xdg-open $@ }
 
 # Personal
 alias tj="tmux switch -t notes 2> /dev/null || \
