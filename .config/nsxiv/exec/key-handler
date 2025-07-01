@@ -16,20 +16,39 @@ while read -r file; do
 	case "$1" in
 	"w") setbg "$file" & ;;
 	"c")
-		[ -z "$destdir" ] && destdir="$(sed "s/#.*$//;/^\s*$/d" "${XDG_CONFIG_HOME:-$HOME/.config}"/shell/bm-dirs | awk '{print $2}' | dmenu -l 20 -i -p "Copy file(s) to where?" | sed "s|~|$HOME|g")"
-		[ ! -d "$destdir" ] && notify-send "$destdir is not a directory, cancelled." && exit
-		cp "$file" "$destdir" && notify-send -i "$(readlink -f "$file")" "$file copied to $destdir." &
+		# Enhance contrast and convert to grayscale
+		magick "$file" -contrast-stretch 0.5%x0.5% -colorspace Gray "$file" &&
+			notify-send "Enhanced contrast & grayscale: $file" &
+		;;
+	"k")
+		# Clean image with unpaper (deskew, edge cleanup)
+		deskew -o "$file" "$file"
+		;;
+	"a")
+		# Auto-rotate based on EXIF
+		exiftran -ai "$file" &&
+			notify-send "Auto-rotated $file" &
+		;;
+	"o")
+		# OCR and output to searchable PDF
+		out="${file%.*}.pdf"
+		ocrmypdf --image-dpi 600 "$file" "$out" &&
+			notify-send "OCRd to $out" &
 		;;
 	"m")
 		[ -z "$destdir" ] && destdir="$(sed "s/#.*$//;/^\s*$/d" "${XDG_CONFIG_HOME:-$HOME/.config}"/shell/bm-dirs | awk '{print $2}' | dmenu -l 20 -i -p "Move file(s) to where?" | sed "s|~|$HOME|g")"
 		[ ! -d "$destdir" ] && notify-send "$destdir is not a directory, cancelled." && exit
 		mv "$file" "$destdir" && notify-send -i "$(readlink -f "$file")" "$file moved to $destdir." &
 		;;
-	"r")
-		magick -rotate 90 "$file" "$file"
+	"comma")
+		tmp="$(mktemp --suffix=.jpg)"
+		magick "$file" -rotate -90 "$tmp" && mv "$tmp" "$file" &&
+			notify-send "Rotated left: $file" &
 		;;
-	"R")
-		magick -rotate -90 "$file" "$file"
+	"period")
+		tmp="$(mktemp --suffix=.jpg)"
+		magick "$file" -rotate 90 "$tmp" && mv "$tmp" "$file" &&
+			notify-send "Rotated right: $file" &
 		;;
 	"f")
 		magick -flop "$file" "$file"
@@ -45,7 +64,6 @@ while read -r file; do
 	"d")
 		[ "$(printf "No\\nYes" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rm "$file" && notify-send "$file deleted."
 		;;
-	"g") ifinstalled gimp && setsid -f gimp "$file" ;;
 	"i") notify-send "File information" "$(mediainfo "$file" | sed "s/[ ]\+:/:/g;s/: /: <b>/;s/$/<\/b>/" | grep "<b>")" ;;
 	esac
 done

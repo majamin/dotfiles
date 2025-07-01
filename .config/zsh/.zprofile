@@ -61,6 +61,8 @@ export PATH="$PATH:$npm_config_prefix/bin" # local package binaries
 export BUN_INSTALL="$HOME/.local/share/bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+[[ -x $(which luarocks) ]] && eval "$(luarocks path)"
+
 export LESS=-R
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
 export LESS_TERMCAP_md="$(printf '%b' '[1;36m')"
@@ -79,4 +81,4 @@ export MANPAGER='nvim +Man!'
 
 
 # Start X if not already running
-[[ -z $(echo "${SSH_CLIENT}") && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u "$USER" '\bXorg$')" ]] && exec startx
+#[[ -z $(echo "${SSH_CLIENT}") && "$(tty)" = "/dev/tty1" && -z "$(pgrep -u "$USER" '\bXorg$')" ]] && exec startx
