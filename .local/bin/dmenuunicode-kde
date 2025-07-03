@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+for cmd in xclip rofi wtype notify-send; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: '$cmd' not found. Please install it." >&2
+    notify-send "Launcher error" "'$cmd' not found" 2>/dev/null
+    exit 1
+  fi
+done
+
+# where your symbol list lives
+symbols="${XDG_DATA_HOME:-$HOME/.local/share}/unicode-symbols"
+
+# launch rofi in dmenu mode, 30 lines, case-insensitive
+chosen="$(<"$symbols" rofi \
+   -dmenu \
+   -normal-window \
+   -matching fuzzy \
+   -i \
+   -lines 30 \
+   -p 'Unicode:' \
+   | cut -d' ' -f1)"
+
+# bail if nothing selected
+[ -n "$chosen" ] || exit 0
+
+if [ -n "$1" ]; then
+  # send it as keystrokes into the focused window
+  wtype --delay=10 -- "$chosen"
+else
+  # copy to clipboard and notify
+  printf '%s' "$chosen" | xclip -selection clipboard
+  notify-send "“$chosen” → clipboard"
+fi
