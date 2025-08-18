@@ -75,8 +75,8 @@ source "/usr/share/fzf/key-bindings.zsh"
 # -------------------------------------------------------------------
 # Plugins
 # -------------------------------------------------------------------
-source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+source "${ZDOTDIR}/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # -------------------------------------------------------------------
 # Key bindings and aliases
@@ -92,7 +92,8 @@ alias ls="ls -hN --color=auto --group-directories-first"
 alias o="xdg-open"
 alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
-alias tj="tmux switch -t notes 2>/dev/null || { cd $ONEDRIVE/Projects/notes && tmux new -d -s notes nvim src/notes.adoc && t notes; }"
+alias tj="tmux switch -t journal 2>/dev/null || tmux attach -t journal 2>/dev/null || { cd $ONEDRIVE/Projects/notes && tmux new -d -s journal nvim src/journal.adoc && t journal; }"
+alias tt="tmux switch -t todo 2>/dev/null || tmux attach -t todo 2>/dev/null || { cd $ONEDRIVE/Projects/notes && tmux new -d -s todo nvim src/todo.md && t todo; }"
 alias tl="tmux ls"
 alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap | sed -E -e "s/:/:
 /"'
@@ -104,20 +105,16 @@ cdf() { cd "$(dirname "$(eval $FZF_CTRL_T_COMMAND | fzf)")"; }
 # Tmux sessionizer
 # -------------------------------------------------------------------
 t() {
-  local s target
+  local s
   [[ $# -gt 1 ]] && echo "too many args" && return 1
   s="${1:-$(basename "$PWD")}"
   s="${s//[\(\)\.:]/_}"
 
   if tmux has-session -t "$s" 2>/dev/null; then
-    if [[ -n "$TMUX" ]]; then
-      target=$(tmux display-message -p '#{client_tty}')
-      tmux switch-client -t "$s"
-    else
-      tmux attach-session -t "$s"
-    fi
+    tmux switch-client -t "$s" 2>/dev/null || tmux attach-session -t "$s"
   else
-    tmux new-session -s "$s"
+    tmux new-session -d -s "$s"
+    tmux switch-client -t "$s" 2>/dev/null || tmux attach-session -t "$s"
   fi
 }
 
@@ -126,10 +123,6 @@ _t_complete() {
   sessions=(${(@f)$(tmux list-sessions -F "#{session_name}" 2>/dev/null)})
   compadd -a sessions
 }
-
-# list_tmux_sessions() {
-#   [[ -n $(tmux list-sessions 2>/dev/null) ]] && print -P "| %F{2}%f $(tmux list-sessions -F '#{session_name}' | tr '\n' ' ')"
-# }
 
 # -------------------------------------------------------------------
 # Cursor shape switching in vi mode
@@ -151,55 +144,3 @@ zle -N zle-line-init
 echo -ne '\e[5 q'
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
-
-# -------------------------------------------------------------------
-# Prompt
-# -------------------------------------------------------------------
-# zstyle ':vcs_info:*' actionformats \
-#   "%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{6}|%F{1}%a%F{7}]%f"
-# zstyle ':vcs_info:*' formats \
-#   "%F{7}(%f%s%F{7})%F{6}-%F{7}[%F{1}%b%F{7}]%f"
-# zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat "%b%F{1}:%F{6}%r"
-#
-# prompt_left() {
-#   vcs_info
-#   local sessions="" current_session=""
-#   if [[ -n "$TMUX" ]]; then
-#     current_session="$(tmux display-message -p '#S')"
-#   fi
-#   if [[ -n $(tmux list-sessions 2>/dev/null) ]]; then
-#     for s in $(tmux list-sessions -F '#{session_name}'); do
-#       if [[ "$s" == "$current_session" ]]; then
-#         sessions+=" %F{3}${s}%f"  # yellow
-#       else
-#         sessions+=" %F{7}${s}%f"  # dim gray
-#       fi
-#     done
-#     sessions="%F{7}[${sessions} ]%f "
-#   fi
-#   echo "${sessions}%F{6}%3~%f"
-# }
-#
-# PROMPT='$(prompt_left)
-# %F{3}%(!.#.$)%f '
-#
-# preexec() {
-#   echo -ne '\e[5 q'
-#   timer=${timer:-$SECONDS}
-# }
-#
-# precmd() {
-#   vcs_info
-#   local sessions=""
-#   if [[ -n $(tmux list-sessions 2>/dev/null) ]]; then
-#     sessions="| %F{2}\uEBF8%f $(tmux list-sessions -F '#{session_name}' | tr '\n' ' ')"
-#   fi
-#   LPROMPT="%F{7}[ %F{6}%n %F{7}${sessions}%F{7}] %F{6}%3~"
-#   if [[ -n $timer ]]; then
-#     RPROMPT="%F{cyan}$(($SECONDS - $timer))s %{$reset_color%}${vcs_info_msg_0_}"
-#     unset timer
-#   else
-#     RPROMPT="${vcs_info_msg_0_}"
-#   fi
-# }
-#
