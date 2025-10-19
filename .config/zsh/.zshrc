@@ -36,7 +36,6 @@ autoload -U colors && colors
 autoload -Uz vcs_info
 autoload edit-command-line; zle -N edit-command-line
 compdef '_git' dots
-compdef _t_complete t
 
 # -------------------------------------------------------------------
 # FZF config
@@ -75,8 +74,9 @@ source "/usr/share/fzf/key-bindings.zsh"
 # -------------------------------------------------------------------
 # Plugins
 # -------------------------------------------------------------------
-source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
-source "${ZDOTDIR}/zsh-autosuggestions/zsh-autosuggestions.zsh"
+#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # -------------------------------------------------------------------
 # Key bindings and aliases
@@ -104,25 +104,7 @@ cdf() { cd "$(dirname "$(eval $FZF_CTRL_T_COMMAND | fzf)")"; }
 # -------------------------------------------------------------------
 # Tmux sessionizer
 # -------------------------------------------------------------------
-t() {
-  local s
-  [[ $# -gt 1 ]] && echo "too many args" && return 1
-  s="${1:-$(basename "$PWD")}"
-  s="${s//[\(\)\.:]/_}"
-
-  if tmux has-session -t "$s" 2>/dev/null; then
-    tmux switch-client -t "$s" 2>/dev/null || tmux attach-session -t "$s"
-  else
-    tmux new-session -d -s "$s"
-    tmux switch-client -t "$s" 2>/dev/null || tmux attach-session -t "$s"
-  fi
-}
-
-_t_complete() {
-  local -a sessions
-  sessions=(${(@f)$(tmux list-sessions -F "#{session_name}" 2>/dev/null)})
-  compadd -a sessions
-}
+source "${ZDOTDIR}/t.zsh"
 
 # -------------------------------------------------------------------
 # Cursor shape switching in vi mode
@@ -144,3 +126,6 @@ zle -N zle-line-init
 echo -ne '\e[5 q'
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
+
+# bun completions
+[ -s "/home/marian/.local/share/bun/_bun" ] && source "/home/marian/.local/share/bun/_bun"
