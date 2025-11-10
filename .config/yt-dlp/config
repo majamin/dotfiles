@@ -1,0 +1,227 @@
+# yt-dlp Configuration File
+
+#########################################
+# Output Settings
+#########################################
+
+# Output template - organize by uploader
+-o "~/Videos/yt-dlp/%(uploader)s/%(title)s [%(id)s].%(ext)s"
+
+# Use this alternative for a simpler structure:
+# -o "~/Videos/yt-dlp/%(title)s [%(id)s].%(ext)s"
+
+# Restrict filenames to ASCII characters
+--restrict-filenames
+
+# Don't overwrite existing files
+--no-overwrites
+
+# Continue partially downloaded files
+--continue
+
+#########################################
+# Format Selection (Quality)
+#########################################
+
+# Best video up to 1080p + best audio, merge into mp4/mkv
+# This is the sweet spot for quality/size/compatibility
+--format "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
+
+# Alternative for 1440p (if you want higher quality):
+# --format "bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
+
+# Merge output into mp4 container (best compatibility)
+--merge-output-format mp4
+
+# Prefer free formats (VP9/AV1 over h264)
+--prefer-free-formats
+
+#########################################
+# Download Behavior
+#########################################
+
+# Number of retries
+--retries 10
+
+# Retry on fragment errors
+--fragment-retries 10
+
+# Number of concurrent fragments (faster downloads)
+--concurrent-fragments 4
+
+# Throttle downloads to avoid getting rate-limited
+# --limit-rate 5M
+
+# Use aria2c for faster downloads (if installed)
+# --external-downloader aria2c
+# --external-downloader-args "-x 16 -s 16 -k 1M"
+
+#########################################
+# Subtitles & Metadata
+#########################################
+
+# Write subtitles (auto-generated and manual)
+--write-subs
+--write-auto-subs
+
+# Subtitle languages (English first, then any available)
+--sub-langs "en.*,en-orig,en"
+
+# Embed subtitles in video file
+--embed-subs
+
+# Convert subtitles to SRT format
+--convert-subs srt
+
+# Write video metadata
+--embed-metadata
+
+# Write thumbnail
+--write-thumbnail
+
+# Embed thumbnail in video file (mp4/m4a only)
+--embed-thumbnail
+
+# Convert thumbnails to jpg
+--convert-thumbnails jpg
+
+#########################################
+# Playlist Handling
+#########################################
+
+# Download playlist in reverse order (oldest first)
+# --playlist-reverse
+
+# Download only videos not listed in archive
+--download-archive ~/.config/yt-dlp/archive.txt
+
+# Don't download playlists, only single videos
+# --no-playlist
+
+# Playlist start index (useful for resuming)
+# --playlist-start 1
+
+# Abort after downloading N videos from playlist
+# --max-downloads 50
+
+#########################################
+# Post-Processing
+#########################################
+
+# Re-encode video to ensure compatibility (only if needed)
+# --recode-video mp4
+
+# Extract audio only (uncomment for music downloads)
+# --extract-audio
+# --audio-format mp3
+# --audio-quality 0
+
+# Remove original file after post-processing
+--no-keep-video
+
+# Use FFmpeg for post-processing
+--ffmpeg-location /usr/bin/ffmpeg
+
+#########################################
+# Authentication (if needed)
+#########################################
+
+# Netrc file for authentication
+# --netrc
+
+# Cookies from browser (useful for members-only content)
+# --cookies-from-browser firefox
+
+#########################################
+# Performance & Network
+#########################################
+
+# Number of retries for HTTP errors
+--retries 10
+
+# Sleep interval between downloads (be nice to servers)
+--sleep-interval 1
+
+# Maximum sleep interval
+--max-sleep-interval 5
+
+# Buffer size
+--buffer-size 16K
+
+# HTTP chunk size
+--http-chunk-size 10M
+
+#########################################
+# Interface & Output
+#########################################
+
+# Show progress bar
+--progress
+
+# No colors in output
+# --no-colors
+
+# Quiet mode (less verbose)
+# --quiet
+
+# Ignore errors and continue
+--ignore-errors
+
+# Don't print warnings
+# --no-warnings
+
+# Update yt-dlp automatically (if installed via pip)
+# --update
+
+#########################################
+# Sponsorblock (skip sponsors/intros/outros)
+#########################################
+
+# Remove sponsor segments using SponsorBlock
+--sponsorblock-remove sponsor,intro,outro,selfpromo
+
+# Alternatively, just mark chapters instead of removing:
+# --sponsorblock-mark all
+
+#########################################
+# Geo-bypass
+#########################################
+
+# Bypass geographic restriction via faking X-Forwarded-For HTTP header
+--geo-bypass
+
+#########################################
+# Archive & History
+#########################################
+
+# Write video IDs to prevent re-downloading
+--download-archive ~/.config/yt-dlp/archive.txt
+
+# Write video description to file
+--write-description
+
+# Write video info JSON
+--write-info-json
+
+#########################################
+# Additional Options
+#########################################
+
+# Add metadata from title
+--parse-metadata "title:%(artist)s - %(title)s"
+
+# Abort download if file size is too large (uncomment if needed)
+# --max-filesize 2G
+
+# Minimum file size
+# --min-filesize 1M
+
+# Date range filtering (download only videos from specific dates)
+# --dateafter 20230101
+# --datebefore 20231231
+
+# Match title regex
+# --match-filter "title ~= '(?i)tutorial'"
+
+# Exclude title regex
+# --reject-title "shorts"
