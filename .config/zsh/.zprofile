@@ -4,10 +4,10 @@
 export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
 
 # WSL Windows paths if in WSL
-if [[ $(grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null) ]]; then
+if grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null; then
   export PATH="$PATH:/mnt/c/Windows:/mnt/c/Windows/System32"
-  export PATH="$PATH:$(find /mnt/c/Users/*/AppData/Local/Microsoft/WindowsApps -maxdepth 1 -type d | tr '\n' ':' | sed 's/:*$//')"
-  export PATH="$PATH:$(find /mnt/c/Users/*/scoop/apps -maxdepth 3 -mindepth 2 -type d -regex '.*/[0-9]+\.[0-9]+\.[0-9]+$' | tr '\n' ':' | sed 's/:*$//')"
+  export PATH="$PATH:$(find /mnt/c/Users/*/AppData/Local/Microsoft/WindowsApps -maxdepth 1 -type d 2>/dev/null | tr '\n' ':' | sed 's/:*$//')"
+  export PATH="$PATH:$(find /mnt/c/Users/*/scoop/apps -maxdepth 3 -mindepth 2 -type d -regex '.*/[0-9]+\.[0-9]+\.[0-9]+$' 2>/dev/null | tr '\n' ':' | sed 's/:*$//')"
 fi
 
 # Default binaries
