@@ -2,90 +2,73 @@
 
 This repo holds my dotfiles for a minimal X11 window manager setup.
 
-Quickstart
-==========
+Installation
+============
 
-  -------------------------------------------------------------
-  git clone --recursive https://github.com/majamin/dotfiles.git
-  -------------------------------------------------------------
+This repo uses a bare git repository for dotfiles management.
+
+  **WARNING: This will overwrite existing dotfiles!**
+
+  1. Clone the bare repository:
+
+     git clone --bare https://github.com/majamin/dotfiles $HOME/.dotfiles
+
+  2. Create a symlink for Fugitive/git integration:
+
+     ln -s .dotfiles $HOME/.git
+
+  3. Checkout the files (this will overwrite existing configs):
+
+     git --git-dir=$HOME/.dotfiles --work-tree=$HOME checkout
+
+  4. Initialize submodules:
+
+     git --git-dir=$HOME/.dotfiles --work-tree=$HOME submodule update --init --recursive
+
+Usage
+=====
+
+The `dots` alias works like git but for your dotfiles (from any directory):
+
+  dots status              # See what's changed
+  dots add .zshrc          # Stage a file
+  dots commit -m "update"  # Commit changes
+  dots push                # Push to remote
+
+The alias is defined in ~/.config/zsh/.zshrc:
+
+  alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+Since ~/.git is symlinked to .dotfiles, you can also use regular git commands
+from your home directory, and vim-fugitive will work in Neovim.
 
 Submodules
 ==========
 
-Submodules are provided for:
+This repo includes submodules for:
 
-  * Neovim (https://github.com/majamin/neovim-config.git)
+  * Neovim config (https://github.com/majamin/neovim-config.git)
   * dwm (https://github.com/majamin/dwm.git)
   * dmenu (https://github.com/majamin/dmenu.git)
   * st (https://github.com/majamin/st.git)
   * oneliners (https://github.com/majamin/oneliners.txt.git)
 
-If you cloned this repo without the `--recursive` flag, run
-
-  --------------------------------------------------------
-  git submodule update --init --recursive
-  --------------------------------------------------------
-
-to fetch the submodules.
-
 Important Files
 ===============
 
-If you use this entire repo as is, here's the important files:
-
-  ~/.xinitrc                                  (loads ENV, window manager)
-  ~/.local/bin/loopwm                         (loops window manager and bar.sh)
-  ~/.local/bin/statusbar/bar.sh               (the statusbar script)
-  ~/.config/xprofile                          (startup programs)
-  ~/.profile -> ~/.config/zsh/.zprofile       (ENV and startx)
-
-Stow
-====
-
-You can use GNU Stow to manage the dotfiles in this repo.
-
-https://www.gnu.org/software/stow/
-
-To deploy all the dotfiles in this repo from the home directory, run
-the following commands:
-
-  --------------------------------------------------------
-  cd ~/
-  git clone --recursive https://github.com/majamin/dotfiles.git .dotfiles
-  cd .dotfiles
-  stow --dotfiles -t $HOME -v -R .
-  --------------------------------------------------------
-
-It's best for the target directory to be free of any clashing files,
-as stow will fail in those particular scenarios (this is normal).
-You can tell stow to *adopt* the already-existing files, i.e. the file
-will be converted to a symlink and "absorbed" into the stow directory.
-
-  --------------------------------------------------------
-  stow --dotfiles -t $HOME -v -R --adopt .
-  --------------------------------------------------------
-
-To deploy as a bare repo
-========================
-
-                                        *****WARNING: DESTRUCTIVE COMMAND!
-  ------------------------------------------------------------------------
-  git clone --bare https://github.com/majamin/dotfiles $HOME/.dotfiles
-  cd && git --git-dir=$HOME/.dotfiles --work-tree=$HOME reset --hard HEAD
-  ------------------------------------------------------------------------
-
-To avoid having to type the `--git-dir` and `--work-tree` flags every time,
-you can use the following alias `dots` just like you'd use `git`.
-
-  ---------------------------------------------------------------------
-  alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
-  ---------------------------------------------------------------------
+  ~/.xinitrc                           (loads ENV, window manager)
+  ~/.config/zsh/.zshrc                 (zsh configuration)
+  ~/.config/zsh/.zprofile              (environment variables, PATH)
+  ~/.config/zsh/t.zsh                  (tmux sessionizer)
+  ~/.local/bin/loopwm                  (window manager loop)
+  ~/.local/bin/statusbar/bar.sh        (statusbar script)
+  ~/.config/xprofile                   (startup programs)
 
 Extra Notes
 ===========
 
   * Key repeat rate is set by xset - change it in ~/.config/xprofile
   * GTK styles are located in ~/.config/gtk-*
-  * Tmux sessionizer is good to go - learn it! (see ~/.config/tmux/tmux.conf)
+  * Tmux sessionizer is a handy tool, see ~/.config/zsh/t.zsh
   * Use `setbg` on a file to set the background (~/.local/bin/setbg)
   * Use `setbg` on a directory to set a random background
