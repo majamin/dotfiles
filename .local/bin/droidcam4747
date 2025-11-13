@@ -1,43 +1,155 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-[[ ! -x $(command -v v4l2-ctl) ]] && echo "v4l2 missing - please install." && break
-[[ ! -x $(command -v adb) ]] && echo "adb missing - please install." && break
-[[ ! -x $(command -v droidcam) ]] && echo "droidcam missing - please install." && break
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
 
-# create loopback device if it doesn't exist
-#[ -z "$(v4l2-ctl -l) | grep \"Cannot open device\"" ] && sudo modprobe v4l2loopback_dc
-[[ -z $(lsmod | grep v4l2loopback_dc) ]] \
-	&& echo "Installing v4l2 module" \
-	&& sudo modprobe v4l2loopback_dc video_nr=42
+# Configuration
+VIDEO_DEVICE="/dev/video42"
+RESOLUTION="1920x1080"
+DROIDCAM_PORT="4747"
 
-DEVICE=$(v4l2-ctl --list-devices | grep -A1 Droidcam | tail -n1 | sed -e 's/^[ \t]*//')
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-# is the phone plugged in?
-adb kill-server && adb start-server
+log_error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 
-if [[ $(adb devices | wc -l ) = 3 ]]; then
-	notify-send "adb reports connection to a device"
-	droidcam-cli -v adb 4747 &
-	ffplay -autoexit -vf "vflip,hflip" $DEVICE \
+# Check dependencies
+check_dependencies() {
+    local missing=()
+    for cmd in v4l2-ctl adb droidcam-cli ffplay; do
+        if ! command -v "$cmd" &>/dev/null; then
+            missing+=("$cmd")
+        fi
+    done
 
-	ffmpeg "$DEVICE" \
-		-f v4l2 -vcodec libx264\
-		-preset ultrafast \
-		video_"$(date +\"%y_%m_%d_%H_%M_%S\")".mkv &
-else
-	notify-send "adb reports NO connections"
-	adb kill-server
-	killall droidcam-cli
-fi
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        log_error "Missing dependencies: ${missing[*]}"
+        log_info "Install with: sudo apt install v4l2-utils android-tools-adb droidcam ffmpeg"
+        exit 1
+    fi
+}
 
-#mpv --no-osc --ontop --vf=rotate=PI av://v4l2:/dev/video0
+# Setup v4l2loopback module
+setup_v4l2() {
+    if ! lsmod | grep -q v4l2loopback; then
+        log_info "Loading v4l2loopback module..."
+        sudo modprobe v4l2loopback \
+            devices=1 \
+            video_nr=42 \
+            card_label="DroidCam" \
+            exclusive_caps=1 \
+            max_width=1920 \
+            max_height=1080 || {
+                log_error "Failed to load v4l2loopback module"
+                exit 1
+            }
+        sleep 1  # Give it a moment to initialize
+    fi
+}
 
-# NOTE: keeping this here as a reference for how to add a filter
-#ffplay -vf "deband=1thr=0.5:d=-PI" $DEVICE
+# Check ADB connection
+check_adb_connection() {
+    log_info "Checking ADB connection..."
+    adb kill-server &>/dev/null
+    adb start-server &>/dev/null
 
-# SCREENGRAB
-#ffmpeg -f x11grab -thread_queue_size 64 -video_size 1920x1080 -framerate 30 -i :1 \
-#       #-f v4l2 -thread_queue_size 64 -video_size 320x180 -framerate 30 -i /dev/video42 \
-#       -filter_complex 'overlay=main_w-overlay_w:main_h-overlay_h:format=yuv444' \
-#       -vcodec libx264 -preset ultrafast -qp 0 -pix_fmt yuv444p \
-#       video.mkv &
+    local device_count=$(adb devices | grep -c "device$" || true)
+
+    if [[ $device_count -eq 0 ]]; then
+        log_error "No ADB devices connected"
+        notify-send "DroidCam" "No phone detected via ADB" -u critical 2>/dev/null || true
+        exit 1
+    fi
+
+    log_info "Found $device_count device(s) connected"
+    notify-send "DroidCam" "Phone detected via ADB" 2>/dev/null || true
+}
+
+# Start DroidCam
+start_droidcam() {
+    log_info "Starting DroidCam at ${RESOLUTION}..."
+    droidcam-cli -size="${RESOLUTION}" -v adb "${DROIDCAM_PORT}" &
+    local droidcam_pid=$!
+
+    # Wait for DroidCam to initialize
+    sleep 2
+
+    if ! kill -0 "$droidcam_pid" 2>/dev/null; then
+        log_error "DroidCam failed to start"
+        exit 1
+    fi
+
+    log_info "DroidCam started (PID: $droidcam_pid)"
+    echo "$droidcam_pid"
+}
+
+# Preview video
+preview_video() {
+    log_info "Starting video preview (press Q to quit)..."
+    ffplay -autoexit -vf "vflip,hflip" "$VIDEO_DEVICE" 2>/dev/null
+}
+
+# Record video
+record_video() {
+    local output_file="video_$(date +%Y%m%d_%H%M%S).mkv"
+    log_info "Recording to: $output_file"
+    log_info "Press Ctrl+C to stop recording"
+
+    ffmpeg -f v4l2 -i "$VIDEO_DEVICE" \
+        -vcodec libx264 \
+        -preset ultrafast \
+        -crf 18 \
+        "$output_file"
+
+    log_info "Recording saved to: $output_file"
+}
+
+# Cleanup
+cleanup() {
+    log_info "Cleaning up..."
+    killall droidcam-cli 2>/dev/null || true
+    adb kill-server &>/dev/null || true
+}
+
+trap cleanup EXIT
+
+# Main execution
+main() {
+    check_dependencies
+    setup_v4l2
+    check_adb_connection
+
+    local droidcam_pid=$(start_droidcam)
+
+    # Choose action
+    echo ""
+    echo "What would you like to do?"
+    echo "1) Preview only"
+    echo "2) Preview and record"
+    echo "3) Record only (no preview)"
+    read -p "Enter choice [1-3]: " -n 1 -r
+    echo ""
+
+    case $REPLY in
+        1)
+            preview_video
+            ;;
+        2)
+            preview_video &
+            record_video
+            ;;
+        3)
+            record_video
+            ;;
+        *)
+            log_error "Invalid choice"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
