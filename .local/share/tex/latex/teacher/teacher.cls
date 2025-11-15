@@ -1,9 +1,9 @@
 %% teacher.cls
 %% A LaTeX class for creating professional secondary school teaching materials
-%% Version 0.2 - Now with Beamer presentation support
+%% Version 0.3 - Now with course.sty support and Beamer presentation support
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{teacher}[2024/11/07 v0.2 Teacher Materials Class]
+\ProvidesClass{teacher}[2025/11/11 v0.3 Teacher Materials Class]
 
 % Class options
 \newif\if@beamer
@@ -18,14 +18,14 @@
 \if@beamer
   % Load Beamer with sensible defaults
   \LoadClass[aspectratio=169,11pt]{beamer}
-  
+
   % Metropolis theme
   \usetheme{metropolis}
-  
+
   % Font setup for Beamer
   \usepackage{fontspec}
   \setsansfont{Fira Sans}[Scale=MatchLowercase]
-  
+
   % Essential packages
   \usepackage{amsmath}
   \usepackage{amssymb}
@@ -34,17 +34,17 @@
   \usepackage{xcolor}
   \usepackage{booktabs}
   \usepackage{graphicx}
-  
-  % Color scheme (matching worksheet colors but adapted for slides)
-  \definecolor{primarycolor}{RGB}{51,51,51}
-  \definecolor{accentcolor}{RGB}{100,100,100}
-  \definecolor{Good}{HTML}{2E7D32}
-  \definecolor{Warn}{HTML}{EF6C00}
-  \definecolor{Bad}{HTML}{C62828}
-  \definecolor{Accent1}{HTML}{1976D2}
-  \definecolor{Accent2}{HTML}{7B1FA2}
-  \definecolor{Accent3}{HTML}{388E3C}
-  
+
+  % Default color scheme (can be overridden by course.sty)
+  \providecolor{primarycolor}{RGB}{51,51,51}
+  \providecolor{accentcolor}{RGB}{100,100,100}
+  \providecolor{Good}{HTML}{2E7D32}
+  \providecolor{Warn}{HTML}{EF6C00}
+  \providecolor{Bad}{HTML}{C62828}
+  \providecolor{Accent1}{HTML}{1976D2}
+  \providecolor{Accent2}{HTML}{7B1FA2}
+  \providecolor{Accent3}{HTML}{388E3C}
+
   % Colored block environments for visual variety
   \newenvironment{blueblock}[1]{%
     \setbeamercolor{block title}{fg=white,bg=Accent1}%
@@ -53,7 +53,7 @@
   }{%
     \end{block}%
   }
-  
+
   \newenvironment{purpleblock}[1]{%
     \setbeamercolor{block title}{fg=white,bg=Accent2}%
     \setbeamercolor{block body}{fg=black,bg=Accent2!10}%
@@ -61,7 +61,7 @@
   }{%
     \end{block}%
   }
-  
+
   \newenvironment{greenblock}[1]{%
     \setbeamercolor{block title}{fg=white,bg=Accent3}%
     \setbeamercolor{block body}{fg=black,bg=Accent3!10}%
@@ -140,11 +140,11 @@
   
   \newcounter{qn}
   \renewcommand{\theqn}{\arabic{qn}.}
-  
-  % Set up colors (neutral, professional)
-  \definecolor{primarycolor}{RGB}{51,51,51}
-  \definecolor{accentcolor}{RGB}{100,100,100}
-  \definecolor{lightgray}{RGB}{240,240,240}
+
+  % Default colors (neutral, professional) - can be overridden by course.sty
+  \providecolor{primarycolor}{RGB}{51,51,51}
+  \providecolor{accentcolor}{RGB}{100,100,100}
+  \providecolor{lightgray}{RGB}{240,240,240}
   
   % Remove default title formatting
   \renewcommand{\maketitle}{}
@@ -175,22 +175,27 @@
   
   % Question/Answer environment
   \tcbuselibrary{skins, breakable}
-  
+
   \newtcolorbox{qanda}[2][]{
+    enhanced,
     colback=white,
     colframe=primarycolor,
     boxrule=1pt,
-    arc=2pt,
+    arc=0.1mm,
     breakable,
     before skip=10pt,
     after skip=10pt,
-    title={\stepcounter{qn}\theqn\ #2},
+    top=5mm,
+    bottom=5mm,
+    title={#2},
     fonttitle=\bfseries\boldmath,
-    coltitle=white,
-    colbacktitle=primarycolor,
-    toptitle=3pt,
-    bottomtitle=3pt,
-    title filled,
+    coltitle=black,
+    colbacktitle=white,
+    boxed title style={boxrule=0pt,colframe=white},
+    attach boxed title to top left={
+      yshift=-\tcboxedtitleheight/2,
+      xshift=4mm
+    },
     #1
   }
   
@@ -227,7 +232,33 @@
     \end{tabular}
     \par\vspace{10pt}
   }
-  
+
+  % Example/You Try counter and environments
+  \newcounter{exnum}
+  \renewcommand{\theexnum}{\arabic{exnum}}
+
+  \newcommand{\exampletitle}[1]{%
+    \stepcounter{exnum}%
+    Example \theexnum: #1%
+  }
+
+  \newcommand{\youtrytitle}[1]{%
+    \stepcounter{exnum}%
+    You Try \theexnum: #1%
+  }
+
+  \newenvironment{example}[1]{%
+    \begin{qanda}{\exampletitle{#1}}%
+  }{%
+    \end{qanda}%
+  }
+
+  \newenvironment{youtry}[1]{%
+    \begin{qanda}{\youtrytitle{#1}}%
+  }{%
+    \end{qanda}%
+  }
+
   % Workspace helpers
   \newcommand{\workspace}[1]{%
     \par\noindent
@@ -311,5 +342,16 @@
     #1 & #2 & #3 & #4 & #5 \\
   }
 \fi
+
+% ============================================================
+% LOAD COURSE-SPECIFIC STYLING (if it exists)
+% ============================================================
+% This must come AFTER all class setup so that course.sty can
+% override colors, commands, etc.
+\IfFileExists{course.sty}{%
+  \RequirePackage{course}
+}{%
+  % course.sty not found, using default styling
+}
 
 \endinput
