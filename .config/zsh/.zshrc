@@ -127,6 +127,3 @@ zle -N zle-line-init
 echo -ne '\e[5 q'
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
-
-# bun completions
-#[ -s "/home/marian/.local/share/bun/_bun" ] && source "/home/marian/.local/share/bun/_bun"
