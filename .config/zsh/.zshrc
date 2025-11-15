@@ -100,13 +100,7 @@ alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap |
 /"'
 
 mkcd() { mkdir -p $1 && cd $1 }
-cdf() { cd "$(dirname "$(eval $FZF_CTRL_T_COMMAND | fzf)")"; }
-dotvim() {
-  export GIT_DIR="$HOME/.dotfiles"
-  export GIT_WORK_TREE="$HOME"
-  nvim "$@"
-  unset GIT_DIR GIT_WORK_TREE
-}
+cdf() { cd "$(dirname "$1")"; }
 
 # -------------------------------------------------------------------
 # Tmux sessionizer
