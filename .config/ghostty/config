@@ -10,7 +10,8 @@ font-feature = "liga, onum, ss01, ss02, ss03, ss04, ss05, ss09, zero, cv02, cv29
 window-decoration = server
 window-padding-x = 8
 window-padding-y = 8
-unfocused-split-fill = dddddd
+unfocused-split-fill = aaeeee
+unfocused-split-opacity = 0.83
 split-divider-color = orange
 
 # ────────────────────────────────────────────────────────────────────────────
