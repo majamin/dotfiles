@@ -35,7 +35,6 @@ autoload -Uz compinit && compinit
 autoload -U colors && colors
 autoload -Uz vcs_info
 autoload edit-command-line; zle -N edit-command-line
-compdef '_git' dots
 
 # -------------------------------------------------------------------
 # FZF config
@@ -90,8 +89,6 @@ bindkey '^j' autosuggest-accept
 
 alias ls="ls -hN --color=auto --group-directories-first"
 alias o="xdg-open"
-alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-compdef dots=git
 
 alias tj="tmux switch -t journal 2>/dev/null || tmux attach -t journal 2>/dev/null || { cd $ONEDRIVE/Projects/notes && tmux new -d -s journal nvim src/journal.adoc && t journal; }"
 alias tt="tmux switch -t todo 2>/dev/null || tmux attach -t todo 2>/dev/null || { cd $ONEDRIVE/Projects/notes && tmux new -d -s todo nvim src/todo.md && t todo; }"
@@ -102,10 +99,31 @@ alias ol='grep "^(.)" ~/.local/src/oneliners.txt/oneliners.txt | fzf -e --wrap |
 mkcd() { mkdir -p $1 && cd $1 }
 cdf() { cd "$(dirname "$1")"; }
 
+
 # -------------------------------------------------------------------
-# Tmux sessionizer
+# Helpers
 # -------------------------------------------------------------------
-source "${ZDOTDIR}/t.zsh"
+source "${ZDOTDIR}/t.zsh" # tmux-sessionizer
+
+dots() {
+    GIT_DIR="$HOME/.dotfiles" GIT_WORK_TREE="$HOME" git "$@"
+}
+
+_dots() {
+    local -x GIT_DIR="$HOME/.dotfiles"
+    local -x GIT_WORK_TREE="$HOME"
+
+    # If completing file arguments for path-heavy commands, use simple _files
+    if (( CURRENT > 2 )) && [[ ${words[2]} == (add|checkout|diff|restore|rm|mv|reset) ]]; then
+        _files
+        return
+    fi
+
+    words[1]=git
+    service=git
+    _git
+}
+compdef _dots dots
 
 # -------------------------------------------------------------------
 # Cursor shape switching in vi mode
@@ -127,3 +145,5 @@ zle -N zle-line-init
 echo -ne '\e[5 q'
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
+
+. "$HOME/.local/share/../bin/env"
