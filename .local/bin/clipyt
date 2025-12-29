@@ -59,7 +59,7 @@ play() {
     fi
 
     # Start mpv with socket control
-    mpv --profile="$MPV_PROFILE" --input-ipc-server="$SOC" "$source" &>/dev/null &
+    mpv --profile="$MPV_PROFILE" --input-ipc-server="$SOC" "$source" 2>&1 &
 
     notify-send -u low "clipyt" "Playing: $(basename "$source")"
 }
