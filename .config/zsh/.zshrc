@@ -37,7 +37,7 @@ autoload -Uz vcs_info
 autoload edit-command-line; zle -N edit-command-line
 
 # -------------------------------------------------------------------
-# FZF config
+# Theming and fuzzy finding
 # -------------------------------------------------------------------
 BAT_THEME="OneHalfDark"
 FZF_OPT_THEME=""
@@ -69,6 +69,7 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
 source "/usr/share/fzf/key-bindings.zsh"
+source "${ZDOTDIR}/LS_COLORS"
 
 # -------------------------------------------------------------------
 # Plugins
