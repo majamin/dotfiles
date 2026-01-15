@@ -36,6 +36,8 @@ autoload -U colors && colors
 autoload -Uz vcs_info
 autoload edit-command-line; zle -N edit-command-line
 
+soifex() { if [[ -f "$1" ]]; then source "$1"; fi }
+
 # -------------------------------------------------------------------
 # Theming and fuzzy finding
 # -------------------------------------------------------------------
@@ -68,15 +70,15 @@ fi
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
-source "/usr/share/fzf/key-bindings.zsh"
-source "${ZDOTDIR}/LS_COLORS"
+soifex "/usr/share/fzf/key-bindings.zsh"
+soifex "${ZDOTDIR}/LS_COLORS"
 
 # -------------------------------------------------------------------
 # Plugins
 # -------------------------------------------------------------------
-#source "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
-source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" 2>/dev/null || true
-source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/dev/null || true
+#soifex "/usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh"
+soifex "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" 2>/dev/null || true
+soifex "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/dev/null || true
 
 # -------------------------------------------------------------------
 # Key bindings and aliases
@@ -104,7 +106,7 @@ cdf() { cd "$(dirname "$1")"; }
 # -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------
-source "${ZDOTDIR}/t.zsh" # tmux-sessionizer
+soifex "${ZDOTDIR}/t.zsh" # tmux-sessionizer
 
 dots() {
     GIT_DIR="$HOME/.dotfiles" GIT_WORK_TREE="$HOME" git "$@"
@@ -146,5 +148,3 @@ zle -N zle-line-init
 echo -ne '\e[5 q'
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
-
-. "$HOME/.local/share/../bin/env"
