@@ -71,7 +71,12 @@ export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
 soifex "/usr/share/fzf/key-bindings.zsh"
-soifex "${ZDOTDIR}/LS_COLORS"
+# LS_COLORS based on theme-mode (set by darkman)
+if [[ "$(< ~/.cache/theme-mode)" == "dark" ]]; then
+  soifex "${ZDOTDIR}/LS_COLORS_DARK"
+else
+  soifex "${ZDOTDIR}/LS_COLORS_LIGHT"
+fi
 
 # -------------------------------------------------------------------
 # Plugins

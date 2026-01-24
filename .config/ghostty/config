@@ -1,7 +1,7 @@
 # ────────────────────────────────────────────────────────────────────────────
-# Theming and fonts
+# Theming and fonts (theme set by darkman in theme.conf)
 # ────────────────────────────────────────────────────────────────────────────
-theme = GitHub Light Default
+config-file = theme.conf
 confirm-close-surface = false
 cursor-color = #0969da
 cursor-text = #ffffff
