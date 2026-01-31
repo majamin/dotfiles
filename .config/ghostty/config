@@ -1,10 +1,9 @@
 # ────────────────────────────────────────────────────────────────────────────
 # Theming and fonts (theme set by darkman in theme.conf)
 # ────────────────────────────────────────────────────────────────────────────
-config-file = theme.conf
+theme = litmus
 confirm-close-surface = false
-cursor-color = #0969da
-cursor-text = #ffffff
+cursor-style-blink = true
 font-family = FiraCode Nerd Font Propo
 font-feature = "liga, onum, ss01, ss02, ss03, ss04, ss05, ss09, zero, cv02, cv29"
 window-decoration = server
@@ -12,9 +11,10 @@ window-padding-x = 8
 window-padding-y = 8
 window-width = 100
 window-height = 40
-unfocused-split-fill = aaeeee
+unfocused-split-fill = #aaeeee
 unfocused-split-opacity = 0.83
 split-divider-color = orange
+app-notifications = clipboard-copy,no-config-reload
 
 # ────────────────────────────────────────────────────────────────────────────
 # Useful shortcuts
