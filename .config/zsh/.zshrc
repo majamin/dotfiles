@@ -6,7 +6,6 @@ HISTFILE="${ZDOTDIR}/.history"
 HISTSIZE=1000
 SAVEHIST=10000
 setopt autocd extendedglob notify promptsubst
-bindkey -v
 
 # -------------------------------------------------------------------
 # Completion config
@@ -34,7 +33,7 @@ zstyle ':completion:*:cd:*' ignore-parents parent pwd
 autoload -Uz compinit && compinit
 autoload -U colors && colors
 autoload -Uz vcs_info
-autoload edit-command-line; zle -N edit-command-line
+autoload -Uz edit-command-line; zle -N edit-command-line
 
 soifex() { if [[ -f "$1" ]]; then source "$1"; fi }
 
@@ -56,6 +55,7 @@ export FZF_DEFAULT_OPTS="
   ${FZF_OPT_THEME}
   --ansi
   --border
+  --color=light
   --layout=reverse
   --height=70%
   --bind '?:toggle-preview'
@@ -70,7 +70,6 @@ fi
 export FZF_ALT_C_OPTS="--preview 'tree -L 1 -C {}'"
 export FZF_CTRL_T_OPTS="--preview \"$FILE_PREVIEW_COMMAND\""
 
-soifex "/usr/share/fzf/key-bindings.zsh"
 # LS_COLORS based on theme-mode (set by darkman)
 if [[ "$(< ~/.cache/theme-mode)" == "dark" ]]; then
   soifex "${ZDOTDIR}/LS_COLORS_DARK"
@@ -89,11 +88,6 @@ soifex "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/d
 # Key bindings and aliases
 # -------------------------------------------------------------------
 bindkey '^[[Z' reverse-menu-complete
-bindkey '^e' edit-command-line
-bindkey -M vicmd '^[[P' vi-delete-char
-bindkey -M vicmd '^e' edit-command-line
-bindkey -M visual '^[[P' vi-delete
-bindkey '^j' autosuggest-accept
 
 alias ls="ls -hN --color=auto --group-directories-first"
 alias o="xdg-open"
@@ -136,20 +130,11 @@ compdef _dots dots
 # -------------------------------------------------------------------
 # Cursor shape switching in vi mode
 # -------------------------------------------------------------------
-function zle-keymap-select() {
-  case $KEYMAP in
-    vicmd) echo -ne '\e[1 q';;
-    viins|main) echo -ne '\e[5 q';;
-  esac
+zvm_after_init() {
+  soifex "/usr/share/fzf/key-bindings.zsh"
+  bindkey '^e' edit-command-line
+  bindkey '^j' autosuggest-accept
 }
-zle -N zle-keymap-select
-
-zle-line-init() {
-  zle -K viins
-  echo -ne '\e[5 q'
-}
-zle -N zle-line-init
-
-echo -ne '\e[5 q'
+soifex /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh || true
 
 PS1='%F{blue}%~ %(?.%F{green}.%F{red})%#%f '
