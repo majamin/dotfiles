@@ -1,50 +1,54 @@
 #!/bin/bash
 
-# First argument is the path to the image directory (defaults to current directory)
-src_dir=${1:-.}
+# Collect all source directories from arguments (default to current directory)
+if [ $# -eq 0 ]; then
+    src_dirs=(".")
+else
+    src_dirs=("$@")
+fi
 
-# If src_dir is '.' or empty, use current directory without moving files
-if [ "$src_dir" = "." ] || [ -z "$1" ]; then
+# Determine output mode: if all args are "." or no args given, use current directory
+if [ $# -eq 0 ]; then
     out_dir="."
 else
     out_dir="images"
+    for dir in "${src_dirs[@]}"; do
+        if [ "$dir" != "." ]; then
+            break
+        fi
+        # If we get through all dirs and they're all ".", use "."
+        if [ "$dir" = "${src_dirs[-1]}" ]; then
+            out_dir="."
+        fi
+    done
 fi
 
-# Check if the directory exists
-if [ ! -d "$src_dir" ]; then
-    printf "Directory '%s' does not exist" "${src_dir}"
-    exit 1
-fi
+for dir in "${src_dirs[@]}"; do
+    if [ ! -d "$dir" ]; then
+        printf "Warning: directory '%s' does not exist\n" "$dir"
+    fi
+done
 
-# Find all files in the directory using fd-find
-# Pipe the output to nsxiv for image selection
-mapfile -t allfiles < <(fd -e jpg -e png -e gif -e bmp -e tiff -e webp -e svg -e jpeg -e heic . "$src_dir" -0 | xargs -0 ls -t | nsxiv -troi)
+mapfile -t allfiles < <(
+    for dir in "${src_dirs[@]}"; do
+        [ -d "$dir" ] && fd -e jpg -e png -e gif -e bmp -e tiff -e webp -e svg -e jpeg -e heic . "$dir" -0
+    done | xargs -0 ls -t \
+         | nsxiv -troi 2>/dev/null
+)
 
-# Check if the user selected any images
 if [ ${#allfiles[@]} -eq 0 ]; then
-    echo "No images selected"
+    echo "No images found or selected"
     exit 1
 fi
 
-# Create the images subdirectory if it doesn't exist
 mkdir -p "$out_dir" 2>/dev/null
 
-# Copy the selected images to the images subdirectory with spaces replaced by hyphens
-declare -a new_name
 for image in "${allfiles[@]}"; do
     if [ "$out_dir" = "." ]; then
-        # When using current directory, just output the original path
         echo "$image"
     else
-        # Get the basename of the image and replace spaces with hyphens
-        # set new extension to png
         new_name=$(basename "$image" | tr ' ' '-' | sed 's/\(.*\)\..*/\1.png/')
-
-        # convert image to png using image magick,
-        # and copy the file to the images/ directory with the new name
         magick "$image" -auto-orient -resize 1600x "${out_dir}/${new_name}"
-
-        # Print the new name of the image
         echo "$new_name"
     fi
 done
