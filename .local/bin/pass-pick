@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+# pass-pick — pick passwords in the terminal or not
+#   terminal  : fzf → fzf field menu
+#   GUI/keybind: rofi → rofi field menu
+
+set -euo pipefail
+
+PREFIX="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
+CLIP_TIME="${PASS_CLIP_TIME:-45}"
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+have() { command -v "$1" &>/dev/null; }
+
+die() {
+    notify-send -u critical "pass-pick" "$*" 2>/dev/null
+    echo "pass-pick: $*" >&2
+    exit 1
+}
+
+in_terminal() { [[ -t 0 && -t 1 ]]; }
+
+list_entries() {
+    (cd "$PREFIX" && fd -e gpg -x sh -c 'printf "%s\n" "${1%.gpg}"' sh {}) \
+        | sed 's|^\./||' | sort
+}
+
+clip() {
+    local text="$1" label="${2:-Copied}"
+    # strip leading/trailing whitespace from multi-line values
+    text=$(printf '%s' "$text" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    if have wl-copy; then
+        printf '%s' "$text" | wl-copy
+        { sleep "$CLIP_TIME"; printf '' | wl-copy; } &>/dev/null &
+    elif have xclip; then
+        printf '%s' "$text" | xclip -selection clipboard
+        { sleep "$CLIP_TIME"; printf '' | xclip -selection clipboard; } &>/dev/null &
+    else
+        die "No clipboard tool found (install wl-clipboard or xclip)"
+    fi
+    disown
+    notify-send -t 3000 -i dialog-password "pass" "$label copied — clears in ${CLIP_TIME}s"
+}
+
+open_term() {
+    local term="${TERMINAL:-konsole}"
+    case "$term" in
+        wezterm) wezterm start -- "$@" ;;
+        konsole) konsole -e "$@" ;;
+        *)       "$term" -e "$@" ;;
+    esac
+}
+
+# ── field parsing ─────────────────────────────────────────────────────────────
+# Parses decrypted pass content into parallel arrays:
+#   F_LABELS[]  — field name  ("password", "username", "notes", …)
+#   F_VALUES[]  — full value, may be multi-line
+#   F_DISPLAY[] — one-line picker string ("password", "username: foo", "notes: 123 Main … ")
+#
+# Rules:
+#   Line 1: if it does NOT look like "key: …" → bare password
+#            if it DOES look like "key: …"    → treat as a field, no bare password
+#   Subsequent "key:" lines start a new field
+#   Lines that follow without a "key:" prefix are continuations of the current field
+
+declare -a F_LABELS F_VALUES F_DISPLAY
+
+_field_flush() {
+    # args: cur_key cur_val (passed by name via indirect)
+    local key="$1" val="$2"
+    [[ -z "$key" ]] && return
+    F_LABELS+=("$key")
+    F_VALUES+=("$val")
+    local preview first_line
+    first_line=$(head -1 <<< "$val")
+    if [[ "$val" == *$'\n'* ]]; then
+        preview="$first_line …"
+    else
+        preview="$first_line"
+    fi
+    if [[ -n "$preview" ]]; then
+        F_DISPLAY+=("$key: $preview")
+    else
+        F_DISPLAY+=("$key")
+    fi
+}
+
+parse_fields() {
+    local content="$1"
+    F_LABELS=(); F_VALUES=(); F_DISPLAY=()
+
+    local lineno=0 cur_key="" cur_val=""
+
+    while IFS= read -r line; do
+        if [[ $lineno -eq 0 ]]; then
+            if [[ "$line" =~ ^[A-Za-z][A-Za-z0-9\ _-]*:[[:space:]]* ]]; then
+                # First line is a field — start it as a field, no bare password
+                cur_key="${line%%:*}"
+                cur_val="${line#*:}"; cur_val="${cur_val# }"
+            else
+                # Bare password
+                F_LABELS+=("password")
+                F_VALUES+=("$line")
+                F_DISPLAY+=("password")
+            fi
+        elif [[ "$line" =~ ^([A-Za-z][A-Za-z0-9\ _-]*):[[:space:]]*(.*) ]]; then
+            # New field — flush previous
+            _field_flush "$cur_key" "$cur_val"
+            cur_key="${BASH_REMATCH[1]}"
+            cur_val="${BASH_REMATCH[2]}"
+        elif [[ -n "$cur_key" ]]; then
+            # Continuation line (blank or text) — append to current field
+            if [[ -n "$cur_val" ]]; then
+                cur_val+=$'\n'"$line"
+            elif [[ -n "$line" ]]; then
+                cur_val="$line"
+            fi
+        fi
+        (( lineno++ )) || true
+    done <<< "$content"
+
+    # Flush last field
+    _field_flush "$cur_key" "$cur_val"
+}
+
+# ── pickers ───────────────────────────────────────────────────────────────────
+
+fzf_pick() {
+    local prompt="$1" header="$2"
+    fzf --prompt="$prompt" \
+        --height=50% --layout=reverse --border \
+        --header="$header"
+}
+
+rofi_pick() {
+    local prompt="$1" lines="${2:-15}"
+    rofi -dmenu -p " $prompt" -i \
+        -theme-str "window {width: 520px;} listview {lines: $lines;}"
+}
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+main() {
+    # Step 1: pick entry
+    local entry
+    if in_terminal; then
+        entry=$(list_entries | fzf_pick "pass> " "select entry") || exit 0
+    else
+        entry=$(list_entries | rofi_pick "pass" 15) || exit 0
+    fi
+    [[ -z "$entry" ]] && exit 0
+
+    # Step 2: decrypt once and parse fields
+    local content; content=$(pass show "$entry")
+    parse_fields "$content"
+
+    # Step 3: build picker menu (fields + actions)
+    local -a menu_lines=("${F_DISPLAY[@]}" "show" "edit" "otp")
+
+    local selection
+    if in_terminal; then
+        selection=$(printf '%s\n' "${menu_lines[@]}" \
+            | fzf_pick "$entry > " "enter:copy field   show/edit/otp to act") || exit 0
+    else
+        local linecount="${#menu_lines[@]}"
+        selection=$(printf '%s\n' "${menu_lines[@]}" \
+            | rofi_pick "$entry" "$linecount") || exit 0
+    fi
+    [[ -z "$selection" ]] && exit 0
+
+    # Step 4: act
+    case "$selection" in
+        show)
+            if in_terminal; then
+                printf '%s\n' "$content"
+            else
+                local escaped="${entry//\'/\'\\\'\'}"
+                open_term bash -c "pass show '$escaped'; echo; read -rp 'Press enter to close...'"
+            fi
+            ;;
+        edit)
+            if in_terminal; then
+                pass edit "$entry"
+            else
+                local escaped="${entry//\'/\'\\\'\'}"
+                open_term bash -c "pass edit '$escaped'"
+            fi
+            ;;
+        otp)
+            local otp; otp=$(pass otp "$entry") \
+                || die "OTP failed — is pass-otp installed and $entry an OTP entry?"
+            clip "$otp" "OTP"
+            ;;
+        *)
+            # Find matching field in F_DISPLAY and copy its value
+            local i found=0
+            for i in "${!F_DISPLAY[@]}"; do
+                if [[ "${F_DISPLAY[$i]}" == "$selection" ]]; then
+                    clip "${F_VALUES[$i]}" "${F_LABELS[$i]}"
+                    in_terminal && echo "${F_LABELS[$i]} copied."
+                    found=1
+                    break
+                fi
+            done
+            [[ $found -eq 0 ]] && die "Unknown selection: $selection"
+            ;;
+    esac
+}
+
+main "$@"
