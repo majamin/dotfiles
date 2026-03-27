@@ -47,7 +47,7 @@ for image in "${allfiles[@]}"; do
     if [ "$out_dir" = "." ]; then
         echo "$image"
     else
-        new_name=$(basename "$image" | tr ' ' '-' | sed 's/\(.*\)\..*/\1.png/')
+        new_name=$(basename "$image" | tr ' ' '-')
         magick "$image" -auto-orient -resize 1600x "${out_dir}/${new_name}"
         echo "$new_name"
     fi

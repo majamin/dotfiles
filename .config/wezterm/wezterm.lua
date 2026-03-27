@@ -1,6 +1,7 @@
 local wezterm = require("wezterm")
 
-local default_color_scheme = "Tokyo Night Storm"
+-- local default_color_scheme = "Tokyo Night Storm"
+local default_color_scheme = "Github Light (Gogh)"
 -- local nvim_light_color_scheme = "AtomOneLight"
 
 local config = {
@@ -17,7 +18,7 @@ local config = {
   font = wezterm.font_with_fallback({
     {
       family = "FiraCode Nerd Font", -- main font
-      weight = "Medium",
+      weight = "Regular",
       italic = false,
     },
     "Noto Color Emoji", -- fallback font
