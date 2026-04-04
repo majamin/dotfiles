@@ -1,0 +1,186 @@
+# litmus — light Helix theme ported from litmus.nvim
+
+# ─── UI ──────────────────────────────────────────────────────────────────────
+
+"ui.background"           = { bg = "bg" }
+"ui.text"                 = { fg = "fg" }
+"ui.text.focus"           = { fg = "fg", modifiers = ["bold"] }
+"ui.text.inactive"        = { fg = "litmus_4" }
+"ui.text.info"            = { fg = "litmus_2" }
+
+"ui.cursor"               = { fg = "bg", bg = "fg" }
+"ui.cursor.insert"        = { fg = "bg", bg = "primary" }
+"ui.cursor.select"        = { fg = "bg", bg = "litmus_2" }
+"ui.cursor.match"         = { fg = "primary", bg = "litmus_8", modifiers = ["bold"] }
+"ui.cursor.primary"       = { fg = "bg", bg = "fg" }
+
+"ui.selection"            = { bg = "litmus_8" }
+"ui.selection.primary"    = { bg = "litmus_7" }
+
+"ui.linenr"               = { fg = "litmus_6" }
+"ui.linenr.selected"      = { fg = "primary", modifiers = ["bold"] }
+
+"ui.statusline"           = { fg = "litmus_0", bg = "litmus_8" }
+"ui.statusline.inactive"  = { fg = "litmus_5", bg = "litmus_8" }
+"ui.statusline.normal"    = { fg = "bg", bg = "primary", modifiers = ["bold"] }
+"ui.statusline.insert"    = { fg = "bg", bg = "add", modifiers = ["bold"] }
+"ui.statusline.select"    = { fg = "bg", bg = "secondary", modifiers = ["bold"] }
+"ui.statusline.separator" = { fg = "litmus_5" }
+
+"ui.popup"                = { fg = "litmus_0", bg = "litmus_8" }
+"ui.popup.info"           = { fg = "litmus_0", bg = "litmus_8" }
+"ui.window"               = { fg = "litmus_6" }
+"ui.help"                 = { fg = "litmus_0", bg = "litmus_8" }
+
+"ui.menu"                 = { fg = "litmus_0", bg = "bg" }
+"ui.menu.selected"        = { fg = "bg", bg = "primary" }
+"ui.menu.scroll"          = { fg = "litmus_6", bg = "litmus_8" }
+
+"ui.highlight"            = { bg = "litmus_8" }
+"ui.gutter"               = { bg = "bg" }
+"ui.gutter.selected"      = { bg = "litmus_8" }
+
+"ui.virtual.ruler"        = { bg = "litmus_8" }
+"ui.virtual.whitespace"   = { fg = "litmus_7" }
+"ui.virtual.indent-guide" = { fg = "litmus_7" }
+"ui.virtual.jump-label"   = { fg = "bg", bg = "primary", modifiers = ["bold"] }
+
+# Inlay hints — clearly visible, distinct from code
+"ui.virtual.inlay-hint"           = { fg = "litmus_4", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.parameter" = { fg = "litmus_3", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.type"      = { fg = "litmus_4", modifiers = ["italic"] }
+
+# ─── Diagnostics ─────────────────────────────────────────────────────────────
+
+"diagnostic.error"       = { underline = { color = "error",   style = "curl" } }
+"diagnostic.warning"     = { underline = { color = "warning", style = "curl" } }
+"diagnostic.info"        = { underline = { color = "info",    style = "curl" } }
+"diagnostic.hint"        = { underline = { color = "hint",    style = "dotted" } }
+"diagnostic.unnecessary" = { modifiers = ["dim"] }
+"diagnostic.deprecated"  = { modifiers = ["crossed_out"] }
+
+"error"   = { fg = "error" }
+"warning" = { fg = "warning" }
+"info"    = { fg = "info" }
+"hint"    = { fg = "hint" }
+
+# ─── Diff ────────────────────────────────────────────────────────────────────
+
+"diff.plus"        = { fg = "add" }
+"diff.minus"       = { fg = "delete" }
+"diff.delta"       = { fg = "change" }
+"diff.delta.moved" = { fg = "info" }
+
+# ─── Syntax ──────────────────────────────────────────────────────────────────
+
+"comment"                     = { fg = "litmus_5", modifiers = ["italic"] }
+"comment.block.documentation" = { fg = "litmus_4", modifiers = ["italic"] }
+
+"keyword"                     = { fg = "litmus_2", modifiers = ["bold"] }
+"keyword.control"             = { fg = "litmus_2" }
+"keyword.control.conditional" = { fg = "litmus_2" }
+"keyword.control.repeat"      = { fg = "litmus_2" }
+"keyword.control.import"      = { fg = "litmus_3" }
+"keyword.control.return"      = { fg = "litmus_2", modifiers = ["bold"] }
+"keyword.control.exception"   = { fg = "litmus_2" }
+"keyword.operator"            = { fg = "litmus_3" }
+"keyword.directive"           = { fg = "litmus_3" }
+"keyword.function"            = { fg = "litmus_2", modifiers = ["bold"] }
+"keyword.storage"             = { fg = "litmus_2" }
+"keyword.storage.type"        = { fg = "litmus_2", modifiers = ["bold"] }
+"keyword.storage.modifier"    = { fg = "litmus_2", modifiers = ["bold"] }
+
+"operator"              = { fg = "litmus_3" }
+"punctuation"           = { fg = "litmus_4" }
+"punctuation.delimiter" = { fg = "litmus_4" }
+"punctuation.bracket"   = { fg = "litmus_4" }
+"punctuation.special"   = { fg = "litmus_3" }
+
+"string"                = { fg = "litmus_3" }
+"string.regexp"         = { fg = "primary" }
+"string.special"        = { fg = "primary" }
+"string.special.symbol" = { fg = "primary" }
+"string.special.url"    = { fg = "primary", modifiers = ["underlined"] }
+
+"type"               = { fg = "litmus_1" }
+"type.builtin"       = { fg = "litmus_2" }
+"type.enum.variant"  = { fg = "litmus_1" }
+
+"constructor"             = { fg = "litmus_0", modifiers = ["bold"] }
+"attribute"               = { fg = "litmus_3" }
+"special"                 = { fg = "litmus_2" }
+"namespace"               = { fg = "litmus_2" }
+"module"                  = { fg = "litmus_2" }
+"label"                   = { fg = "primary" }
+
+"constant"               = { fg = "litmus_1" }
+"constant.builtin"       = { fg = "litmus_1", modifiers = ["bold"] }
+"constant.builtin.boolean" = { fg = "litmus_1", modifiers = ["bold"] }
+"constant.character"     = { fg = "litmus_2" }
+"constant.character.escape" = { fg = "primary" }
+"constant.numeric"       = { fg = "litmus_1" }
+
+"variable"              = { fg = "litmus_0" }
+"variable.builtin"      = { fg = "litmus_2" }
+"variable.parameter"    = { fg = "litmus_1" }
+"variable.other.member" = { fg = "litmus_1" }
+
+"function"         = { fg = "secondary", modifiers = ["bold"] }
+"function.builtin" = { fg = "litmus_1", modifiers = ["bold"] }
+"function.macro"   = { fg = "litmus_2" }
+"function.special" = { fg = "primary" }
+"function.method"  = { fg = "litmus_0" }
+
+"tag"       = { fg = "primary" }
+"tag.error" = { fg = "error" }
+
+# ─── Markup ──────────────────────────────────────────────────────────────────
+
+"markup.heading"            = { fg = "litmus_0", modifiers = ["bold"] }
+"markup.heading.1"          = { fg = "litmus_0", modifiers = ["bold"] }
+"markup.heading.2"          = { fg = "litmus_1", modifiers = ["bold"] }
+"markup.heading.3"          = { fg = "litmus_2", modifiers = ["bold"] }
+"markup.heading.4"          = { fg = "litmus_2" }
+"markup.heading.5"          = { fg = "litmus_3" }
+"markup.heading.6"          = { fg = "litmus_4" }
+"markup.list"               = { fg = "litmus_3" }
+"markup.list.checked"       = { fg = "add" }
+"markup.list.unchecked"     = { fg = "litmus_5" }
+"markup.bold"               = { fg = "litmus_0", modifiers = ["bold"] }
+"markup.italic"             = { fg = "litmus_0", modifiers = ["italic"] }
+"markup.strikethrough"      = { fg = "litmus_4", modifiers = ["crossed_out"] }
+"markup.link"               = { fg = "primary", modifiers = ["underlined"] }
+"markup.link.url"           = { fg = "litmus_4", modifiers = ["underlined"] }
+"markup.link.label"         = { fg = "primary" }
+"markup.quote"              = { fg = "litmus_3", modifiers = ["italic"] }
+"markup.raw"                = { fg = "litmus_3" }
+"markup.raw.block"          = { fg = "litmus_3" }
+
+# ─── Palette ─────────────────────────────────────────────────────────────────
+
+[palette]
+bg        = "#f7fcff"
+fg        = "#1a1a1a"
+
+litmus_0  = "#1a1a1a"
+litmus_1  = "#2d2d2d"
+litmus_2  = "#454545"
+litmus_3  = "#5c5c5c"
+litmus_4  = "#737373"
+litmus_5  = "#8a8a8a"
+litmus_6  = "#a1a1a1"
+litmus_7  = "#c4c4c4"
+litmus_8  = "#d7e9f4"
+litmus_9  = "#f7fcff"
+
+primary   = "#be185d"
+secondary = "#9f1239"
+
+error     = "#dc2626"
+warning   = "#644696"
+info      = "#2563eb"
+hint      = "#737373"
+
+add       = "#16a34a"
+change    = "#ca8a04"
+delete    = "#dc2626"

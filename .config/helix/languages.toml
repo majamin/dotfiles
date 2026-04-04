@@ -1,0 +1,78 @@
+# Language server configurations
+# Only languages with servers currently installed on this system are configured here.
+# Install additional servers and uncomment/add sections as needed.
+
+# ─── Rust ────────────────────────────────────────────────────────────────────
+
+[language-server.rust-analyzer.config]
+inlayHints.bindingModeHints.enable = true
+inlayHints.closureReturnTypeHints.enable = "with_block"
+inlayHints.discriminantHints.enable = "fieldless"
+inlayHints.lifetimeElisionHints.enable = "skip_trivial"
+check.command = "clippy"
+
+[[language]]
+name = "rust"
+auto-format = true
+
+# ─── JavaScript / TypeScript ─────────────────────────────────────────────────
+
+[language-server.typescript-language-server.config.preferences]
+quotePreference = "single"
+includeInlayParameterNameHints = "all"
+includeInlayParameterNameHintsWhenArgumentMatchesName = false
+includeInlayFunctionParameterTypeHints = true
+includeInlayVariableTypeHints = true
+includeInlayPropertyDeclarationTypeHints = true
+includeInlayFunctionLikeReturnTypeHints = true
+includeInlayEnumMemberValueHints = true
+
+[[language]]
+name = "javascript"
+auto-format = true
+
+[[language]]
+name = "typescript"
+auto-format = true
+
+[[language]]
+name = "tsx"
+auto-format = true
+
+[[language]]
+name = "jsx"
+auto-format = true
+
+# ─── Lua ─────────────────────────────────────────────────────────────────────
+
+[language-server.lua-language-server.config.Lua]
+hint.enable = true
+hint.setType = true
+hint.paramType = true
+hint.paramName = "All"
+hint.arrayIndex = "Enable"
+diagnostics.globals = ["vim"]          # suppress vim global warnings in Neovim configs
+
+[[language]]
+name = "lua"
+formatter = { command = "stylua", args = ["--indent-type", "Spaces", "--indent-width", "2", "-"] }
+auto-format = true
+
+# ─── C / C++ ─────────────────────────────────────────────────────────────────
+
+[language-server.clangd]
+command = "clangd"
+args = [
+  "--header-insertion=never",
+  "--clang-tidy",
+  "--completion-style=detailed",
+  "--inlay-hints",
+]
+
+[[language]]
+name = "c"
+auto-format = true
+
+[[language]]
+name = "cpp"
+auto-format = true

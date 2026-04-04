@@ -1,0 +1,54 @@
+theme = "litmus"
+
+[editor]
+line-number = "relative"
+cursorline = true
+color-modes = true
+scrolloff = 8
+idle-timeout = 80
+completion-trigger-len = 1
+auto-pairs = true
+auto-format = true
+trim-trailing-whitespace = true
+insert-final-newline = true
+rulers = [100]
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
+
+[editor.indent-guides]
+render = true
+character = "▏"
+skip-levels = 1
+
+[editor.whitespace.render]
+tab = "all"
+space = "none"
+newline = "none"
+
+[editor.whitespace.characters]
+tab = "→"
+tabpad = " "
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
+other-lines = "error"
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "selections", "position", "file-encoding", "file-line-ending"]
+separator = "│"
+
+[editor.file-picker]
+hidden = false
+git-ignore = true
+
+[keys.normal.space]
+"i" = ":toggle-option lsp.display-inlay-hints"
