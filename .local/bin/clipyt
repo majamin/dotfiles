@@ -10,12 +10,12 @@ set -euo pipefail
 # Configuration
 readonly SOC="/tmp/mpv-clipyt"
 readonly MPV_PROFILE="clipyt"
-readonly ROFI_LINES=20
+readonly MENU_LINES=20
 
 # Dependency checking function
 check_dependencies() {
     local missing_deps=()
-    local deps=("mpv" "yt-dlp" "socat" "rofi" "xclip")
+    local deps=("mpv" "yt-dlp" "socat" "tofi" "wl-paste")
 
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &>/dev/null; then
@@ -93,7 +93,7 @@ Options:
     SOURCE              A file or URL containing media
 
 Examples:
-    clipyt                          # Interactive mode with rofi
+    clipyt                          # Interactive mode with tofi
     clipyt video.mp4                # Play a specific file
     clipyt -p                       # Toggle play/pause
     clipyt https://example.com/stream.m3u8
@@ -107,7 +107,7 @@ collect_sources() {
 
     # Get clipboard content if it contains a URL
     local clipboard
-    clipboard=$(xclip -o -sel clip 2>/dev/null || true)
+    clipboard=$(wl-paste --no-newline 2>/dev/null || true)
     if [[ "$clipboard" =~ ^https?:// ]]; then
         sources+=("$clipboard")
     fi
@@ -181,13 +181,14 @@ main() {
         exit 1
     fi
 
-    # Show rofi menu and get selection
+    # Show tofi menu and get selection
     local selection
-    selection=$(echo "$sources" | rofi -dmenu -i -p "Select media source" \
-        -lines "$ROFI_LINES" \
-        -theme-str 'window {width: 50%;}' \
-        -theme-str 'listview {scrollbar: true;}' \
-        -no-custom)
+    selection=$(echo "$sources" | tofi --prompt-text "Select media source" \
+        --num-results "$MENU_LINES" \
+        --width 100% \
+        --font /usr/share/fonts/TTF/JetBrainsMono-Regular.ttf \
+        --font-size 14 \
+        --hint-font false)
 
     # Exit if no selection made
     if [[ -z "$selection" ]]; then
