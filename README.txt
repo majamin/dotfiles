@@ -1,11 +1,11 @@
-=== dotfiles ===
+=== Wayland dotfiles ===
 
 Some basic dotfiles that I use.
 
 Usage
 =====
 
-You are on the master branch.
+You are on the wayland branch.
 
 Pick a branch for the best results.
 

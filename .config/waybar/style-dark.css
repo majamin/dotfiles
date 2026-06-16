@@ -1,0 +1,100 @@
+* {
+    font-family: "Fira Sans", "Iosevka Nerd Font", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+window#waybar {
+    background: rgba(30, 30, 46, 0.92);
+    color: #cdd6f4;
+    border-bottom: 1px solid rgba(137, 180, 250, 0.18);
+}
+
+/* Left zone */
+#workspaces {
+    padding: 0 4px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    color: #45475a;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    transition: all 0.15s ease;
+}
+
+#workspaces button.active {
+    color: #cdd6f4;
+    border-bottom: 2px solid #89b4fa;
+    font-weight: 600;
+}
+
+#workspaces button.occupied {
+    color: #7f849c;
+    border-bottom: 2px solid rgba(137, 180, 250, 0.3);
+}
+
+#workspaces button:hover {
+    background: rgba(137, 180, 250, 0.08);
+    color: #cdd6f4;
+}
+
+#window {
+    color: #585b70;
+    font-style: italic;
+    padding: 0 4px;
+}
+
+/* Center */
+#clock {
+    font-weight: 500;
+    color: #cdd6f4;
+    padding: 0 14px;
+}
+
+/* Right zone */
+#pulseaudio,
+#backlight,
+#network,
+#battery,
+#tray {
+    padding: 0 10px;
+    color: #a6adc8;
+}
+
+#tray {
+    padding: 0 10px 0 20px;
+}
+
+#backlight {
+    padding-right: 24px;
+}
+
+#pulseaudio.muted {
+    color: #45475a;
+}
+
+#battery.warning {
+    color: #f9e2af;
+}
+
+#battery.critical {
+    color: #f38ba8;
+    animation: blink 0.7s infinite alternate;
+}
+
+@keyframes blink {
+    to { opacity: 0.35; }
+}
+
+tooltip {
+    background: rgba(30, 30, 46, 0.96);
+    border: 1px solid rgba(137, 180, 250, 0.25);
+    border-radius: 6px;
+    color: #cdd6f4;
+    padding: 4px 8px;
+}
