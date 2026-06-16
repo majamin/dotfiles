@@ -1,0 +1,23 @@
+#!/bin/bash
+# Build menu entries: "Name — connected" or "Name"
+entries=$(bluetoothctl devices Paired | awk '{print $2}' | while read -r mac; do
+    name=$(bluetoothctl info "$mac" | awk -F': ' '/^\s+Name:/ {print $2}')
+    connected=$(bluetoothctl info "$mac" | awk '/Connected:/ {print $2}')
+    if [ "$connected" = "yes" ]; then
+        echo "$name — connected|$mac"
+    else
+        echo "$name|$mac"
+    fi
+done)
+
+chosen=$(echo "$entries" | awk -F'|' '{print $1}' | tofi)
+[ -z "$chosen" ] && exit
+
+mac=$(echo "$entries" | awk -F'|' -v chosen="$chosen" '$1 == chosen {print $2}')
+connected=$(bluetoothctl info "$mac" | awk '/Connected:/ {print $2}')
+
+if [ "$connected" = "yes" ]; then
+    bluetoothctl disconnect "$mac"
+else
+    bluetoothctl connect "$mac"
+fi
