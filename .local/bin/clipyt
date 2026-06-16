@@ -1,0 +1,217 @@
+#!/bin/bash
+
+#############################################
+# clipyt - A media player launcher for mpv
+# Reads multiple sources and plays them with mpv
+#############################################
+
+set -euo pipefail
+
+# Configuration
+readonly SOC="/tmp/mpv-clipyt"
+readonly MPV_PROFILE="clipyt"
+readonly MENU_LINES=20
+
+# Dependency checking function
+check_dependencies() {
+    local missing_deps=()
+    local deps=("mpv" "yt-dlp" "socat" "tofi" "wl-paste")
+
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &>/dev/null; then
+            missing_deps+=("$dep")
+        fi
+    done
+
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        notify-send -u critical "Missing Dependencies" \
+            "Please install: ${missing_deps[*]}"
+        echo "Error: Missing dependencies: ${missing_deps[*]}" >&2
+        exit 1
+    fi
+}
+
+# Toggle play/pause using socat
+play_toggle() {
+    if [[ -S "$SOC" ]]; then
+        echo '{ "command": ["cycle", "pause"] }' | socat - "$SOC" &>/dev/null
+        notify-send -u low "clipyt" "Toggled play/pause"
+        exit 0
+    else
+        notify-send -u normal "clipyt" "No active mpv session found"
+        exit 1
+    fi
+}
+
+# Play media with mpv
+play() {
+    local source="$1"
+
+    if [[ -z "$source" ]]; then
+        echo "Error: No source provided" >&2
+        exit 1
+    fi
+
+    # Check if source is a file and exists
+    if [[ ! "$source" =~ ^https?:// ]] && [[ ! -f "$source" ]]; then
+        notify-send -u normal "clipyt" "File not found: $source"
+        exit 1
+    fi
+
+    # Start mpv with socket control
+    mpv --profile="$MPV_PROFILE" --input-ipc-server="$SOC" "$source" 2>&1 &
+
+    notify-send -u low "clipyt" "Playing: $(basename "$source")"
+}
+
+# Stop current mpv session
+stop_playback() {
+    if [[ -S "$SOC" ]]; then
+        echo '{ "command": ["quit"] }' | socat - "$SOC" &>/dev/null
+        notify-send -u low "clipyt" "Stopped playback"
+        exit 0
+    else
+        notify-send -u normal "clipyt" "No active mpv session found"
+        exit 1
+    fi
+}
+
+# Display help
+show_help() {
+    cat << EOF
+clipyt - A media player launcher for mpv
+
+Reads in multiple sources of media and plays them in mpv.
+mpv is opened using a socket for remote control via socat.
+
+Usage: clipyt [OPTIONS] [SOURCE]
+
+Options:
+    -h, --help          Show this help message
+    -p, --toggle        Toggle play/pause
+    -s, --stop          Stop playback
+    SOURCE              A file or URL containing media
+
+Examples:
+    clipyt                          # Interactive mode with tofi
+    clipyt video.mp4                # Play a specific file
+    clipyt -p                       # Toggle play/pause
+    clipyt https://example.com/stream.m3u8
+
+EOF
+}
+
+# Collect media sources
+collect_sources() {
+    local -a sources=()
+
+    # Get clipboard content if it contains a URL
+    local clipboard
+    clipboard=$(wl-paste --no-newline 2>/dev/null || true)
+    if [[ "$clipboard" =~ ^https?:// ]]; then
+        sources+=("$clipboard")
+    fi
+
+    # Add radio stations
+    sources+=(
+        "# --- Radio Stations ---"
+        "Shoegaze Radio|https://ais-edge09-live365-dal02.cdnstream.com/a06375?listenerId=Live365-Widget-AdBlock&aw_0_1st.playerid=Live365-Widget&aw_0_1st.skey=1617124325"
+        "Toronto Cast|https://kathy.torontocast.com:1825/stream"
+        "KCRW (128k)|https://kcrw.streamguys1.com//kcrw_128k_mp3_on_air"
+        "KCRW Eclectic 24|https://kcrw.streamguys1.com/kcrw_192k_mp3_e24"
+        "CBC Radio Kamloops|http://liveradio.cbc.ca/i/CBCR1_KAM@384142/index_96_a-p.m3u8"
+        "Nightride FM|https://nightride.fm/stream/nightride.m4a"
+        "Chillout Zone|https://chillout.zone/chillout_plus"
+        "WCPE Classical|http://audio-ogg.ibiblio.org:8000/wcpe.ogg"
+        "YourClassical Radio|https://ycradio.stream.publicradio.org/ycradio.aac"
+        "Holiday Music|https://holiday.stream.publicradio.org/holiday_yc.aac"
+        "WQXR Special|https://stream.wqxr.org/qxr-special-web?nyprBrowserId=73ef765c453ff400"
+        "Hygge Radio|https://hygge.stream.publicradio.org/hygge.aac"
+        "Peaceful Piano|https://peacefulpiano.stream.publicradio.org/peacefulpiano.aac"
+        "Classical Kids|https://classicalkids.stream.publicradio.org/classicalkids.aac"
+        "Focus Music|https://focus.stream.publicradio.org/focus.aac"
+        "Favorites|https://favorites.stream.publicradio.org/favorites.aac"
+    )
+
+    # Add local video files if directory exists
+    if [[ -d "$HOME/Videos" ]]; then
+        sources+=("# --- Local Videos ---")
+        while IFS= read -r -d '' file; do
+            sources+=("$file")
+        done < <(find "$HOME/Videos" -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.webm" -o -iname "*.mov" \) -print0 2>/dev/null | sort -z)
+    fi
+
+    printf '%s\n' "${sources[@]}"
+}
+
+# Main function
+main() {
+    # Parse command-line arguments
+    case "${1:-}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -p|--toggle)
+            play_toggle
+            ;;
+        -s|--stop)
+            stop_playback
+            ;;
+        -*)
+            echo "Error: Unknown option: $1" >&2
+            echo "Use -h or --help for usage information" >&2
+            exit 1
+            ;;
+        *)
+            # If argument provided, play it directly
+            if [[ -n "${1:-}" ]]; then
+                play "$1"
+                exit 0
+            fi
+            ;;
+    esac
+
+    # Interactive mode: collect sources and show rofi menu
+    local sources
+    sources=$(collect_sources)
+
+    if [[ -z "$sources" ]]; then
+        notify-send -u normal "clipyt" "No media sources found"
+        exit 1
+    fi
+
+    # Show tofi menu and get selection
+    local selection
+    selection=$(echo "$sources" | tofi --prompt-text "Select media source" \
+        --num-results "$MENU_LINES" \
+        --width 100% \
+        --font /usr/share/fonts/TTF/JetBrainsMono-Regular.ttf \
+        --font-size 14 \
+        --hint-font false)
+
+    # Exit if no selection made
+    if [[ -z "$selection" ]]; then
+        exit 0
+    fi
+
+    # Skip section headers
+    if [[ "$selection" =~ ^#.*--- ]]; then
+        exit 0
+    fi
+
+    # Extract URL from "Label|URL" format
+    local media_url="$selection"
+    if [[ "$selection" =~ \|(.+)$ ]]; then
+        media_url="${BASH_REMATCH[1]}"
+    fi
+
+    # Play the selected media
+    play "$media_url"
+}
+
+# Check dependencies before running
+check_dependencies
+
+# Run main function
+main "$@"
