@@ -1,0 +1,18 @@
+[Keyboard]
+RepeatDelay=250
+RepeatRate=40
+
+[Libinput][1133][50504][Logitech USB Receiver]
+Enabled=true
+PointerAcceleration=0.200
+
+[Libinput][1133][50504][Logitech USB Receiver Mouse]
+PointerAcceleration=0.400
+
+[Libinput][1267][12981][ELAN06D4:00 04F3:32B5 Touchpad]
+Enabled=true
+PointerAcceleration=0.600
+
+[Libinput][2][10][TPPS/2 Elan TrackPoint]
+PointerAcceleration=1.000
+PointerAccelerationProfile=1
