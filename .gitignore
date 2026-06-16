@@ -15,7 +15,7 @@ node_modules/
 
 /*
 
-.gitconfig
+/.gitconfig
 !/.gitignore
 !/.profile
 !/.bashrc
@@ -29,12 +29,22 @@ node_modules/
 !/.config/gtk-4.0
 !/.config/gtkrc
 !/.config/gtkrc-2.0
+!/.config/hypr
 !/.config/mpv
-!/.config/nvim
 !/.config/nsxiv
+!/.config/nvim
 !/.config/R
+!/.config/swappy
 !/.config/tmux
 !/.config/tofi
+!/.config/waybar
+!/.config/wlogout
 !/.config/yt-dlp
 !/.config/zathura
 !/.config/zsh/
+
+!/.local/
+/.local/*
+!/.local/bin/
+/.local/bin/*
+!/.local/bin/*
