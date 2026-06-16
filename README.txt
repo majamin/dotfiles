@@ -1,9 +1,11 @@
-=== dotfiles ===
+=== KDE dotfiles ===
 
-Some basic dotfiles that I use.
+Some basic dotfiles that I use for KDE.
 
 Usage
 =====
+
+This is the KDE branch.
 
 Pick a branch for the best results.
 
