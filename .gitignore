@@ -15,11 +15,11 @@ node_modules/
 
 /*
 
+/.gitconfig
 !/.gitignore
 !/.profile
 !/.bashrc
 !/.zshenv
-!/.gitconfig
 
 !/.config/
 /.config/*
