@@ -5,6 +5,8 @@ Some basic dotfiles that I use.
 Usage
 =====
 
+You are on the master branch.
+
 Pick a branch for the best results.
 
 `master` branch .............. barebones
