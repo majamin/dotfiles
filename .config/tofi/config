@@ -1,0 +1,34 @@
+font = Fira Sans
+font-size = 14
+
+# Colors
+background-color = #f5f5f0ef
+text-color = #2d2d2d
+prompt-color = #5c7a9f
+selection-color = #ffffff
+selection-background = #5c7a9f
+
+# Dimensions
+width = 780
+num-results = 8
+padding-top = 25
+padding-bottom = 25
+padding-left = 20
+padding-right = 80
+
+# Positioning
+anchor = center
+margin-top = 0
+margin-bottom = 0
+margin-left = 0
+margin-right = 0
+
+# Border / outline
+outline-width = 0
+border-width = 1
+border-color = #8b8bab55
+corner-radius = 8
+
+# Prompt
+prompt-text = "  "
+prompt-padding = 8

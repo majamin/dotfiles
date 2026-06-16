@@ -1,0 +1,11 @@
+# The .First function is called after everything else in .Rprofile is executed
+.First <- function() {
+  # Print a welcome message
+  message("Welcome back ", Sys.getenv("USER"),"!\n","working directory is:", getwd())
+}
+
+# Recommended:
+# devtools::install_github("jalvesaq/colorout", quiet=TRUE)
+if(any(rownames(utils::installed.packages()) == "colorout")) {
+  library("colorout")
+}

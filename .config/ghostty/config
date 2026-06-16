@@ -1,0 +1,32 @@
+# ────────────────────────────────────────────────────────────────────────────
+# Theming
+# ────────────────────────────────────────────────────────────────────────────
+theme = litmus
+confirm-close-surface = false
+cursor-style-blink = true
+font-size = 14
+font-family = JetBrainsMono Nerd Font
+font-synthetic-style = true
+font-feature = "ss02,cv16" # see https://github.com/JetBrains/JetBrainsMono/wiki/OpenType-features
+window-decoration = server
+window-padding-x = 8
+window-padding-y = 8
+window-width = 120
+window-height = 30
+gtk-single-instance = true
+unfocused-split-fill = #aaeeee
+unfocused-split-opacity = 0.83
+split-divider-color = orange
+
+# ────────────────────────────────────────────────────────────────────────────
+# Useful
+# ────────────────────────────────────────────────────────────────────────────
+keybind = shift+enter=text:\x1b\r
+keybind = ctrl+shift+comma=reload_config
+keybind = ctrl+comma=open_config
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
+keybind = ctrl+enter=toggle_fullscreen

@@ -1,0 +1,4 @@
+set selection-clipboard clipboard
+set default-bg "#ffffff"
+set window-height 1100
+set window-width 850

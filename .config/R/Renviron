@@ -1,0 +1,8 @@
+# R environment
+
+R_HOME_USER = "${XDG_CONFIG_HOME:-$HOME/.config}/R"
+R_PROFILE_USER = "${XDG_CONFIG_HOME:-$HOME/.config}/R/Rprofile"
+R_LIBS_USER = "${XDG_DATA_HOME:-$HOME/.local/share}/R/lib"
+R_HISTFILE = "${XDG_CONFIG_HOME:-$HOME/.config}/R/Rhistory"
+R_BROWSER = "$BROWSER"
+#MYSL_HOME = /var/lib/mysqlQ

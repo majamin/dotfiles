@@ -1,0 +1,69 @@
+#!/bin/sh
+
+# Example for $XDG_CONFIG_HOME/sxiv/exec/key-handler
+# Called by sxiv(1) after the external prefix key (C-x by default) is pressed.
+# The next key combo is passed as its first argument. Passed via stdin are the
+# images to act upon, one path per line: all marked images, if in thumbnail
+# mode and at least one image has been marked, otherwise the current image.
+# sxiv(1) blocks until this script terminates. It then checks which images
+# have been modified and reloads them.
+
+# The key combo argument has the following form: "[C-][M-][S-]KEY",
+# where C/M/S indicate Ctrl/Meta(Alt)/Shift modifier states and KEY is the X
+# keysym as listed in /usr/include/X11/keysymdef.h without the "XK_" prefix.
+
+while read -r file; do
+	case "$1" in
+	"w") setbg "$file" & ;;
+	"c")
+		# Enhance contrast and convert to grayscale
+		magick "$file" -contrast-stretch 0.5%x0.5% -colorspace Gray "$file" &&
+			notify-send "Enhanced contrast & grayscale: $file" &
+		;;
+	"k")
+		# Clean image with unpaper (deskew, edge cleanup)
+		deskew -o "$file" "$file"
+		;;
+	"a")
+		# Auto-rotate based on EXIF
+		exiftran -ai "$file" &&
+			notify-send "Auto-rotated $file" &
+		;;
+	"o")
+		# OCR and output to searchable PDF
+		out="${file%.*}.pdf"
+		ocrmypdf --image-dpi 600 "$file" "$out" &&
+			notify-send "OCRd to $out" &
+		;;
+	"m")
+		[ -z "$destdir" ] && destdir="$(sed "s/#.*$//;/^\s*$/d" "${XDG_CONFIG_HOME:-$HOME/.config}"/shell/bm-dirs | awk '{print $2}' | dmenu -l 20 -i -p "Move file(s) to where?" | sed "s|~|$HOME|g")"
+		[ ! -d "$destdir" ] && notify-send "$destdir is not a directory, cancelled." && exit
+		mv "$file" "$destdir" && notify-send -i "$(readlink -f "$file")" "$file moved to $destdir." &
+		;;
+	"comma")
+		tmp="$(mktemp --suffix=.jpg)"
+		magick "$file" -rotate -90 "$tmp" && mv "$tmp" "$file" &&
+			notify-send "Rotated left: $file" &
+		;;
+	"period")
+		tmp="$(mktemp --suffix=.jpg)"
+		magick "$file" -rotate 90 "$tmp" && mv "$tmp" "$file" &&
+			notify-send "Rotated right: $file" &
+		;;
+	"f")
+		magick -flop "$file" "$file"
+		;;
+	"y")
+		printf "%s" "$file" | tr -d '\n' | xclip -selection clipboard &&
+			notify-send "$file copied to clipboard" &
+		;;
+	"Y")
+		readlink -f "$file" | tr -d '\n' | xclip -selection clipboard &&
+			notify-send "$(readlink -f "$file") copied to clipboard" &
+		;;
+	"d")
+		[ "$(printf "No\\nYes" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rm "$file" && notify-send "$file deleted."
+		;;
+	"i") notify-send "File information" "$(mediainfo "$file" | sed "s/[ ]\+:/:/g;s/: /: <b>/;s/$/<\/b>/" | grep "<b>")" ;;
+	esac
+done
