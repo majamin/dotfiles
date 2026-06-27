@@ -1,9 +1,8 @@
 === dotfiles ===
 
 Personal dotfiles, managed as a bare git repo plus a `dots` alias.
-Everything lives on one branch (master); each machine just uses the
-files relevant to it (KDE configs on a KDE box, hypr/waybar on a
-wayland box, the rest everywhere). Unused configs sit harmlessly.
+
+It has basic configs for wayland-based sessions like KDE or hyprland.
 
 Setup on a new machine
 ======================
