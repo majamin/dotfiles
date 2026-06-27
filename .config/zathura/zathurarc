@@ -1,4 +1,92 @@
-set selection-clipboard clipboard
-set default-bg "#ffffff"
-set window-height 1100
-set window-width 850
+# ~/.config/zathura/zathurarc
+# A clean, modern, ergonomic setup for zathura 0.5.x
+# Palette: Nord (https://www.nordtheme.com) — calm, professional, high-contrast.
+
+# ─── Window ──────────────────────────────────────────────────────────────────
+set window-width             850
+set window-height            1100
+set guioptions               "s"          # statusbar only; no scrollbars/cmdline clutter
+set window-title-basename    true         # show file name, not full path, in title
+set window-title-page        true         # show page number in title
+set adjust-open              "width"       # fit page to window width on open
+set page-padding             6             # breathing room between pages
+set vertical-center          true
+
+# ─── Statusbar ───────────────────────────────────────────────────────────────
+set statusbar-basename       true
+set statusbar-home-tilde     true          # collapse $HOME to ~
+set statusbar-page-percent   true          # show "page / total (NN%)"
+set statusbar-h-padding      10
+set statusbar-v-padding      8
+
+# ─── Reading behaviour ───────────────────────────────────────────────────────
+set selection-clipboard      clipboard     # yank to CLIPBOARD (Ctrl+v elsewhere)
+set selection-notification   false         # don't nag on every text selection
+set scroll-step              80
+set scroll-page-aware        true          # half/full-page scroll stops at page edges
+set scroll-full-overlap      0.05          # keep a sliver of context on full-page jumps
+set incremental-search       true
+set continuous-hist-save     true          # remember position even on crash/kill
+set database                 "sqlite"      # plain backend is deprecated; sqlite is faster
+set show-hidden              true          # show dotfiles in the open/completion dialog
+set show-recent              15
+
+# ─── Zoom ────────────────────────────────────────────────────────────────────
+set zoom-step                10
+set zoom-min                 25
+set zoom-max                 1000
+set zoom-center              true
+
+# ─── Theme: UI chrome (dark, vim-like) ───────────────────────────────────────
+set default-bg               "#f6f7f9"     # light page surround
+set default-fg               "#2e3440"
+
+set statusbar-bg             "#2e3440"
+set statusbar-fg             "#d8dee9"
+set inputbar-bg              "#2e3440"
+set inputbar-fg              "#eceff4"
+
+set completion-bg            "#2e3440"
+set completion-fg            "#d8dee9"
+set completion-group-bg      "#3b4252"
+set completion-group-fg      "#88c0d0"
+set completion-highlight-bg  "#88c0d0"
+set completion-highlight-fg  "#2e3440"
+
+set index-bg                 "#2e3440"
+set index-fg                 "#d8dee9"
+set index-active-bg          "#88c0d0"
+set index-active-fg          "#2e3440"
+
+# ─── Notifications ───────────────────────────────────────────────────────────
+set notification-bg          "#2e3440"
+set notification-fg          "#d8dee9"
+set notification-error-bg    "#bf616a"
+set notification-error-fg    "#eceff4"
+set notification-warning-bg  "#ebcb8b"
+set notification-warning-fg  "#2e3440"
+
+# ─── Search / highlight ──────────────────────────────────────────────────────
+set highlight-color          "rgba(136,192,208,0.40)"
+set highlight-active-color   "rgba(94,129,172,0.55)"
+set highlight-fg             "rgba(46,52,64,0.90)"
+
+# ─── Dark mode (toggle with Ctrl+r) ──────────────────────────────────────────
+# Inverts the page to a soft dark theme that's easy on the eyes at night.
+set recolor                  false         # start in normal/light mode
+set recolor-keephue          true          # keep images/figures looking natural
+set recolor-lightcolor       "#2e3440"     # becomes the page background
+set recolor-darkcolor        "#d8dee9"     # becomes the page text
+
+# ─── Keybindings ─────────────────────────────────────────────────────────────
+map <C-r>  recolor                         # toggle dark/light reading mode
+map <C-i>  zoom in
+map <C-o>  zoom out
+map <C-0>  adjust_window best-fit
+map =      adjust_window best-fit
+map +      zoom in
+map -      zoom out
+map r      reload
+map R      rotate rotate-cw
+map p      print
+map i      toggle_statusbar                # distraction-free reading
