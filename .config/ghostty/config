@@ -2,6 +2,7 @@
 # Theming
 # ────────────────────────────────────────────────────────────────────────────
 theme = litmus
+# background-image = "$HOME/Maja/Media/Images/Backgrounds/desktop/digi.png"
 confirm-close-surface = false
 cursor-style-blink = true
 font-size = 14
