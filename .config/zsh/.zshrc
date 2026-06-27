@@ -45,8 +45,10 @@ source "${ZDOTDIR}/LS_COLORS"
 zmodload zsh/complist
 setopt auto_menu
 autoload -Uz compinit && compinit -d "${ZDOTDIR:-$HOME}/.zcompdump"
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
 zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+# zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
@@ -55,14 +57,7 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' select-prompt '%S%p%s'
 zstyle ':completion:*' completer _complete _approximate
 compdef _dots dots
-
-bindkey -M menuselect '^I'   menu-complete
-bindkey -M menuselect '^[[Z' reverse-menu-complete
-bindkey -M menuselect '^N'   menu-complete
-bindkey -M menuselect '^P'   reverse-menu-complete
-bindkey -M menuselect '^['   send-break
-bindkey -M menuselect '^Y'   accept-and-infer-next-history
-_comp_options+=(globdots)                                       # complete dotfiles
+compdef cdr
 
 # --- Vi mode + cursor shape ---
 bindkey -v
@@ -82,11 +77,20 @@ bindkey -M vicmd 'k' up-line-or-beginning-search
 bindkey -M vicmd 'j' down-line-or-beginning-search
 
 # --- Insert-mode keys ---
+autoload -Uz edit-command-line && zle -N edit-command-line
 bindkey -M viins '^R' history-incremental-pattern-search-backward
 bindkey -M viins '^F' history-incremental-pattern-search-forward
-bindkey -M viins '^I' complete-word
-autoload -Uz edit-command-line && zle -N edit-command-line
+# bindkey -M viins '^I' complete-word
 bindkey -M viins '^E' edit-command-line
+bindkey -M viins '^N'   menu-complete
+bindkey -M viins '^Y'   accept-and-infer-next-history
+
+# --- Menu selection ---
+bindkey -M menuselect '^N'   menu-complete
+bindkey -M menuselect '^P'   reverse-menu-complete
+bindkey -M menuselect '^['   undo
+bindkey -M menuselect '^I'   accept-and-infer-next-history
+bindkey -M menuselect '^Y'   accept-and-infer-next-history
 
 # --- Git, prompt and colors ---
 autoload -Uz vcs_info
@@ -106,3 +110,4 @@ soifex /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh \
        /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
        /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
        /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
