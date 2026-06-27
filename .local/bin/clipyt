@@ -112,24 +112,26 @@ collect_sources() {
         sources+=("$clipboard")
     fi
 
+    # TODO:
+    # "KCRW (128k)|https://kcrw.streamguys1.com//kcrw_128k_mp3_on_air"
+    # "KCRW Eclectic 24|https://kcrw.streamguys1.com/kcrw_192k_mp3_e24"
+    # "CBC Radio Kamloops|http://liveradio.cbc.ca/i/CBCR1_KAM@384142/index_96_a-p.m3u8"
+    # "Nightride FM|https://nightride.fm/stream/nightride.m4a"
+    # "Chillout Zone|https://chillout.zone/chillout_plus"
+    # "Holiday Music|https://holiday.stream.publicradio.org/holiday_yc.aac"
+    # "WQXR Special|https://stream.wqxr.org/qxr-special-web?nyprBrowserId=73ef765c453ff400"
+    # "Hygge Radio|https://hygge.stream.publicradio.org/hygge.aac"
+    # "Focus Music|https://focus.stream.publicradio.org/focus.aac"
+
     # Add radio stations
     sources+=(
         "# --- Radio Stations ---"
         "Shoegaze Radio|https://ais-edge09-live365-dal02.cdnstream.com/a06375?listenerId=Live365-Widget-AdBlock&aw_0_1st.playerid=Live365-Widget&aw_0_1st.skey=1617124325"
         "Toronto Cast|https://kathy.torontocast.com:1825/stream"
-        "KCRW (128k)|https://kcrw.streamguys1.com//kcrw_128k_mp3_on_air"
-        "KCRW Eclectic 24|https://kcrw.streamguys1.com/kcrw_192k_mp3_e24"
-        "CBC Radio Kamloops|http://liveradio.cbc.ca/i/CBCR1_KAM@384142/index_96_a-p.m3u8"
-        "Nightride FM|https://nightride.fm/stream/nightride.m4a"
-        "Chillout Zone|https://chillout.zone/chillout_plus"
         "WCPE Classical|http://audio-ogg.ibiblio.org:8000/wcpe.ogg"
         "YourClassical Radio|https://ycradio.stream.publicradio.org/ycradio.aac"
-        "Holiday Music|https://holiday.stream.publicradio.org/holiday_yc.aac"
-        "WQXR Special|https://stream.wqxr.org/qxr-special-web?nyprBrowserId=73ef765c453ff400"
-        "Hygge Radio|https://hygge.stream.publicradio.org/hygge.aac"
         "Peaceful Piano|https://peacefulpiano.stream.publicradio.org/peacefulpiano.aac"
         "Classical Kids|https://classicalkids.stream.publicradio.org/classicalkids.aac"
-        "Focus Music|https://focus.stream.publicradio.org/focus.aac"
         "Favorites|https://favorites.stream.publicradio.org/favorites.aac"
     )
 
@@ -184,10 +186,7 @@ main() {
     # Show tofi menu and get selection
     local selection
     selection=$(echo "$sources" | tofi --prompt-text "Select media source" \
-        --num-results "$MENU_LINES" \
         --width 100% \
-        --font /usr/share/fonts/TTF/JetBrainsMono-Regular.ttf \
-        --font-size 14 \
         --hint-font false)
 
     # Exit if no selection made
