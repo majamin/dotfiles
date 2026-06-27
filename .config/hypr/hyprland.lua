@@ -1,0 +1,7 @@
+require("modules/auto")
+require("modules/displays")
+require("modules/decor")
+require("modules/keybinds")
+require("modules/rules")
+require("modules/config")
+require("modules/superpin")

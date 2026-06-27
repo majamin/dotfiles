@@ -1,0 +1,83 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 32,
+    "spacing": 6,
+
+    "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["custom/clock"],
+    "modules-right":  ["pulseaudio", "bluetooth", "backlight", "battery", "tray"],
+
+    "hyprland/workspaces": {
+        "format": "{id}",
+        "on-click": "activate",
+        "sort-by-number": true
+    },
+
+    "hyprland/window": {
+        "max-length": 55,
+        "separate-outputs": true,
+        "format": "  {title}"
+    },
+
+    "custom/clock": {
+        "exec": "jq -cn --arg text \"$(date '+%a %d %b  %I:%M %p')\" --arg tooltip \"$(cal)\" '{\"text\":$text,\"tooltip\":(\"<tt>\" + $tooltip + \"</tt>\")}'",
+        "interval": 30,
+        "return-type": "json",
+        "format": "{}",
+        "tooltip": true
+    },
+
+    "pulseaudio": {
+        "format": "{icon}    {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "headset": "󰋎",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol",
+        "scroll-step": 5,
+        "tooltip": false
+    },
+
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱    {device_alias}",
+        "format-disabled": "",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "bt-menu",
+        "tooltip": true
+    },
+
+    "backlight": {
+        "format": "{icon}   {percent}%",
+        "format-icons": ["󰃞", "󰃟", "󰃠"],
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "tooltip": false
+    },
+
+    "network": {
+        "format-wifi": "󰤨    {essid}",
+        "format-ethernet": "󰈀    {ipaddr}",
+        "format-disconnected": "󰤭",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}\n{signalStrength}%",
+        "on-click": "nm-connection-editor"
+    },
+
+    "battery": {
+        "states": { "warning": 30, "critical": 15 },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄   {capacity}%",
+        "format-plugged": "󰚦   {capacity}%",
+        "format-icons": ["󰂎","󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"],
+        "tooltip": false
+    },
+
+    "tray": {
+        "spacing": 8,
+        "icon-size": 16
+    }
+}

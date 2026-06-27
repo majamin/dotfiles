@@ -1,0 +1,43 @@
+* {
+    background-image: none;
+    box-shadow: none;
+}
+
+window {
+    background-image: url("/home/marian/Maja/Media/Images/Backgrounds/desktop/digi.png");
+    background-size: cover;
+    background-position: center;
+    font-family: "Fira Sans", sans-serif;
+}
+
+button {
+    color: rgba(245, 245, 240, 0.85);
+    font-size: 2rem;
+    font-weight: 900;
+    background-color: rgba(18, 18, 26, 0.95);
+    border: 1px solid rgba(139, 139, 171, 0.20);
+    border-radius: 16px;
+    margin: 12px;
+    background-repeat: no-repeat;
+    background-position: center 35%;
+    background-size: 28%;
+}
+
+button:focus,
+button:hover {
+    border-color: rgba(224, 120, 32, 1.0);
+    color: rgba(245, 245, 240, 1.0);
+    outline-style: none;
+}
+
+button:active {
+    background-color: rgba(224, 120, 32, 0.15);
+    border-color: rgba(224, 120, 32, 1.0);
+}
+
+#lock      { background-image: image(url("/home/marian/.config/wlogout/assets/lock.svg")); }
+#logout    { background-image: image(url("/home/marian/.config/wlogout/assets/logout.svg")); }
+#suspend   { background-image: image(url("/home/marian/.config/wlogout/assets/suspend.svg")); }
+#hibernate { background-image: image(url("/home/marian/.config/wlogout/assets/hibernate.svg")); }
+#shutdown  { background-image: image(url("/home/marian/.config/wlogout/assets/shutdown.svg")); }
+#reboot    { background-image: image(url("/home/marian/.config/wlogout/assets/reboot.svg")); }

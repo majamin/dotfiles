@@ -1,34 +1,61 @@
-font = Fira Sans
-font-size = 14
+# tofi — minimal light theme (litmus-inspired)
+# Palette: near-white #f7fcff base, grayscale text, magenta #bf1d71 accent.
 
-# Colors
-background-color = #f5f5f0ef
-text-color = #2d2d2d
-prompt-color = #5c7a9f
-selection-color = #ffffff
-selection-background = #5c7a9f
+# Font — referenced by name (Pango) so the prompt glyph falls back to a Nerd Font
+font = IBM Plex Sans
+font-size = 22
 
-# Dimensions
-width = 780
-num-results = 8
-padding-top = 25
-padding-bottom = 25
-padding-left = 20
-padding-right = 80
+# Base colors
+background-color = #f7fcfff5
+text-color       = #2d2d2d
+prompt-color     = #bf1d71
+placeholder-color = #8a8a8a
+input-color      = #1a1a1a
 
-# Positioning
-anchor = center
-margin-top = 0
+# Results
+default-result-color = #454545
+selection-color      = #ffffff
+
+# Selection: rounded magenta "pill"
+selection-background               = #bf1d71
+selection-background-corner-radius = 8
+# top&bottom, left&right — 0 vertical keeps the pill at line height (slimmest)
+selection-background-padding       = 0, 16
+
+# Text cursor: thin accent bar
+text-cursor           = true
+text-cursor-style     = bar
+text-cursor-color     = #bf1d71
+text-cursor-thickness = 2
+
+# Prompt / placeholder
+prompt-text      = "  "
+prompt-padding   = 18
+placeholder-text = "Search…"
+
+# Layout — large centered overlay (intentionally occludes window content)
+anchor        = center
+width         = 60%
+height        = 70%
+num-results   = 12
+result-spacing = 12
+
+padding-top    = 60
+padding-bottom = 60
+padding-left   = 70
+padding-right  = 70
+
+margin-top    = 0
 margin-bottom = 0
-margin-left = 0
-margin-right = 0
+margin-left   = 0
+margin-right  = 0
 
-# Border / outline
+# Frame — subtle hairline, soft corners
 outline-width = 0
-border-width = 1
-border-color = #8b8bab55
-corner-radius = 8
+border-width  = 1
+border-color  = #dde3e7
+corner-radius = 20
 
-# Prompt
-prompt-text = "  "
-prompt-padding = 8
+# Behavior
+fuzzy-match = true
+hide-cursor = false

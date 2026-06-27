@@ -1,46 +1,42 @@
 === dotfiles ===
 
 Personal dotfiles, managed as a bare git repo plus a `dots` alias.
-You are on the master branch (barebones -- the common base every machine shares).
+Everything lives on one branch (master); each machine just uses the
+files relevant to it (KDE configs on a KDE box, hypr/waybar on a
+wayland box, the rest everywhere). Unused configs sit harmlessly.
 
-Branches
-========
-
-  master ......... common base; everything every machine needs
-  KDE ............ master + KDE / Plasma settings
-  wayland ........ master + wayland WM settings
-
-Common changes are authored on `master` and flow DOWN into the topic
-branches via merge. Topic branches only add their own machine-specific
-commits. Never merge a topic branch back into master.
-
-I just want one setup
-=====================
+Setup on a new machine
+======================
 
   git clone --bare git@github.com:majamin/dotfiles.git ~/.dotfiles
   alias dots='GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME git'
-  dots checkout KDE          # or: master / wayland-other
+  dots checkout
   dots submodule update --init --recursive
   dots config status.showUntrackedFiles no
 
 If `checkout` complains about existing files, move them aside first.
 The `dots` alias is also defined as a function in ~/.config/zsh/.zshrc.
 
-Maintaining all branches
-========================
+Then create ~/.gitconfig.local (untracked) with your git identity:
 
-A linked worktree lets you edit master without touching your live $HOME:
+  [user]
+      name = Your Name
+      email = you@example.com
 
-  git --git-dir=$HOME/.dotfiles worktree add ~/dotfiles-master master
+And, if you use pass, create the store dir with the right perms:
 
-  - Common change?  edit it in ~/dotfiles-master, commit there, then on
-    each machine:  dots merge master
-  - Machine-specific change?  just commit it on the current branch.
+  mkdir -p ~/.local/share/PasswordStore && chmod 700 ~/.local/share/PasswordStore
 
-Git identity lives in ~/.gitconfig.local (untracked) so it survives branch
-switches -- create it on a new machine with your name/email. README.txt is
-per-branch and protected by a merge=ours driver, so `dots merge master`
-never conflicts on it.
+Day to day
+==========
+
+  Edit any file live in $HOME, then:
+      dots add <file>
+      dots commit -m "..."
+      dots push
+
+  dots status   # quiet -- untracked files are hidden
+  dots lg1      # graph log
 
 Key files
 =========
@@ -50,3 +46,5 @@ Key files
   ~/.config/zsh/.zshrc ....... Shell config
   ~/.gitconfig ............... Git aliases (lg1/lg2); identity is in ~/.gitconfig.local
   ~/.local/bin/ .............. Helper scripts
+  ~/.config/hypr/ ............ Hyprland (wayland machines)
+  ~/.config/kwinrc, kde* ..... KDE / Plasma (KDE machines)

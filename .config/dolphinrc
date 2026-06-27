@@ -1,0 +1,29 @@
+MenuBar=Disabled
+
+[ExtractDialog]
+1920x1200 screen: Height=600
+1920x1200 screen: Width=1256
+
+[General]
+ConfirmClosingTerminalRunningProgram=false
+DynamicView=true
+GlobalViewProps=false
+ShowFullPath=true
+ShowStatusBar=FullWidth
+ShowZoomSlider=true
+UseTabForSwitchingSplitView=true
+Version=202
+ViewPropsTimestamp=2026,6,2,7,19,28.569
+
+[IconsMode]
+PreviewSize=112
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=22
+
+[MainWindow]
+MenuBar=Disabled
+
+[PreviewSettings]
+Plugins=comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,directorythumbnail,fontthumbnail,marble_thumbnail_geojson,marble_thumbnail_gpx,imagethumbnail,jpegthumbnail,jxl,marble_thumbnail_kmz,marble_thumbnail_kml,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,mltpreview,opendocumentthumbnail,marble_thumbnail_osm,palathumbcreator,gdk-pixbuf-thumbnailer,gsthumbnail,rawthumbnail,librsvg,svgthumbnail,ffmpegthumbs,aseprite
