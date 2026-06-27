@@ -36,5 +36,7 @@ node_modules/
 !/.config/tmux
 !/.config/tofi
 !/.config/yt-dlp
+/.config/yt-dlp/cookies.txt
+/.config/yt-dlp/archive.txt
 !/.config/zathura
 !/.config/zsh/
