@@ -17,6 +17,7 @@ node_modules/
 
 !/.gitconfig
 !/.gitignore
+!/.gitattributes
 !/.profile
 !/.bashrc
 !/.zshenv
